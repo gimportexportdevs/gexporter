@@ -1,7 +1,7 @@
 # gexporter
 Android App to export GPX and FIT to garmin devices
 
-# HOWTO
+## HOWTO
 * Android Studio -> Settings -> System Settings -> Android SDK -> "SDK Tools" Tab -> Check "Support Repository/Constraint Layout"
 * compile and install the app on your device where the Garmin Connect app is also running
 * go to settings of the app and give sdcard permission for file reading
