@@ -10,6 +10,10 @@ import java.io.InputStream;
 
 import fi.iki.elonen.NanoHTTPD;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
+
 class WebServer extends NanoHTTPD {
     WebServer(int port) {
         super(port);
@@ -29,7 +33,7 @@ class WebServer extends NanoHTTPD {
         String rootdir = Environment.getExternalStorageDirectory().getAbsolutePath() +
                 "/Download/";
 
-        if(method.toString().equalsIgnoreCase("GET")){
+        if(method.toString().equalsIgnoreCase("GET")) {
             String path;
             if(uri.equals("/dir.json")){
                 String[] filelist = new File(rootdir).list();
@@ -39,10 +43,17 @@ class WebServer extends NanoHTTPD {
 
                 String ret="{ \"tracks\" : [";
                 for (String aFilelist : filelist) {
-                    if (aFilelist.endsWith(".gpx") || aFilelist.endsWith(".fit")) {
-                        ret += "{ title: \"" + aFilelist + "\", url: \"http://127.0.0.1:" + this.getListeningPort() + "/" + aFilelist + "\" },";
+                    if (aFilelist.endsWith(".gpx") || aFilelist.endsWith(".fit") || aFilelist.endsWith(".GPX") || aFilelist.endsWith(".FIT") ) {
+                        String url = null;
+                        try {
+                            url = "http://127.0.0.1:" + this.getListeningPort() + "/" + URLEncoder.encode(aFilelist, "UTF-8");
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                        ret += "{ \"title\": \"" + aFilelist + "\", \"url\": \"" + url + "\" },";
                     }
                 }
+                ret = ret.substring(0, ret.length()-1);
                 ret += "]}";
                 return newFixedLengthResponse(Response.Status.OK, MIME_JSON, ret);
             }
@@ -51,9 +62,9 @@ class WebServer extends NanoHTTPD {
             try{
                 if(path.endsWith(".json")){
                     mime_type = MIME_JSON;
-                } else if(path.endsWith(".fit")) {
+                } else if(path.endsWith(".fit") || path.endsWith(".FIT")) {
                     mime_type = MIME_FIT;
-                } else if(path.endsWith(".gpx")) {
+                } else if(path.endsWith(".gpx") || path.endsWith(".GPX")) {
                     mime_type = MIME_GPX;
                 }
             }catch(Exception e){
