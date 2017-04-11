@@ -10,6 +10,7 @@ Android App to export GPX and FIT to garmin devices
 * start the connect IQ app on your garmin device https://github.com/gimportexportdevs/gimporter
 
 ## TODO
+* rename to org.gexporter
 * request sdcard android permission
 * create proper GUI
 * display what is exported
