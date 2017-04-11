@@ -11,6 +11,7 @@ Android App to export GPX and FIT to garmin devices
 
 ## TODO
 * request sdcard android permission
+* create proper GUI
 * display what is exported
 * make the server a background service
 * configure the list of directories to scan
