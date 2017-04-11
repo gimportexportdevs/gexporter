@@ -28,7 +28,6 @@ class WebServer extends NanoHTTPD {
         Method method = session.getMethod();
         String uri = session.getUri();
         System.out.println(method + " '" + uri + "' ");
-        InputStream descriptor = null;
         // Open file from SD Card
         String rootdir = Environment.getExternalStorageDirectory().getAbsolutePath() +
                 "/Download/";
@@ -43,7 +42,7 @@ class WebServer extends NanoHTTPD {
 
                 String ret="{ \"tracks\" : [";
                 for (String aFilelist : filelist) {
-                    if (aFilelist.endsWith(".gpx") || aFilelist.endsWith(".fit") || aFilelist.endsWith(".GPX") || aFilelist.endsWith(".FIT") ) {
+                    if (aFilelist.endsWith(".fit") || aFilelist.endsWith(".FIT") /*|| aFilelist.endsWith(".gpx") || aFilelist.endsWith(".GPX")*/  ) {
                         String url = null;
                         try {
                             url = "http://127.0.0.1:" + this.getListeningPort() + "/" + URLEncoder.encode(aFilelist, "UTF-8");
@@ -64,9 +63,9 @@ class WebServer extends NanoHTTPD {
                     mime_type = MIME_JSON;
                 } else if(path.endsWith(".fit") || path.endsWith(".FIT")) {
                     mime_type = MIME_FIT;
-                } else if(path.endsWith(".gpx") || path.endsWith(".GPX")) {
+                } /* else if(path.endsWith(".gpx") || path.endsWith(".GPX")) {
                     mime_type = MIME_GPX;
-                }
+                } */
             }catch(Exception e){
                 return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_JSON, "{ error: \"" + e.toString() + "\" } ");
             }
@@ -74,7 +73,7 @@ class WebServer extends NanoHTTPD {
             try {
                 // Open file from SD Card
                 File src = new File(rootdir + path);
-                descriptor = new FileInputStream(src);
+                InputStream descriptor = new FileInputStream(src);
                 return newFixedLengthResponse(Response.Status.OK, mime_type, descriptor, src.length());
 
             } catch(IOException ioe) {
