@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpsies="http://www.gpsies.com/GPX/1/0" creator="GPSies http://www.gpsies.com - sample11" version="1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.gpsies.com/GPX/1/0 http://www.gpsies.com/gpsies.xsd">
+  <metadata>
+    <name>sample11</name>
+    <link href="http://www.gpsies.com/">
+      <text>sample11 on GPSies.com</text>
+    </link>
+    <time>2017-05-23T10:59:38Z</time>
+  </metadata>
+  <trk>
+    <name>sample11 on GPSies.com</name>
+    <trkseg>
+      <trkpt lat="48.11276106" lon="11.77565395">
+        <ele>542.00000</ele>
+        <time>2010-01-01T00:00:00Z</time>
+      </trkpt>
+      <trkpt lat="48.11274000" lon="11.77567000">
+        <ele>542.00000</ele>
+        <time>2010-01-01T00:00:00Z</time>
+      </trkpt>
+      <trkpt lat="48.11309000" lon="11.77623000">
+        <ele>541.00000</ele>
+        <time>2010-01-01T00:00:21Z</time>
+      </trkpt>
+      <trkpt lat="48.11325000" lon="11.77654000">
+        <ele>541.00000</ele>
+        <time>2010-01-01T00:00:31Z</time>
+      </trkpt>
+      <trkpt lat="48.11326000" lon="11.77652000">
+        <ele>541.00000</ele>
+        <time>2010-01-01T00:00:32Z</time>
+      </trkpt>
+      <trkpt lat="48.11326000" lon="11.77653000">
+        <ele>541.00000</ele>
+        <time>2010-01-01T00:00:32Z</time>
+      </trkpt>
+      <trkpt lat="48.11296000" lon="11.77692000">
+        <ele>541.00000</ele>
+        <time>2010-01-01T00:00:48Z</time>
+      </trkpt>
+      <trkpt lat="48.11271000" lon="11.77724000">
+        <ele>541.00000</ele>
+        <time>2010-01-01T00:01:01Z</time>
+      </trkpt>
+      <trkpt lat="48.11266000" lon="11.77732000">
+        <ele>541.00000</ele>
+        <time>2010-01-01T00:01:04Z</time>
+      </trkpt>
+      <trkpt lat="48.11250000" lon="11.77701000">
+        <ele>542.00000</ele>
+        <time>2010-01-01T00:01:15Z</time>
+      </trkpt>
+      <trkpt lat="48.11249000" lon="11.77701000">
+        <ele>542.00000</ele>
+        <time>2010-01-01T00:01:15Z</time>
+      </trkpt>
+      <trkpt lat="48.11232000" lon="11.77669000">
+        <ele>542.00000</ele>
+        <time>2010-01-01T00:01:26Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>
+

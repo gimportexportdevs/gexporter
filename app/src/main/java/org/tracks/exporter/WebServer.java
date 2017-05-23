@@ -3,6 +3,8 @@ package org.tracks.exporter;
 import android.os.Environment;
 import android.util.Log;
 
+import org.surfsite.gpxtofit.GPXLoader;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,11 +14,24 @@ import fi.iki.elonen.NanoHTTPD;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
 
 
 class WebServer extends NanoHTTPD {
-    WebServer(int port) {
+    File cacheDir;
+
+    WebServer(KeyStore keystore, KeyManagerFactory keyManagerFactory, File cacheDir, int port) throws IOException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
         super(port);
+        this.cacheDir = cacheDir;
+        //System.setProperty("javax.net.ssl.trustStore", new File("src/test/resources/keystore.jks").getAbsolutePath());
+
+        //makeSecure(NanoHTTPD.makeSSLSocketFactory(keystore, keyManagerFactory), null);
     }
 
     private static final String MIME_JSON = "application/json";
@@ -42,7 +57,7 @@ class WebServer extends NanoHTTPD {
 
                 String ret="{ \"tracks\" : [";
                 for (String aFilelist : filelist) {
-                    if (aFilelist.endsWith(".fit") || aFilelist.endsWith(".FIT") /*|| aFilelist.endsWith(".gpx") || aFilelist.endsWith(".GPX")*/  ) {
+                    if (aFilelist.endsWith(".fit") || aFilelist.endsWith(".FIT") || aFilelist.endsWith(".gpx") || aFilelist.endsWith(".GPX")  ) {
                         String url = null;
                         try {
                             url = "http://127.0.0.1:" + this.getListeningPort() + "/" + URLEncoder.encode(aFilelist, "UTF-8");
@@ -58,22 +73,37 @@ class WebServer extends NanoHTTPD {
             }
 
             path = uri;
+            File src = null;
             try{
                 if(path.endsWith(".json")){
                     mime_type = MIME_JSON;
                 } else if(path.endsWith(".fit") || path.endsWith(".FIT")) {
                     mime_type = MIME_FIT;
-                } /* else if(path.endsWith(".gpx") || path.endsWith(".GPX")) {
-                    mime_type = MIME_GPX;
-                } */
+                    src = new File(rootdir + path);
+                } else if(path.endsWith(".gpx") || path.endsWith(".GPX")) {
+                    src = new File(rootdir + path);
+
+                    GPXLoader loader = new GPXLoader(src);
+                    src = new File(cacheDir, path + ".fit");
+                    Log.w("Httpd", "Generating " + src.getAbsolutePath());
+                    loader.writeFit(src);
+                    mime_type = MIME_FIT;
+                }
             }catch(Exception e){
+                Log.e("Httpd", "Error Serving:", e);
+
                 return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_JSON, "{ error: \"" + e.toString() + "\" } ");
+            }
+            if (src == null) {
+                Log.w("Httpd", "src == null");
+
+                return newFixedLengthResponse(Response.Status.NOT_FOUND, "text/html", "Not found");
             }
 
             try {
                 // Open file from SD Card
-                File src = new File(rootdir + path);
                 InputStream descriptor = new FileInputStream(src);
+                Log.w("Httpd", "Serving bytes: " + src.length());
                 return newFixedLengthResponse(Response.Status.OK, mime_type, descriptor, src.length());
 
             } catch(IOException ioe) {
