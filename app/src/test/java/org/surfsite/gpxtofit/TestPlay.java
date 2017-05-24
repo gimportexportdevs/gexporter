@@ -46,10 +46,10 @@ public class TestPlay {
 
     @Test
     public void testFit() {
-        //testFit("sample10.gpx", "/dev/null");
-        //testFit("sample11.gpx", "/dev/null");
-        testFit("sample11-2.gpx", "example.fit");
-        //testFit("sample11-3.gpx", "example.fit");
+        testFit("sample10.gpx", "sample10.fit");
+        testFit("sample11.gpx", "sample11.fit");
+        testFit("sample11-2.gpx", "sample11-2.fit");
+        testFit("sample11-3.gpx", "sample11-3.fit");
     }
 
     void testFit(String inFileName, String outFileName) {

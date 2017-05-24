@@ -1,7 +1,5 @@
 package org.surfsite.gpxtofit;
 
-import android.util.Xml;
-
 import com.garmin.fit.CourseMesg;
 import com.garmin.fit.CoursePoint;
 import com.garmin.fit.CoursePointMesg;
@@ -30,30 +28,13 @@ import java.util.Date;
 import java.util.List;
 
 public class GPXLoader {
-    public static final String HTTP_WWW_TOPOGRAFIX_COM_GPX_1_0 = "http://www.topografix.com/GPX/1/0";
-    public static final String HTTP_WWW_TOPOGRAFIX_COM_GPX_1_1 = "http://www.topografix.com/GPX/1/1";
+    private static final String HTTP_WWW_TOPOGRAFIX_COM_GPX_1_0 = "http://www.topografix.com/GPX/1/0";
+    private static final String HTTP_WWW_TOPOGRAFIX_COM_GPX_1_1 = "http://www.topografix.com/GPX/1/1";
 
-    private double sdist = .0;
-    private WayPoint last = null;
-    private double minEle = 100000.0;
-    private double maxEle = .0;
-    private double totalAsc = .0;
-    private double totalDesc = .0;
-    private WayPoint firstWayPoint = null;
-    private WayPoint lastWayPoint = null;
-    private final long today = (new Date()).getTime();
-    private long i = 0;
-    private double dist = .0;
-    private double lcdist = .0;
-    private double ldist = .0;
-    private long duration = 0;
-    private CoursePointMesg cp;
-    private RecordMesg r;
-    private FileEncoder encode;
-    private List<WayPoint> wayPoints = new ArrayList<>();
-    private String courseName = new String("course");
+    private final List<WayPoint> wayPoints = new ArrayList<>();
+    private String courseName = "course";
     private String ns = HTTP_WWW_TOPOGRAFIX_COM_GPX_1_0;
-    
+
     public GPXLoader(File file) throws Exception {
         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
         factory.setNamespaceAware(true);
@@ -65,11 +46,11 @@ public class GPXLoader {
         try {
             parser.setInput(in, null);
             parser.nextTag();
-            readFeed10(parser);
+            readGPX(parser);
             in.close();
             return;
         } catch (Exception e) {
-        	ns = HTTP_WWW_TOPOGRAFIX_COM_GPX_1_1;
+            ns = HTTP_WWW_TOPOGRAFIX_COM_GPX_1_1;
         } finally {
             in.close();
         }
@@ -79,16 +60,16 @@ public class GPXLoader {
         try {
             parser.setInput(in, null);
             parser.nextTag();
-            readFeed10(parser);
+            readGPX(parser);
         } finally {
             in.close();
         }
     }
 
     public List<WayPoint> getWaypoints() {
-    	return wayPoints;
+        return wayPoints;
     }
-    
+
     private void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
         if (parser.getEventType() != XmlPullParser.START_TAG) {
             throw new IllegalStateException();
@@ -106,7 +87,7 @@ public class GPXLoader {
         }
     }
 
-    private void readFeed10(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
+    private void readGPX(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
         parser.require(XmlPullParser.START_TAG, ns, "gpx");
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -114,16 +95,24 @@ public class GPXLoader {
             }
             String name = parser.getName();
             // Starts by looking for the entry tag
-            if (name.equals("trk")) {
-                readTrk10(parser);
-            } else {
-                skip(parser);
+            switch (name) {
+                case "trk":
+                    readTrk(parser);
+                    // If waypoints found, bail out.
+                    if (wayPoints.size() > 0)
+                        return;
+                    break;
+                case "rte":
+                    // TODO
+                    break;
+                default:
+                    skip(parser);
+                    break;
             }
         }
-        return;
     }
 
-    private void readTrk10(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
+    private void readTrk(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
         parser.require(XmlPullParser.START_TAG, ns, "trk");
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -131,26 +120,30 @@ public class GPXLoader {
             }
             String name = parser.getName();
             // Starts by looking for the entry tag
-            if (name.equals("trkseg")) {
-                readTrkSeg10(parser);
-            } else if (name.equals("name")) {
-            	courseName = readTrkName10(parser);
-            } else {
-                skip(parser);
+            switch (name) {
+                case "trkseg":
+                    readTrkSeg(parser);
+                    break;
+                case "name":
+                    courseName = readTrkName(parser);
+                    break;
+                default:
+                    skip(parser);
+                    break;
             }
         }
     }
 
-    private String readTrkName10(XmlPullParser parser) throws IOException, XmlPullParserException, ParseException {
+    private String readTrkName(XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, ns, "name");
         String txt = readText(parser);
         if (txt.length() > 15)
-        	txt = txt.substring(0, 15);
+            txt = txt.substring(0, 15);
         parser.require(XmlPullParser.END_TAG, ns, "name");
         return txt;
     }
 
-    private void readTrkSeg10(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
+    private void readTrkSeg(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
         parser.require(XmlPullParser.START_TAG, ns, "trkseg");
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -159,7 +152,7 @@ public class GPXLoader {
             String name = parser.getName();
             // Starts by looking for the entry tag
             if (name.equals("trkpt")) {
-                readTrkPt10(parser);
+                readTrkPt(parser);
             } else {
                 skip(parser);
             }
@@ -168,32 +161,31 @@ public class GPXLoader {
 
     // Parses the contents of an entry. If it encounters a title, summary, or link tag, hands them off
 // to their respective "read" methods for processing. Otherwise, skips the tag.
-    private void readTrkPt10(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
+    private void readTrkPt(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
         parser.require(XmlPullParser.START_TAG, ns, "trkpt");
+        Date time = null;
+        double lat = Double.parseDouble(parser.getAttributeValue(null, "lat"));
+        double lon = Double.parseDouble(parser.getAttributeValue(null, "lon"));
         double ele = .0;
-        Date time = new Date();
-        double lat = .0;
-        double lon = .0;
-        lat = Double.parseDouble(parser.getAttributeValue(null, "lat"));
-        lon = Double.parseDouble(parser.getAttributeValue(null, "lon"));
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
             }
             String name = parser.getName();
-            if (name.equals("ele")) {
-                ele = readEle(parser);
-            } else if (name.equals("time")) {
-                time = readTime(parser);
-                if (time == null)
-                    time = new Date();
-            } else {
-                skip(parser);
+            switch (name) {
+                case "ele":
+                    ele = readEle(parser);
+                    break;
+                case "time":
+                    time = readTime(parser);
+                    break;
+                default:
+                    skip(parser);
+                    break;
             }
         }
         wayPoints.add(new WayPoint(lat, lon, ele, time));
-        return;
     }
 
     private double readEle(XmlPullParser parser) throws IOException, XmlPullParserException {
@@ -204,12 +196,18 @@ public class GPXLoader {
         return ele;
     }
 
-    private Date readTime(XmlPullParser parser) throws IOException, XmlPullParserException, ParseException {
+    private Date readTime(XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, ns, "time");
         String txt = readText(parser);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        Date time = dateFormat.parse(txt);
-        parser.require(XmlPullParser.END_TAG, ns, "time");
+        Date time;
+        try {
+            time = dateFormat.parse(txt);
+        } catch (ParseException e) {
+            time = null;
+        } finally {
+            parser.require(XmlPullParser.END_TAG, ns, "time");
+        }
         return time;
     }
 
@@ -227,21 +225,18 @@ public class GPXLoader {
     }
 
     public void writeFit(File outfile) {
-        sdist = .0;
-        last = null;
-        minEle = 100000.0;
-        maxEle = .0;
-        totalAsc = .0;
-        totalDesc = .0;
-        firstWayPoint = null;
-        lastWayPoint = null;
-        i = 0;
-        dist = .0;
-        lcdist = .0;
-        ldist = .0;
-        duration = 0;
+        double sdist = .0;
+        WayPoint last = null;
+        double minEle = 100000.0;
+        double maxEle = .0;
+        double totalAsc = .0;
+        double totalDesc = .0;
+        long i = 0;
+        double dist = .0;
+        double lcdist = .0;
+        double ldist = .0;
 
-        encode = new FileEncoder(outfile, Fit.ProtocolVersion.V2_0);
+        FileEncoder encode = new FileEncoder(outfile, Fit.ProtocolVersion.V2_0);
 
         //Generate FileIdMessage
         FileIdMesg fileIdMesg = new FileIdMesg(); // Every FIT file MUST contain a 'File ID' message as the first message
@@ -249,6 +244,8 @@ public class GPXLoader {
         fileIdMesg.setType(com.garmin.fit.File.COURSE);
         fileIdMesg.setProduct(12345);
         fileIdMesg.setSerialNumber(12345L);
+        fileIdMesg.setNumber(wayPoints.hashCode());
+        fileIdMesg.setTimeCreated(new DateTime(new Date()));
         encode.write(fileIdMesg); // Encode the FileIDMesg
 
         CourseMesg courseMesg = new CourseMesg();
@@ -260,14 +257,14 @@ public class GPXLoader {
         lapMesg.setLocalNum(2);
         EventMesg eventMesg = new EventMesg();
         eventMesg.setLocalNum(3);
-        r = new RecordMesg();
+        RecordMesg r = new RecordMesg();
         r.setLocalNum(4);
-        cp = new CoursePointMesg();
+        CoursePointMesg cp = new CoursePointMesg();
         cp.setLocalNum(5);
 
         System.out.println(String.format("Track: %s", getName()));
-        firstWayPoint = wayPoints.get(0);
-        lastWayPoint = wayPoints.get(wayPoints.size() - 1);
+        WayPoint firstWayPoint = wayPoints.get(0);
+        WayPoint lastWayPoint = wayPoints.get(wayPoints.size() - 1);
 
         for (WayPoint wpt : wayPoints) {
             if (minEle > wpt.getEle())
@@ -295,22 +292,22 @@ public class GPXLoader {
         lapMesg.setTotalAscent((int) totalAsc);
         lapMesg.setTotalDescent((int) totalDesc);
         WayPoint w = firstWayPoint;
-        lapMesg.setStartPositionLat(Utils.toSemiCircles(w.getLat()));
-        lapMesg.setStartPositionLong(Utils.toSemiCircles(w.getLon()));
+        lapMesg.setStartPositionLat(w.getLatSemi());
+        lapMesg.setStartPositionLong(w.getLonSemi());
         Date startDate = w.getTime();
         lapMesg.setStartTime(new DateTime(startDate));
 
         w = lastWayPoint;
-        lapMesg.setEndPositionLat(Utils.toSemiCircles(w.getLat()));
-        lapMesg.setEndPositionLong(Utils.toSemiCircles(w.getLon()));
+        lapMesg.setEndPositionLat(w.getLatSemi());
+        lapMesg.setEndPositionLong(w.getLonSemi());
         Date endDate = w.getTime();
 
-        duration = endDate.getTime() - startDate.getTime();
-        lapMesg.setTotalElapsedTime((float) (duration / 1000.0));
-        lapMesg.setTotalTimerTime((float) (duration / 1000.0));
-
-        if (duration != 0)
+        long duration = endDate.getTime() - startDate.getTime();
+        if (duration != 0) {
+            lapMesg.setTotalElapsedTime((float) (duration / 1000.0));
+            lapMesg.setTotalTimerTime((float) (duration / 1000.0));
             lapMesg.setAvgSpeed((float) (sdist * 1000.0 / (double) duration));
+        }
 
         encode.write(lapMesg);
         sdist = sdist / 48.0;
@@ -325,53 +322,55 @@ public class GPXLoader {
         last = null;
 
         for (WayPoint wpt : wayPoints) {
-            Date timestamp;
+            DateTime timestamp;
+
             i += 1;
 
             if (duration != 0)
-                timestamp = wpt.getTime();
+                timestamp = new DateTime(wpt.getTime());
             else
-                timestamp = new Date(today + i * 1000);
+                timestamp = new DateTime(new Date(WayPoint.RefMilliSec + i * 1000));
 
             if (last == null) {
-                cp.setPositionLat(Utils.toSemiCircles(wpt.getLat()));
-                cp.setPositionLong(Utils.toSemiCircles(wpt.getLon()));
+                cp.setPositionLat(wpt.getLatSemi());
+                cp.setPositionLong(wpt.getLonSemi());
                 cp.setName("Start");
                 cp.setType(CoursePoint.GENERIC);
                 cp.setDistance((float) dist);
-                cp.setTimestamp(new DateTime(timestamp));
+                cp.setTimestamp(timestamp);
 
                 encode.write(cp);
             } else {
+                // TODO: choose between distance and distance3D
                 dist += wpt.distance3D(last);
             }
 
             if (wpt == lastWayPoint) {
-                cp.setPositionLat(Utils.toSemiCircles(wpt.getLat()));
-                cp.setPositionLong(Utils.toSemiCircles(wpt.getLon()));
+                cp.setPositionLat(wpt.getLatSemi());
+                cp.setPositionLong(wpt.getLonSemi());
                 cp.setName("End");
                 cp.setType(CoursePoint.GENERIC);
                 cp.setDistance((float) dist);
-                cp.setTimestamp(new DateTime(timestamp));
+                cp.setTimestamp(timestamp);
 
                 encode.write(cp);
             } else if ((dist - lcdist) > sdist) {
                 cp.setName("");
                 cp.setType(CoursePoint.GENERIC);
-                cp.setPositionLat(Utils.toSemiCircles(wpt.getLat()));
-                cp.setPositionLong(Utils.toSemiCircles(wpt.getLon()));
+                cp.setPositionLat(wpt.getLatSemi());
+                cp.setPositionLong(wpt.getLonSemi());
                 cp.setDistance((float) dist);
-                cp.setTimestamp(new DateTime(timestamp));
+                cp.setTimestamp(timestamp);
 
                 encode.write(cp);
                 lcdist = dist;
             }
             if ((last == null) || (dist - ldist) > 5.0) {
-                r.setPositionLat(Utils.toSemiCircles(wpt.getLat()));
-                r.setPositionLong(Utils.toSemiCircles(wpt.getLon()));
+                r.setPositionLat(wpt.getLatSemi());
+                r.setPositionLong(wpt.getLonSemi());
                 r.setDistance((float) dist);
                 r.setAltitude((float) wpt.getEle());
-                r.setTimestamp(new DateTime(timestamp));
+                r.setTimestamp(timestamp);
                 encode.write(r);
                 ldist = dist;
             }
@@ -383,7 +382,12 @@ public class GPXLoader {
         eventMesg.setEvent(Event.TIMER);
         eventMesg.setEventType(EventType.STOP_DISABLE_ALL);
         eventMesg.setEventGroup((short) 0);
-        eventMesg.setTimestamp(new DateTime(startDate));
+        if (duration != 0)
+            eventMesg.setTimestamp(new DateTime(endDate));
+        else
+
+        eventMesg.setTimestamp(new DateTime(new Date(WayPoint.RefMilliSec + wayPoints.size() * 1000)));
+
         encode.write(eventMesg);
         encode.close();
     }

@@ -6,19 +6,21 @@ import org.gavaghan.geodesy.GlobalCoordinates;
 
 import java.util.Date;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
 public class WayPoint {
     // instantiate the calculator
-    static GeodeticCalculator geoCalc = new GeodeticCalculator();
+    private static final GeodeticCalculator geoCalc = new GeodeticCalculator();
 
-    // select a reference elllipsoid
-    static Ellipsoid reference = Ellipsoid.WGS84;
+    // milliseconds since UTC 00:00 Dec 31 1989"
+    public static final long RefMilliSec = 631065600000L;
+    public static final Date RefDate = new Date(RefMilliSec);
+
+    // select a reference ellipsoid
+    private static final Ellipsoid reference = Ellipsoid.WGS84;
 
     private double lat = .0;
     private double lon = .0;
     private double ele = .0;
-    Date time = null;
+    private Date time = null;
 
     public WayPoint() {
     }
@@ -29,7 +31,7 @@ public class WayPoint {
         this.ele = ele;
         this.time = time;
         if (this.time == null) {
-            this.time = new Date();
+            this.time = RefDate;
         }
     }
 
@@ -39,6 +41,19 @@ public class WayPoint {
 
     public double getLon() {
         return lon;
+    }
+
+    public int getLatSemi() {
+        return toSemiCircles(lat);
+    }
+
+    public int getLonSemi() {
+        return toSemiCircles(lon);
+    }
+
+    public static int toSemiCircles(double i) {
+        double d = i * 2147483648.0 / 180.0;
+        return (int) d;
     }
 
     public double getEle() {
