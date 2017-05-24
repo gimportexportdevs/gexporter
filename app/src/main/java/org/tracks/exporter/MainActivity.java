@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         try {
-            TypedValue value = new TypedValue();
+/*
             InputStream keystoreStream = getResources().openRawResource(R.raw.keystore);
             KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
             keystore.load(keystoreStream, "123456".toCharArray());
@@ -39,12 +39,15 @@ public class MainActivity extends AppCompatActivity {
             keyManagerFactory.init(keystore, "123456".toCharArray());
 
             server = new WebServer(keystore, keyManagerFactory, getCacheDir(), 22222);
+*/
+            server = new WebServer(getCacheDir(), 22222);
             server.start();
             Log.w("Httpd", "Web server initialized.");
         } catch (IOException e) {
             Log.w("Httpd", "The server could not start. " + e.getLocalizedMessage());
         } catch (NoSuchAlgorithmException e) {
             Log.w("Httpd", "The server could not start. " + e.getLocalizedMessage());
+            /*
         } catch (KeyManagementException e) {
             Log.w("Httpd", "The server could not start. " + e.getLocalizedMessage());
         } catch (CertificateException e) {
@@ -53,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         } catch (KeyStoreException e) {
             Log.w("Httpd", "The server could not start. " + e.getLocalizedMessage());
+            */
         }
 
         mTextView = (TextView) findViewById(R.id.textv);

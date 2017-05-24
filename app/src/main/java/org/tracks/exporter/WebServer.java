@@ -26,12 +26,13 @@ import javax.net.ssl.SSLContext;
 class WebServer extends NanoHTTPD {
     File cacheDir;
 
-    WebServer(KeyStore keystore, KeyManagerFactory keyManagerFactory, File cacheDir, int port) throws IOException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+    WebServer(
+            /* KeyStore keystore, KeyManagerFactory keyManagerFactory, */
+            File cacheDir, int port) throws IOException, NoSuchAlgorithmException /*, KeyManagementException, KeyStoreException*/ {
         super(port);
         this.cacheDir = cacheDir;
         //System.setProperty("javax.net.ssl.trustStore", new File("src/test/resources/keystore.jks").getAbsolutePath());
-
-        //makeSecure(NanoHTTPD.makeSSLSocketFactory(keystore, keyManagerFactory), null);
+        // makeSecure(NanoHTTPD.makeSSLSocketFactory(keystore, keyManagerFactory), null);
     }
 
     private static final String MIME_JSON = "application/json";
