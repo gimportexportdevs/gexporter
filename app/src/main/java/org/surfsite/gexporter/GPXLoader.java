@@ -107,7 +107,10 @@ public class GPXLoader {
                         return;
                     break;
                 case "rte":
-                    // TODO
+                    readRte(parser);
+                    // If waypoints found, bail out.
+                    if (wayPoints.size() > 0)
+                        return;
                     break;
                 default:
                     skip(parser);
@@ -165,14 +168,55 @@ public class GPXLoader {
         }
     }
 
-    // Parses the contents of an entry. If it encounters a title, summary, or link tag, hands them off
-// to their respective "read" methods for processing. Otherwise, skips the tag.
+    private void readRte(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
+        parser.require(XmlPullParser.START_TAG, ns, "rte");
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                continue;
+            }
+            String name = parser.getName();
+            // Starts by looking for the entry tag
+            if (name.equals("rtept")) {
+                readRtePt(parser);
+            } else {
+                skip(parser);
+            }
+        }
+    }
+
     private void readTrkPt(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
         parser.require(XmlPullParser.START_TAG, ns, "trkpt");
         Date time = null;
         double lat = Double.parseDouble(parser.getAttributeValue(null, "lat"));
         double lon = Double.parseDouble(parser.getAttributeValue(null, "lon"));
-        double ele = .0;
+        double ele = Double.NaN;
+
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                continue;
+            }
+            String name = parser.getName();
+            switch (name) {
+                case "ele":
+                    ele = readEle(parser);
+                    break;
+                case "time":
+                    time = readTime(parser);
+                    break;
+                default:
+                    skip(parser);
+                    break;
+            }
+        }
+        wayPoints.add(new WayPoint(lat, lon, ele, time));
+    }
+
+    private void readRtePt(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
+        parser.require(XmlPullParser.START_TAG, ns, "rtept");
+        Date time = null;
+        double lat = Double.parseDouble(parser.getAttributeValue(null, "lat"));
+        double lon = Double.parseDouble(parser.getAttributeValue(null, "lon"));
+        double ele = Double.NaN;
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -231,14 +275,14 @@ public class GPXLoader {
     }
 
     public void writeFit(File outfile) {
-        double sdist = .0;
         WayPoint last = null;
-        double minEle = 100000.0;
-        double maxEle = .0;
-        double totalAsc = .0;
-        double totalDesc = .0;
+        double minEle = Double.NaN;
+        double maxEle = Double.NaN;
+        double totalAsc = Double.NaN;
+        double totalDesc = Double.NaN;
         long i = 0;
         double dist = .0;
+        double sdist = .0;
         double lcdist = .0;
         double ldist = .0;
 
@@ -273,30 +317,48 @@ public class GPXLoader {
         WayPoint lastWayPoint = wayPoints.get(wayPoints.size() - 1);
 
         for (WayPoint wpt : wayPoints) {
-            if (minEle > wpt.getEle())
-                minEle = wpt.getEle();
-            if (maxEle < wpt.getEle())
-                maxEle = wpt.getEle();
+            double ele = wpt.getEle();
+            if (!Double.isNaN(ele)) {
+                if (minEle > ele || Double.isNaN(minEle))
+                    minEle = ele;
+                if (maxEle < ele || Double.isNaN(maxEle))
+                    maxEle = ele;
+            }
+
             if (last != null) {
                 sdist += wpt.distance3D(last);
-                double ele = wpt.getEle() - last.getEle();
-                if (ele > 0.0)
-                    totalAsc += ele;
-                else
-                    totalDesc += Math.abs(ele);
 
+                if (Double.isNaN(ele)) {
+                    double dele = ele - last.getEle();
+                    if (dele > 0.0)
+                        totalAsc += dele;
+                    else
+                        totalDesc += Math.abs(dele);
+                }
             }
             last = wpt;
-            System.out.println(String.format("[%s , %s] %s", wpt.getLat(), wpt.getLon(), wpt.getEle()));
+            if (!Double.isNaN(ele))
+                System.out.println(String.format("fff[%s , %s] %s", wpt.getLat(), wpt.getLon(), ele));
+            else
+                System.out.println(String.format("[%s , %s]", wpt.getLat(), wpt.getLon()));
         }
 
-        totalAsc += 0.5;
-        totalDesc += 0.5;
         lapMesg.setTotalDistance((float) sdist);
-        lapMesg.setMaxAltitude((float) maxEle);
-        lapMesg.setMinAltitude((float) minEle);
-        lapMesg.setTotalAscent((int) totalAsc);
-        lapMesg.setTotalDescent((int) totalDesc);
+
+        if (!Double.isNaN(totalAsc)) {
+            totalAsc += 0.5;
+            lapMesg.setTotalAscent((int) totalAsc);
+        }
+        if (!Double.isNaN(totalDesc)) {
+            totalDesc += 0.5;
+            lapMesg.setTotalDescent((int) totalDesc);
+        }
+        if (!Double.isNaN(Double.NaN))
+            lapMesg.setMaxAltitude((float) maxEle);
+
+        if (!Double.isNaN(Double.NaN))
+            lapMesg.setMinAltitude((float) minEle);
+
         WayPoint w = firstWayPoint;
         lapMesg.setStartPositionLat(w.getLatSemi());
         lapMesg.setStartPositionLong(w.getLonSemi());
@@ -351,6 +413,17 @@ public class GPXLoader {
                 dist += wpt.distance3D(last);
             }
 
+            if ((last == null) || (dist - ldist) > 5.0) {
+                r.setPositionLat(wpt.getLatSemi());
+                r.setPositionLong(wpt.getLonSemi());
+                r.setDistance((float) dist);
+                if (!Double.isNaN(wpt.getEle()))
+                    r.setAltitude((float) wpt.getEle());
+                r.setTimestamp(timestamp);
+                encode.write(r);
+                ldist = dist;
+            }
+
             if (wpt == lastWayPoint) {
                 cp.setPositionLat(wpt.getLatSemi());
                 cp.setPositionLong(wpt.getLonSemi());
@@ -370,15 +443,6 @@ public class GPXLoader {
 
                 encode.write(cp);
                 lcdist = dist;
-            }
-            if ((last == null) || (dist - ldist) > 5.0) {
-                r.setPositionLat(wpt.getLatSemi());
-                r.setPositionLong(wpt.getLonSemi());
-                r.setDistance((float) dist);
-                r.setAltitude((float) wpt.getEle());
-                r.setTimestamp(timestamp);
-                encode.write(r);
-                ldist = dist;
             }
 
             last = wpt;

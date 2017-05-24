@@ -17,9 +17,9 @@ public class WayPoint {
     // select a reference ellipsoid
     private static final Ellipsoid reference = Ellipsoid.WGS84;
 
-    private double lat = .0;
-    private double lon = .0;
-    private double ele = .0;
+    private double lat = Double.NaN;
+    private double lon = Double.NaN;
+    private double ele = Double.NaN;
     private Date time = null;
 
     public WayPoint() {
@@ -80,12 +80,10 @@ public class WayPoint {
     }
 
     public double distance(WayPoint other) {
-        double d = geoCalc.calculateGeodeticCurve(reference,
+        return geoCalc.calculateGeodeticCurve(reference,
                 new GlobalCoordinates(getLat(), this.getLon()),
                 new GlobalCoordinates(other.getLat(), other.getLon())
         ).getEllipsoidalDistance();
-        double h = (getEle() - other.getEle());
-        return Math.sqrt(d * d + h * h);
     }
 
     public double distance3D(WayPoint other) {
@@ -93,7 +91,10 @@ public class WayPoint {
                 new GlobalCoordinates(getLat(), this.getLon()),
                 new GlobalCoordinates(other.getLat(), other.getLon())
         ).getEllipsoidalDistance();
-        double h = (getEle() - other.getEle());
-        return Math.sqrt(d * d + h * h);
+
+        if (!Double.isNaN(getEle()) && !Double.isNaN(other.getEle())) {
+            double h = (getEle() - other.getEle());
+            return Math.sqrt(d * d + h * h);
+        } else return d;
     }
 }

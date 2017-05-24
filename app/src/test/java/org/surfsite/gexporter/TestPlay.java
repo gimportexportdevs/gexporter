@@ -50,6 +50,7 @@ public class TestPlay {
         testFit("sample11.gpx", "sample11.fit");
         testFit("sample11-2.gpx", "sample11-2.fit");
         testFit("sample11-3.gpx", "sample11-3.fit");
+        testFit("sample11-route.gpx", "sample11-route.fit");
     }
 
     void testFit(String inFileName, String outFileName) {
