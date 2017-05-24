@@ -1,10 +1,18 @@
 package org.tracks.exporter;
 
+import android.os.Environment;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyManagementException;
@@ -18,6 +26,8 @@ import javax.net.ssl.KeyManagerFactory;
 
 public class MainActivity extends AppCompatActivity {
     private WebServer server;
+    private TextView mTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
             server = new WebServer(keystore, keyManagerFactory, getFilesDir(), 22222);
             server.start();
             Log.w("Httpd", "Web server initialized.");
-        } catch(IOException e) {
+        } catch (IOException e) {
             Log.w("Httpd", "The server could not start. " + e.getLocalizedMessage());
         } catch (NoSuchAlgorithmException e) {
             Log.w("Httpd", "The server could not start. " + e.getLocalizedMessage());
@@ -48,12 +58,27 @@ public class MainActivity extends AppCompatActivity {
         } catch (KeyStoreException e) {
             Log.w("Httpd", "The server could not start. " + e.getLocalizedMessage());
         }
+
+        mTextView = (TextView) findViewById(R.id.textv);
+        String rootdir = Environment.getExternalStorageDirectory().getAbsolutePath() +
+                "/Download/";
+        FilenameFilter filenameFilter = new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                if (name.endsWith(".fit") || name.endsWith(".FIT") || name.endsWith(".gpx") || name.endsWith(".GPX")  ) {
+                    return true;
+                }
+                return false;
+            }
+        };
+        String[] filelist = new File(rootdir).list(filenameFilter);
+        String txt = "Serving from " + rootdir + ":\n\n" + TextUtils.join("\n", filelist);
+        mTextView.setText(txt);
     }
 
     // DON'T FORGET to stop the server
     @Override
-    public void onDestroy()
-    {
+    public void onDestroy() {
         super.onDestroy();
         if (server != null)
             server.stop();
