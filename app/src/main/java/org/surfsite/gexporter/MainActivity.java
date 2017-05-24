@@ -66,8 +66,13 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         String[] filelist = new File(rootdir).list(filenameFilter);
-        String txt = "Serving from " + rootdir + ":\n\n" + TextUtils.join("\n", filelist);
-        mTextView.setText(txt);
+        if (filelist == null) {
+            // TODO: ask for permission
+            mTextView.setText("Set the correct permissions for this app.");
+        } else {
+            String txt = "Serving from " + rootdir + ":\n\n" + TextUtils.join("\n", filelist);
+            mTextView.setText(txt);
+        }
     }
 
     // DON'T FORGET to stop the server
