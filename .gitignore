@@ -9,4 +9,5 @@
 /captures
 .externalNativeBuild
 /*.fit
+/*.csv
 /app/libs/fit.jar
