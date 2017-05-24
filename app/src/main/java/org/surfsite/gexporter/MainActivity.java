@@ -1,10 +1,15 @@
 package org.surfsite.gexporter;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import org.surfsite.gexporter.WebServer;
@@ -18,12 +23,52 @@ import java.security.NoSuchAlgorithmException;
 public class MainActivity extends AppCompatActivity {
     private WebServer server;
     private TextView mTextView;
-
+    private final static int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 300;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        mTextView = (TextView) findViewById(R.id.textv);
 
+        if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+        } else {
+            serveFiles();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    serveFiles();
+
+                } else {
+                    mTextView.setText("No permission to read files.");
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+    protected void serveFiles() {
         try {
 /*
             InputStream keystoreStream = getResources().openRawResource(R.raw.keystore);
@@ -53,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
             */
         }
 
-        mTextView = (TextView) findViewById(R.id.textv);
         String rootdir = Environment.getExternalStorageDirectory().getAbsolutePath() +
                 "/Download/";
         FilenameFilter filenameFilter = new FilenameFilter() {
