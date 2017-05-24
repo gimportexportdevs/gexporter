@@ -1,0 +1,1096 @@
+<?xml version="1.0"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wptx1="http://www.garmin.com/xmlschemas/WaypointExtension/v1" xmlns:gpxtrx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:trp="http://www.garmin.com/xmlschemas/TripExtensions/v1" xmlns:adv="http://www.garmin.com/xmlschemas/AdventuresExtensions/v1" xmlns:prs="http://www.garmin.com/xmlschemas/PressureExtension/v1" xmlns:tmd="http://www.garmin.com/xmlschemas/TripMetaDataExtensions/v1" xmlns:vptm="http://www.garmin.com/xmlschemas/ViaPointTransportationModeExtensions/v1" xmlns:ctx="http://www.garmin.com/xmlschemas/CreationTimeExtension/v1" xmlns:gpxacc="http://www.garmin.com/xmlschemas/AccelerationExtension/v1" xmlns:gpxpx="http://www.garmin.com/xmlschemas/PowerExtension/v1" xmlns:vidx1="http://www.garmin.com/xmlschemas/VideoExtension/v1" creator="Garmin Desktop App" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/WaypointExtension/v1 http://www8.garmin.com/xmlschemas/WaypointExtensionv1.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/ActivityExtension/v1 http://www8.garmin.com/xmlschemas/ActivityExtensionv1.xsd http://www.garmin.com/xmlschemas/AdventuresExtensions/v1 http://www8.garmin.com/xmlschemas/AdventuresExtensionv1.xsd http://www.garmin.com/xmlschemas/PressureExtension/v1 http://www.garmin.com/xmlschemas/PressureExtensionv1.xsd http://www.garmin.com/xmlschemas/TripExtensions/v1 http://www.garmin.com/xmlschemas/TripExtensionsv1.xsd http://www.garmin.com/xmlschemas/TripMetaDataExtensions/v1 http://www.garmin.com/xmlschemas/TripMetaDataExtensionsv1.xsd http://www.garmin.com/xmlschemas/ViaPointTransportationModeExtensions/v1 http://www.garmin.com/xmlschemas/ViaPointTransportationModeExtensionsv1.xsd http://www.garmin.com/xmlschemas/CreationTimeExtension/v1 http://www.garmin.com/xmlschemas/CreationTimeExtensionsv1.xsd http://www.garmin.com/xmlschemas/AccelerationExtension/v1 http://www.garmin.com/xmlschemas/AccelerationExtensionv1.xsd http://www.garmin.com/xmlschemas/PowerExtension/v1 http://www.garmin.com/xmlschemas/PowerExtensionv1.xsd http://www.garmin.com/xmlschemas/VideoExtension/v1 http://www.garmin.com/xmlschemas/VideoExtensionv1.xsd">
+
+  <metadata>
+    <link href="http://www.garmin.com">
+      <text>Garmin International</text>
+    </link>
+    <time>2017-05-24T06:55:30Z</time>
+    <bounds maxlat="47.763079963624477" maxlon="12.039768984541297" minlat="47.736007003113627" minlon="12.014367962256074"/>
+  </metadata>
+
+  <wpt lat="47.743449211120605" lon="12.035629749298096">
+    <ele>1273</ele>
+    <time>2013-05-15T12:33:06Z</time>
+    <name>Farrenpoint (3)</name>
+    <sym>Flag, Blue</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+        <gpxx:Categories>
+          <gpxx:Category>T-05-Farrenpoint.gpx</gpxx:Category>
+        </gpxx:Categories>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+        <wptx1:Categories>
+          <wptx1:Category>T-05-Farrenpoint.gpx</wptx1:Category>
+        </wptx1:Categories>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2013-05-15T12:33:06Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+
+  <wpt lat="47.742432821542025" lon="12.036556787788868">
+    <ele>1270</ele>
+    <time>2013-05-15T12:32:30Z</time>
+    <name>Huberalm (2)</name>
+    <sym>Flag, Blue</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+        <gpxx:Categories>
+          <gpxx:Category>T-05-Farrenpoint.gpx</gpxx:Category>
+        </gpxx:Categories>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+        <wptx1:Categories>
+          <wptx1:Category>T-05-Farrenpoint.gpx</wptx1:Category>
+        </wptx1:Categories>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2013-05-15T12:32:30Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+
+  <wpt lat="47.762990025803447" lon="12.014974979683757">
+    <ele>522</ele>
+    <time>2013-05-15T12:31:15Z</time>
+    <name>Untersteinach (1)</name>
+    <sym>Flag, Blue</sym>
+    <type>user</type>
+    <extensions>
+      <gpxx:WaypointExtension>
+        <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+        <gpxx:Categories>
+          <gpxx:Category>T-05-Farrenpoint.gpx</gpxx:Category>
+        </gpxx:Categories>
+      </gpxx:WaypointExtension>
+      <wptx1:WaypointExtension>
+        <wptx1:DisplayMode>SymbolAndName</wptx1:DisplayMode>
+        <wptx1:Categories>
+          <wptx1:Category>T-05-Farrenpoint.gpx</wptx1:Category>
+        </wptx1:Categories>
+      </wptx1:WaypointExtension>
+      <ctx:CreationTimeExtension>
+        <ctx:CreationTime>2013-05-15T12:31:15Z</ctx:CreationTime>
+      </ctx:CreationTimeExtension>
+    </extensions>
+  </wpt>
+
+  <rte>
+    <name>5-Farrenpoint 114 bis 5-Farrenpoint 822</name>
+    <extensions>
+      <gpxx:RouteExtension>
+        <gpxx:IsAutoNamed>true</gpxx:IsAutoNamed>
+        <gpxx:DisplayColor>Magenta</gpxx:DisplayColor>
+      </gpxx:RouteExtension>
+    </extensions>
+    <rtept lat="47.762990025803447" lon="12.014974979683757">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 114</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ViaPoint>
+          <trp:CalculationMode>Direct</trp:CalculationMode>
+        </trp:ViaPoint>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.763079963624477" lon="12.015776038169861">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 214</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.762226015329361" lon="12.01644198037684">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 314</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.760787010192871" lon="12.016641972586513">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 410</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.760336985811591" lon="12.017642017453909">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 510</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.759392010048032" lon="12.018308965489268">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 610</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.759032007306814" lon="12.019843021407723">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 710</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.758043026551604" lon="12.020241999998689">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 83</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.757393512874842" lon="12.021432900801301">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 93</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.75493904016912" lon="12.022775011137128">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 103</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.75493904016912" lon="12.022375026717782">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 115</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.753589972853661" lon="12.02164102345705">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 123</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.752691013738513" lon="12.023573974147439">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 133</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.752914978191257" lon="12.02417504042387">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 143</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.751971008256078" lon="12.026441004127264">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 153</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.750800978392363" lon="12.027174001559615">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 163</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.748912032693624" lon="12.027107030153275">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 173</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.748058000579476" lon="12.027972964569926">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 183</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.746933987364173" lon="12.027306016534567">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 193</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.746213981881738" lon="12.0275719743222">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 203</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.745449971407652" lon="12.026505041867495">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 215</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.743516014888883" lon="12.025703983381391">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 223</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.741897972300649" lon="12.024703016504645">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 233</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.741177966818213" lon="12.025236021727324">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 243</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.740862974897027" lon="12.026102039963007">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 253</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.741941977292299" lon="12.026435974985361">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 263</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.741402015089989" lon="12.027036035433412">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 273</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.741492036730051" lon="12.028503036126494">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 283</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.741132033988833" lon="12.029103012755513">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 293</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.742076003924012" lon="12.029169984161854">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 303</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.741536041721702" lon="12.03283597715199">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 315</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.742119003087282" lon="12.036770023405552">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 323</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.743333959951997" lon="12.035637963563204">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 333</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.742119003087282" lon="12.036970015615225">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 343</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.740770019590855" lon="12.037901999428868">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 353</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.740588970482349" lon="12.039768984541297">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 363</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.739869970828295" lon="12.038168041035533">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 373</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.738475976511836" lon="12.038433998823166">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 383</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.739016022533178" lon="12.03670104034245">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 393</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.738521993160248" lon="12.036768011748791">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 403</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.739196987822652" lon="12.03356796875596">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 413</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.738973023369908" lon="12.031367970630527">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 423</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.738613020628691" lon="12.031500991433859">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 433</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.738208007067442" lon="12.03223398886621">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 443</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.737219026312232" lon="12.031366964802146">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 453</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.737624039873481" lon="12.029899964109063">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 463</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.737894020974636" lon="12.028433969244361">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 473</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.737490013241768" lon="12.025833986699581">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 482</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.738255029544234" lon="12.024501012638211">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 492</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.73807599209249" lon="12.021968001499772">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 501</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.7370860055089" lon="12.022366980090737">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 512</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.736636986956" lon="12.022100016474724">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 522</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.736007003113627" lon="12.020166981965303">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 531</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.736053019762039" lon="12.018967028707266">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 541</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.736591976135969" lon="12.018634015694261">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 551</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.73708701133728" lon="12.018634015694261">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 561</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.738211024552584" lon="12.017701026052237">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 571</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.737941965460777" lon="12.015633964911103">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 581</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.738391989842057" lon="12.014367962256074">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 591</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.740640016272664" lon="12.016235031187534">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 601</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.74140503257513" lon="12.015235992148519">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 612</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.742573972791433" lon="12.015435984358191">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 622</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.743518026545644" lon="12.01717003248632">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 631</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.744237026199698" lon="12.019437002018094">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 641</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.745361039415002" lon="12.019904041662812">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 651</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.745045963674784" lon="12.020369991660118">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 661</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.745855990797281" lon="12.020036978647113">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 671</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.747070025652647" lon="12.018704004585743">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 681</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.747115958482027" lon="12.017038017511368">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 691</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.747519966214895" lon="12.016170993447304">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 701</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.748599974438548" lon="12.016170993447304">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 712</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.74967897683382" lon="12.014971040189266">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 722</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.750848000869155" lon="12.015504967421293">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 731</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.751972014084458" lon="12.017239015549421">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 741</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.752692019566894" lon="12.017105994746089">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 751</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.753230975940824" lon="12.017573034390807">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 761</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.75354596786201" lon="12.018173011019826">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 771</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.754535032436252" lon="12.018174016848207">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 781</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.756378967314959" lon="12.018508035689592">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 791</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.757279016077518" lon="12.017574040219188">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 801</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.759571969509125" lon="12.016308037564158">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 812</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ShapingPoint/>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+    <rtept lat="47.762945014983416" lon="12.015042034909129">
+      <time>2017-05-23T05:11:32Z</time>
+      <name>5-Farrenpoint 822</name>
+      <sym>Waypoint</sym>
+      <extensions>
+        <trp:ViaPoint>
+          <trp:CalculationMode>Direct</trp:CalculationMode>
+        </trp:ViaPoint>
+        <gpxx:RoutePointExtension>
+          <gpxx:Subclass>000000000000FFFFFFFFFFFFFFFFFFFFFFFF</gpxx:Subclass>
+        </gpxx:RoutePointExtension>
+      </extensions>
+    </rtept>
+  </rte>
+
+  <trk>
+    <name>5-Farrenpoint</name>
+    <extensions>
+      <gpxx:TrackExtension>
+        <gpxx:DisplayColor>Magenta</gpxx:DisplayColor>
+      </gpxx:TrackExtension>
+    </extensions>
+    <trkseg>
+      <trkpt lat="47.762990025803447" lon="12.014974979683757"/>
+      <trkpt lat="47.763079963624477" lon="12.015776038169861"/>
+      <trkpt lat="47.762226015329361" lon="12.01644198037684"/>
+      <trkpt lat="47.760787010192871" lon="12.016641972586513"/>
+      <trkpt lat="47.760336985811591" lon="12.017642017453909"/>
+      <trkpt lat="47.759392010048032" lon="12.018308965489268"/>
+      <trkpt lat="47.759032007306814" lon="12.019843021407723"/>
+      <trkpt lat="47.758043026551604" lon="12.020241999998689"/>
+      <trkpt lat="47.757393512874842" lon="12.021432900801301"/>
+      <trkpt lat="47.75493904016912" lon="12.022775011137128"/>
+      <trkpt lat="47.75493904016912" lon="12.022375026717782"/>
+      <trkpt lat="47.753589972853661" lon="12.02164102345705"/>
+      <trkpt lat="47.752691013738513" lon="12.023573974147439"/>
+      <trkpt lat="47.752914978191257" lon="12.02417504042387"/>
+      <trkpt lat="47.751971008256078" lon="12.026441004127264"/>
+      <trkpt lat="47.750800978392363" lon="12.027174001559615"/>
+      <trkpt lat="47.748912032693624" lon="12.027107030153275"/>
+      <trkpt lat="47.748058000579476" lon="12.027972964569926"/>
+      <trkpt lat="47.746933987364173" lon="12.027306016534567"/>
+      <trkpt lat="47.746213981881738" lon="12.0275719743222"/>
+      <trkpt lat="47.745449971407652" lon="12.026505041867495"/>
+      <trkpt lat="47.743516014888883" lon="12.025703983381391"/>
+      <trkpt lat="47.741897972300649" lon="12.024703016504645"/>
+      <trkpt lat="47.741177966818213" lon="12.025236021727324"/>
+      <trkpt lat="47.740862974897027" lon="12.026102039963007"/>
+      <trkpt lat="47.741941977292299" lon="12.026435974985361"/>
+      <trkpt lat="47.741402015089989" lon="12.027036035433412"/>
+      <trkpt lat="47.741492036730051" lon="12.028503036126494"/>
+      <trkpt lat="47.741132033988833" lon="12.029103012755513"/>
+      <trkpt lat="47.742076003924012" lon="12.029169984161854"/>
+      <trkpt lat="47.741536041721702" lon="12.03283597715199"/>
+      <trkpt lat="47.742119003087282" lon="12.036770023405552"/>
+      <trkpt lat="47.743333959951997" lon="12.035637963563204"/>
+      <trkpt lat="47.742119003087282" lon="12.036970015615225"/>
+      <trkpt lat="47.740770019590855" lon="12.037901999428868"/>
+      <trkpt lat="47.740588970482349" lon="12.039768984541297"/>
+      <trkpt lat="47.739869970828295" lon="12.038168041035533"/>
+      <trkpt lat="47.738475976511836" lon="12.038433998823166"/>
+      <trkpt lat="47.739016022533178" lon="12.03670104034245"/>
+      <trkpt lat="47.738521993160248" lon="12.036768011748791"/>
+      <trkpt lat="47.739196987822652" lon="12.03356796875596"/>
+      <trkpt lat="47.738973023369908" lon="12.031367970630527"/>
+      <trkpt lat="47.738613020628691" lon="12.031500991433859"/>
+      <trkpt lat="47.738208007067442" lon="12.03223398886621"/>
+      <trkpt lat="47.737219026312232" lon="12.031366964802146"/>
+      <trkpt lat="47.737624039873481" lon="12.029899964109063"/>
+      <trkpt lat="47.737894020974636" lon="12.028433969244361"/>
+      <trkpt lat="47.737490013241768" lon="12.025833986699581"/>
+      <trkpt lat="47.738255029544234" lon="12.024501012638211"/>
+      <trkpt lat="47.73807599209249" lon="12.021968001499772"/>
+      <trkpt lat="47.7370860055089" lon="12.022366980090737"/>
+      <trkpt lat="47.736636986956" lon="12.022100016474724"/>
+      <trkpt lat="47.736007003113627" lon="12.020166981965303"/>
+      <trkpt lat="47.736053019762039" lon="12.018967028707266"/>
+      <trkpt lat="47.736591976135969" lon="12.018634015694261"/>
+      <trkpt lat="47.73708701133728" lon="12.018634015694261"/>
+      <trkpt lat="47.738211024552584" lon="12.017701026052237"/>
+      <trkpt lat="47.737941965460777" lon="12.015633964911103"/>
+      <trkpt lat="47.738391989842057" lon="12.014367962256074"/>
+      <trkpt lat="47.740640016272664" lon="12.016235031187534"/>
+      <trkpt lat="47.74140503257513" lon="12.015235992148519"/>
+      <trkpt lat="47.742573972791433" lon="12.015435984358191"/>
+      <trkpt lat="47.743518026545644" lon="12.01717003248632"/>
+      <trkpt lat="47.744237026199698" lon="12.019437002018094"/>
+      <trkpt lat="47.745361039415002" lon="12.019904041662812"/>
+      <trkpt lat="47.745045963674784" lon="12.020369991660118"/>
+      <trkpt lat="47.745855990797281" lon="12.020036978647113"/>
+      <trkpt lat="47.747070025652647" lon="12.018704004585743"/>
+      <trkpt lat="47.747115958482027" lon="12.017038017511368"/>
+      <trkpt lat="47.747519966214895" lon="12.016170993447304"/>
+      <trkpt lat="47.748599974438548" lon="12.016170993447304"/>
+      <trkpt lat="47.74967897683382" lon="12.014971040189266"/>
+      <trkpt lat="47.750848000869155" lon="12.015504967421293"/>
+      <trkpt lat="47.751972014084458" lon="12.017239015549421"/>
+      <trkpt lat="47.752692019566894" lon="12.017105994746089"/>
+      <trkpt lat="47.753230975940824" lon="12.017573034390807"/>
+      <trkpt lat="47.75354596786201" lon="12.018173011019826"/>
+      <trkpt lat="47.754535032436252" lon="12.018174016848207"/>
+      <trkpt lat="47.756378967314959" lon="12.018508035689592"/>
+      <trkpt lat="47.757279016077518" lon="12.017574040219188"/>
+      <trkpt lat="47.759571969509125" lon="12.016308037564158"/>
+      <trkpt lat="47.762945014983416" lon="12.015042034909129"/>
+    </trkseg>
+  </trk>
+
+</gpx>
