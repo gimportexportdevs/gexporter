@@ -1,4 +1,4 @@
-package org.surfsite.gpxtofit;
+package org.surfsite.gexporter;
 
 import org.gavaghan.geodesy.Ellipsoid;
 import org.gavaghan.geodesy.GeodeticCalculator;

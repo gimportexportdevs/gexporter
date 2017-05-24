@@ -1,25 +1,19 @@
-package org.tracks.exporter;
+package org.surfsite.gexporter;
 
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.TypedValue;
 import android.widget.TextView;
+
+import org.surfsite.gexporter.WebServer;
+import org.tracks.exporter.R;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-
-import javax.net.ssl.KeyManagerFactory;
 
 public class MainActivity extends AppCompatActivity {
     private WebServer server;

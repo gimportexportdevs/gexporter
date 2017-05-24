@@ -1,4 +1,4 @@
-package org.surfsite.gpxtofit;
+package org.surfsite.gexporter;
 
 import com.garmin.fit.CourseMesg;
 import com.garmin.fit.CoursePoint;

@@ -1,4 +1,4 @@
-package org.tracks.exporter;
+package org.surfsite.gexporter;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

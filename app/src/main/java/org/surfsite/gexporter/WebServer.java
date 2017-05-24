@@ -1,9 +1,9 @@
-package org.tracks.exporter;
+package org.surfsite.gexporter;
 
 import android.os.Environment;
 import android.util.Log;
 
-import org.surfsite.gpxtofit.GPXLoader;
+import org.surfsite.gexporter.GPXLoader;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,13 +14,7 @@ import fi.iki.elonen.NanoHTTPD;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
 
 
 class WebServer extends NanoHTTPD {
