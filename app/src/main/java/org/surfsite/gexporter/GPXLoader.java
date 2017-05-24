@@ -32,7 +32,7 @@ public class GPXLoader {
     private static final String HTTP_WWW_TOPOGRAFIX_COM_GPX_1_1 = "http://www.topografix.com/GPX/1/1";
 
     private final List<WayPoint> wayPoints = new ArrayList<>();
-    private String courseName = "course";
+    private String courseName;
     private String ns = HTTP_WWW_TOPOGRAFIX_COM_GPX_1_0;
 
     public GPXLoader(File file) throws Exception {
@@ -40,6 +40,10 @@ public class GPXLoader {
         factory.setNamespaceAware(true);
         XmlPullParser parser = factory.newPullParser();
         //parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+        courseName = file.getName();
+        if (courseName.length() > 15) {
+            courseName = file.getName().substring(0, 15);
+        }
 
         FileInputStream in = new FileInputStream(file);
 
@@ -124,9 +128,11 @@ public class GPXLoader {
                 case "trkseg":
                     readTrkSeg(parser);
                     break;
+/*
                 case "name":
                     courseName = readTrkName(parser);
                     break;
+*/
                 default:
                     skip(parser);
                     break;

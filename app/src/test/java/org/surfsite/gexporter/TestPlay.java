@@ -16,7 +16,7 @@ public class TestPlay {
         try {
             GPXLoader loader = new GPXLoader(file);
             System.out.println(String.format("Track: %s", loader.getName()));
-            assertEquals("67329", loader.getName());
+            assertEquals("sample10.gpx", loader.getName());
             for (WayPoint wpt : loader.getWaypoints()) {
                 System.out.println(String.format("[%s , %s] %s", wpt.getLat(), wpt.getLon(), wpt.getEle()));
             }
@@ -33,7 +33,7 @@ public class TestPlay {
         try {
             GPXLoader loader = new GPXLoader(file);
             System.out.println(String.format("Track: %s", loader.getName()));
-            assertEquals("51-Quer-durch-d", loader.getName());
+            assertEquals("sample11.gpx", loader.getName());
 
             for (WayPoint wpt : loader.getWaypoints()) {
                 System.out.println(String.format("[%s , %s] %s", wpt.getLat(), wpt.getLon(), wpt.getEle()));
