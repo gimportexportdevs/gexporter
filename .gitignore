@@ -8,3 +8,5 @@
 /Application/build
 /captures
 .externalNativeBuild
+/*.fit
+/app/libs/fit.jar
