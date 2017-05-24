@@ -41,8 +41,12 @@ public class GPXLoader {
         XmlPullParser parser = factory.newPullParser();
         //parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
         courseName = file.getName();
+        if (courseName.endsWith(".fit") || courseName.endsWith(".FIT") || courseName.endsWith(".gpx") || courseName.endsWith(".GPX")  ) {
+            courseName = courseName.substring(0, courseName.length()-4);
+        }
+
         if (courseName.length() > 15) {
-            courseName = file.getName().substring(0, 15);
+            courseName = courseName.substring(0, 15);
         }
 
         FileInputStream in = new FileInputStream(file);
