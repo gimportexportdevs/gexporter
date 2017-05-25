@@ -15,6 +15,7 @@ import fi.iki.elonen.NanoHTTPD;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 
 class WebServer extends NanoHTTPD {
@@ -49,6 +50,8 @@ class WebServer extends NanoHTTPD {
                 if (filelist == null) {
                     return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_JSON, "{ error: \"No permission\" } ");
                 }
+
+                Arrays.sort(filelist);
 
                 String ret="{ \"tracks\" : [";
                 for (String aFilelist : filelist) {
