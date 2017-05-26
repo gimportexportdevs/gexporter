@@ -383,8 +383,8 @@ public class GPXLoader {
 
         encode.write(lapMesg);
         sdist = sdist / 48.0;
-        if (sdist < 50.0)
-            sdist = 50.0;
+        if (sdist < 1000.0)
+            sdist = 1000.0;
 
         eventMesg.setEvent(Event.TIMER);
         eventMesg.setEventType(EventType.START);
