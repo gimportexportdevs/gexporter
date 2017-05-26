@@ -357,10 +357,10 @@ public class GPXLoader {
             totalDesc += 0.5;
             lapMesg.setTotalDescent((int) totalDesc);
         }
-        if (!Double.isNaN(Double.NaN))
+        if (!Double.isNaN(maxEle))
             lapMesg.setMaxAltitude((float) maxEle);
 
-        if (!Double.isNaN(Double.NaN))
+        if (!Double.isNaN(minEle))
             lapMesg.setMinAltitude((float) minEle);
 
         WayPoint w = firstWayPoint;
