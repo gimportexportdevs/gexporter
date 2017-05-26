@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
     private WebServer server;
@@ -110,10 +111,11 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         String[] filelist = new File(rootdir).list(filenameFilter);
+
         if (filelist == null) {
-            // TODO: ask for permission
             mTextView.setText("Set the correct permissions for this app.");
         } else {
+            Arrays.sort(filelist);
             String txt = "Serving from " + rootdir + ":\n\n" + TextUtils.join("\n", filelist);
             mTextView.setText(txt);
         }
