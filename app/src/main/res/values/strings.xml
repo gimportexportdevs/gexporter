@@ -5,6 +5,7 @@
     <string name="speed">Default Speed:</string>
     <string name="inject_course_points">Inject Course Points</string>
     <string name="use_3d_distance">Use 3D distance</string>
+    <string name="use_walking_grade_factor">Use Walking Grade Factor</string>
 
     <string-array name="speedunits">
         <item name="minkm">min/km</item>

@@ -21,9 +21,7 @@ public class WayPoint {
     private double lon = Double.NaN;
     private double ele = Double.NaN;
     private Date time = null;
-
-    public WayPoint() {
-    }
+    private double totaldist = Double.NaN;
 
     public WayPoint(double lat, double lon, double ele, Date time) {
         this.lat = lat;
@@ -97,4 +95,13 @@ public class WayPoint {
             return Math.sqrt(d * d + h * h);
         } else return d;
     }
+
+    public double getTotaldist() {
+        return totaldist;
+    }
+
+    public void setTotaldist(double totaldist) {
+        this.totaldist = totaldist;
+    }
+
 }

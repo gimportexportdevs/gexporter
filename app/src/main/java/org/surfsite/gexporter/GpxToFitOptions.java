@@ -9,16 +9,20 @@ public class GpxToFitOptions {
     private boolean use3dDistance;
     private boolean forceSpeed;
     private boolean injectCoursePoints;
+    private boolean walkingGrade;
     private double minRoutePointDistance;
     private double minCoursePointDistance;
+    private long maxPoints;
 
     public GpxToFitOptions() {
         speed = Double.NaN;
         use3dDistance = true;
+        walkingGrade = false;
         forceSpeed = false;
         injectCoursePoints = false;
         minRoutePointDistance = 5.0;
         minCoursePointDistance = 1000.0;
+        maxPoints = 1000;
     }
 
     public double getSpeed() {
@@ -67,5 +71,21 @@ public class GpxToFitOptions {
 
     public void setMinCoursePointDistance(double minCoursePointDistance) {
         this.minCoursePointDistance = minCoursePointDistance;
+    }
+
+    public boolean isWalkingGrade() {
+        return walkingGrade;
+    }
+
+    public void setWalkingGrade(boolean walkingGrade) {
+        this.walkingGrade = walkingGrade;
+    }
+
+    public long getMaxPoints() {
+        return maxPoints;
+    }
+
+    public void setMaxPoints(long maxPoints) {
+        this.maxPoints = maxPoints;
     }
 }

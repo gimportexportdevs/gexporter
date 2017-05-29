@@ -46,11 +46,14 @@ public class TestPlay {
 
     @Test
     public void testFit() {
+/*
         testFit("sample10.gpx", "sample10.fit");
         testFit("sample11.gpx", "sample11.fit");
         testFit("sample11-2.gpx", "sample11-2.fit");
         testFit("sample11-3.gpx", "sample11-3.fit");
         testFit("sample11-route.gpx", "sample11-route.fit");
+        */
+        testFit("sample2.gpx", "sample2.fit");
     }
 
     void testFit(String inFileName, String outFileName) {
@@ -61,8 +64,11 @@ public class TestPlay {
         try {
             GpxToFitOptions options = new GpxToFitOptions();
             loader = new Gpx2Fit(file, options);
-            options.setSpeed(1000.0 / (14.0 * 60.0) );
-            options.setInjectCoursePoints(false);
+            loader.writeFit(new File(outFileName));
+            options.setSpeed(1000.0 / (13.0 * 60.0) );
+            options.setInjectCoursePoints(true);
+            options.setForceSpeed(true);
+            options.setWalkingGrade(true);
             loader.writeFit(new File(outFileName));
         } catch (Exception e) {
             fail(e.toString());
