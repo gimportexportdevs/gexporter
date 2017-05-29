@@ -10,6 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.surfsite.gexporter.WebServer;
@@ -24,6 +27,12 @@ import java.util.Arrays;
 public class MainActivity extends AppCompatActivity {
     private WebServer server;
     private TextView mTextView;
+    private Spinner mSpeedUnit;
+    private EditText mSpeed;
+    private CheckBox mForceSpeed;
+    private CheckBox mUse3DDistance;
+    private CheckBox mInjectCoursePoints;
+
     private GpxToFitOptions mGpxToFitOptions = new GpxToFitOptions();
 
     private final static int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 300;
