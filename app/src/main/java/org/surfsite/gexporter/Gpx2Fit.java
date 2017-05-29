@@ -183,10 +183,18 @@ public class Gpx2Fit {
             }
             String name = parser.getName();
             // Starts by looking for the entry tag
-            if (name.equals("rtept")) {
-                readRtePt(parser);
-            } else {
-                skip(parser);
+            switch (name) {
+                case "rtept":
+                    readRtePt(parser);
+                    break;
+/*
+                case "name":
+                    courseName = readTrkName(parser);
+                    break;
+*/
+                default:
+                    skip(parser);
+                    break;
             }
         }
     }
