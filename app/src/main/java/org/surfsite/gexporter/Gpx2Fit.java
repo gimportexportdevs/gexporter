@@ -27,21 +27,24 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class GPXLoader {
+public class Gpx2Fit {
     private static final String HTTP_WWW_TOPOGRAFIX_COM_GPX_1_0 = "http://www.topografix.com/GPX/1/0";
     private static final String HTTP_WWW_TOPOGRAFIX_COM_GPX_1_1 = "http://www.topografix.com/GPX/1/1";
 
     private final List<WayPoint> wayPoints = new ArrayList<>();
     private String courseName;
     private String ns = HTTP_WWW_TOPOGRAFIX_COM_GPX_1_0;
+    GpxToFitOptions mGpxToFitOptions;
 
-    public GPXLoader(File file) throws Exception {
+    public Gpx2Fit(File file, GpxToFitOptions options) throws Exception {
+        mGpxToFitOptions = options;
         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
         factory.setNamespaceAware(true);
         XmlPullParser parser = factory.newPullParser();
         //parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
         courseName = file.getName();
-        if (courseName.endsWith(".fit") || courseName.endsWith(".FIT") || courseName.endsWith(".gpx") || courseName.endsWith(".GPX")  ) {
+        if (courseName.endsWith(".fit") || courseName.endsWith(".FIT")
+                || courseName.endsWith(".gpx") || courseName.endsWith(".GPX")  ) {
             courseName = courseName.substring(0, courseName.length()-4);
         }
 
@@ -289,6 +292,8 @@ public class GPXLoader {
         double sdist = .0;
         double lcdist = .0;
         double ldist = .0;
+        boolean forceSpeed = false;
+        double speed = Double.NaN;
 
         FileEncoder encode = new FileEncoder(outfile, Fit.ProtocolVersion.V2_0);
 
@@ -330,7 +335,10 @@ public class GPXLoader {
             }
 
             if (last != null) {
-                sdist += wpt.distance3D(last);
+                if (mGpxToFitOptions.isUse3dDistance())
+                    sdist += wpt.distance3D(last);
+                else
+                    sdist += wpt.distance(last);
 
                 if (Double.isNaN(ele)) {
                     double dele = ele - last.getEle();
@@ -375,16 +383,29 @@ public class GPXLoader {
         Date endDate = w.getTime();
 
         long duration = endDate.getTime() - startDate.getTime();
-        if (duration != 0) {
+        if (mGpxToFitOptions.isForceSpeed() || (duration == 0)) {
+            speed = mGpxToFitOptions.getSpeed();
+            if (!Double.isNaN(speed))
+                forceSpeed = true;
+            else
+                forceSpeed = false;
+        }
+        if (forceSpeed) {
+            duration = (long) (sdist * 1000.0 / speed);
+            lapMesg.setTotalElapsedTime((float) (duration / 1000.0));
+            lapMesg.setTotalTimerTime((float) (duration / 1000.0));
+            lapMesg.setAvgSpeed((float) (sdist * 1000.0 / (double) duration));
+        } else {
             lapMesg.setTotalElapsedTime((float) (duration / 1000.0));
             lapMesg.setTotalTimerTime((float) (duration / 1000.0));
             lapMesg.setAvgSpeed((float) (sdist * 1000.0 / (double) duration));
         }
 
         encode.write(lapMesg);
+
         sdist = sdist / 48.0;
-        if (sdist < 1000.0)
-            sdist = 1000.0;
+        if (sdist < mGpxToFitOptions.getMinCoursePointDistance())
+            sdist = mGpxToFitOptions.getMinCoursePointDistance();
 
         eventMesg.setEvent(Event.TIMER);
         eventMesg.setEventType(EventType.START);
@@ -395,7 +416,7 @@ public class GPXLoader {
 
         for (WayPoint wpt : wayPoints) {
             DateTime timestamp;
-
+            boolean written = false;
             i += 1;
 
             if (duration != 0)
@@ -410,14 +431,22 @@ public class GPXLoader {
                 cp.setType(CoursePoint.GENERIC);
                 cp.setDistance((float) dist);
                 cp.setTimestamp(timestamp);
-
                 encode.write(cp);
+                written = true;
             } else {
-                // TODO: choose between distance and distance3D
-                dist += wpt.distance3D(last);
+                if (mGpxToFitOptions.isUse3dDistance())
+                    dist += wpt.distance3D(last);
+                else
+                    dist += wpt.distance(last);
             }
 
-            if ((last == null) || (dist - ldist) > 5.0) {
+            if (forceSpeed) {
+                timestamp = new DateTime(startDate);
+                timestamp.add((long) (dist / speed));
+                //System.out.println(String.format("%s + (%s / %s) = %s", startDate.toString(), dist, speed, timestamp.toString()));
+            }
+
+            if ((last == null) || (dist - ldist) > mGpxToFitOptions.getMinRoutePointDistance()) {
                 r.setPositionLat(wpt.getLatSemi());
                 r.setPositionLong(wpt.getLonSemi());
                 r.setDistance((float) dist);
@@ -426,6 +455,7 @@ public class GPXLoader {
                 r.setTimestamp(timestamp);
                 encode.write(r);
                 ldist = dist;
+                written = true;
             }
 
             if (wpt == lastWayPoint) {
@@ -435,22 +465,24 @@ public class GPXLoader {
                 cp.setType(CoursePoint.GENERIC);
                 cp.setDistance((float) dist);
                 cp.setTimestamp(timestamp);
-
                 encode.write(cp);
-            } else if ((dist - lcdist) > sdist) {
+                written = true;
+            } else if (mGpxToFitOptions.isInjectCoursePoints() && ((dist - lcdist) > sdist)) {
                 cp.setName("");
                 cp.setType(CoursePoint.GENERIC);
                 cp.setPositionLat(wpt.getLatSemi());
                 cp.setPositionLong(wpt.getLonSemi());
                 cp.setDistance((float) dist);
                 cp.setTimestamp(timestamp);
-
                 encode.write(cp);
                 lcdist = dist;
+                written = true;
             }
 
             last = wpt;
-            System.out.println(String.format("[%s , %s] %s - %f", wpt.getLat(), wpt.getLon(), wpt.getEle(), dist));
+            if (written)
+                System.out.println(String.format("%s [%s , %s] %s - %f", timestamp.toString(),
+                        wpt.getLat(), wpt.getLon(), wpt.getEle(), dist));
         }
 
         eventMesg.setEvent(Event.TIMER);

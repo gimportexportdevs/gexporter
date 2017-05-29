@@ -14,9 +14,9 @@ public class TestPlay {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("sample10.gpx").getFile());
         try {
-            GPXLoader loader = new GPXLoader(file);
+            Gpx2Fit loader = new Gpx2Fit(file, new GpxToFitOptions());
             System.out.println(String.format("Track: %s", loader.getName()));
-            assertEquals("sample10.gpx", loader.getName());
+            assertEquals("sample10", loader.getName());
             for (WayPoint wpt : loader.getWaypoints()) {
                 System.out.println(String.format("[%s , %s] %s", wpt.getLat(), wpt.getLon(), wpt.getEle()));
             }
@@ -31,9 +31,9 @@ public class TestPlay {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource("sample11.gpx").getFile());
         try {
-            GPXLoader loader = new GPXLoader(file);
+            Gpx2Fit loader = new Gpx2Fit(file, new GpxToFitOptions());
             System.out.println(String.format("Track: %s", loader.getName()));
-            assertEquals("sample11.gpx", loader.getName());
+            assertEquals("sample11", loader.getName());
 
             for (WayPoint wpt : loader.getWaypoints()) {
                 System.out.println(String.format("[%s , %s] %s", wpt.getLat(), wpt.getLon(), wpt.getEle()));
@@ -57,9 +57,12 @@ public class TestPlay {
         ClassLoader classLoader = getClass().getClassLoader();
         File file = new File(classLoader.getResource(inFileName).getFile());
 
-        GPXLoader loader;
+        Gpx2Fit loader;
         try {
-            loader = new GPXLoader(file);
+            GpxToFitOptions options = new GpxToFitOptions();
+            loader = new Gpx2Fit(file, options);
+            options.setSpeed(1000.0 / (14.0 * 60.0) );
+            options.setInjectCoursePoints(false);
             loader.writeFit(new File(outFileName));
         } catch (Exception e) {
             fail(e.toString());

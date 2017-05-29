@@ -24,7 +24,10 @@ import java.util.Arrays;
 public class MainActivity extends AppCompatActivity {
     private WebServer server;
     private TextView mTextView;
+    private GpxToFitOptions mGpxToFitOptions = new GpxToFitOptions();
+
     private final static int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 300;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,7 +83,12 @@ public class MainActivity extends AppCompatActivity {
 
             server = new WebServer(keystore, keyManagerFactory, getCacheDir(), 22222);
 */
-            server = new WebServer(getCacheDir(), 22222);
+            // default speed to 14 min/km in m/s
+            mGpxToFitOptions.setSpeed(1000.0 / (14.0 * 60.0) );
+            mGpxToFitOptions.setUse3dDistance(true);
+            mGpxToFitOptions.setForceSpeed(false);
+
+            server = new WebServer(getCacheDir(), 22222, mGpxToFitOptions);
             server.start();
             Log.w("Httpd", "Web server initialized.");
         } catch (IOException e) {

@@ -3,8 +3,6 @@ package org.surfsite.gexporter;
 import android.os.Environment;
 import android.util.Log;
 
-import org.surfsite.gexporter.GPXLoader;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,12 +18,13 @@ import java.util.Arrays;
 
 class WebServer extends NanoHTTPD {
     File cacheDir;
-
+    GpxToFitOptions mGpxToFitOptions;
     WebServer(
             /* KeyStore keystore, KeyManagerFactory keyManagerFactory, */
-            File cacheDir, int port) throws IOException, NoSuchAlgorithmException /*, KeyManagementException, KeyStoreException*/ {
+            File cacheDir, int port, GpxToFitOptions options) throws IOException, NoSuchAlgorithmException /*, KeyManagementException, KeyStoreException*/ {
         super(port);
         this.cacheDir = cacheDir;
+        this.mGpxToFitOptions = options;
         //System.setProperty("javax.net.ssl.trustStore", new File("src/test/resources/keystore.jks").getAbsolutePath());
         // makeSecure(NanoHTTPD.makeSSLSocketFactory(keystore, keyManagerFactory), null);
     }
@@ -81,7 +80,7 @@ class WebServer extends NanoHTTPD {
                 } else if(path.endsWith(".gpx") || path.endsWith(".GPX")) {
                     src = new File(rootdir + path);
 
-                    GPXLoader loader = new GPXLoader(src);
+                    Gpx2Fit loader = new Gpx2Fit(src, mGpxToFitOptions);
                     src = new File(cacheDir, path + ".fit");
                     Log.w("Httpd", "Generating " + src.getAbsolutePath());
                     loader.writeFit(src);
