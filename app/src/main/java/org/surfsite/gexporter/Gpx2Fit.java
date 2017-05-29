@@ -433,8 +433,10 @@ public class Gpx2Fit {
         encode.write(eventMesg);
         last = null;
 
+        DateTime timestamp = new DateTime(new Date(WayPoint.RefMilliSec));
+        long i = 0;
+
         for (WayPoint wpt : wayPoints) {
-            DateTime timestamp;
             boolean written = false;
             i += 1;
 
@@ -507,11 +509,8 @@ public class Gpx2Fit {
         eventMesg.setEvent(Event.TIMER);
         eventMesg.setEventType(EventType.STOP_DISABLE_ALL);
         eventMesg.setEventGroup((short) 0);
-        if (duration != 0)
-            eventMesg.setTimestamp(new DateTime(endDate));
-        else
-
-        eventMesg.setTimestamp(new DateTime(new Date(WayPoint.RefMilliSec + wayPoints.size() * 1000)));
+        //timestamp.add(2);
+        eventMesg.setTimestamp(timestamp);
 
         encode.write(eventMesg);
         encode.close();
