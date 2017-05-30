@@ -24,13 +24,13 @@ public class GpxToFitOptions {
     private int speedUnit;
 
     public GpxToFitOptions() {
-        speed = Double.NaN;
+        speed = 1000.0 / 14.0 / 60.0;
         use3dDistance = true;
         walkingGrade = false;
         forceSpeed = false;
         injectCoursePoints = false;
-        minRoutePointDistance = .0;
-        minCoursePointDistance = .0;
+        minRoutePointDistance = 1.0;
+        minCoursePointDistance = 1000.0;
         maxPoints = 1000;
     }
 
