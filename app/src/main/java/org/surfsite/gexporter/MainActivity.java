@@ -110,8 +110,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         speed = .0;
                     }
                     if (speed > .0) {
-                        System.err.println("Speed: " + speed);
-                        System.err.println("Unit: " + mGpxToFitOptions.getSpeedUnit());
+                        //System.err.println("Speed: " + speed);
+                        //System.err.println("Unit: " + mGpxToFitOptions.getSpeedUnit());
                         switch (mGpxToFitOptions.getSpeedUnit()) {
                             case 0:
                                 speed = 1000.0 / 60.0 / speed;
@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             case 3:
                                 speed = speed * 1609.344 / 3600.0;
                         }
-                        System.err.println("ResSpeed: " + speed);
+                        //System.err.println("ResSpeed: " + speed);
                     }
                     mGpxToFitOptions.setSpeed(speed);
                 }
@@ -171,8 +171,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void setSpeedText(int pos) {
         double speed = mGpxToFitOptions.getSpeed();
-        System.err.println("xx Speed: " + speed);
-        System.err.println("xx Unit: " + pos);
+        //System.err.println("xx Speed: " + speed);
+        //System.err.println("xx Unit: " + pos);
 
         switch (pos) {
             case 0:
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (mSpeed != null)
             mSpeed.setText(String.format(Locale.getDefault(), "%.2f", speed));
-        System.err.println("xx Speed: " + speed);
+        //System.err.println("xx Speed: " + speed);
     }
 
     @Override
