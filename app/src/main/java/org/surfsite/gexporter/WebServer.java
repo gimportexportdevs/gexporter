@@ -5,6 +5,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -14,6 +15,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 
 class WebServer extends NanoHTTPD {
@@ -36,6 +39,8 @@ class WebServer extends NanoHTTPD {
     @Override public Response serve(IHTTPSession session) {
         String mime_type = NanoHTTPD.MIME_HTML;
         Method method = session.getMethod();
+        Map<String, List<String>> parms = session.getParameters();
+
         String uri = session.getUri();
         System.out.println(method + " '" + uri + "' ");
         // Open file from SD Card
@@ -43,11 +48,39 @@ class WebServer extends NanoHTTPD {
                 "/Download/";
 
         if(method.toString().equalsIgnoreCase("GET")) {
+            boolean doGPXonly = false;
+            if (parms.containsKey("type") && parms.get("type").get(0).equals("GPX")) {
+                doGPXonly = true;
+            }
+
             String path;
             if(uri.equals("/dir.json")){
-                String[] filelist = new File(rootdir).list();
+                FilenameFilter filenameFilter;
+                if (doGPXonly) {
+                    filenameFilter = new FilenameFilter() {
+                        @Override
+                        public boolean accept(File dir, String name) {
+                            if (name.endsWith(".gpx") || name.endsWith(".GPX")) {
+                                return true;
+                            }
+                            return false;
+                        }
+                    };
+                } else {
+                    filenameFilter = new FilenameFilter() {
+                        @Override
+                        public boolean accept(File dir, String name) {
+                            if (name.endsWith(".fit") || name.endsWith(".FIT") || name.endsWith(".gpx") || name.endsWith(".GPX")) {
+                                return true;
+                            }
+                            return false;
+                        }
+                    };
+                }
+                String[] filelist = new File(rootdir).list(filenameFilter);
+
                 if (filelist == null) {
-                    return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_JSON, "{ error: \"No permission\" } ");
+                    return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_JSON, "{ error: \"No permission or no files\" } ");
                 }
 
                 Arrays.sort(filelist);
@@ -80,17 +113,22 @@ class WebServer extends NanoHTTPD {
                 } else if(path.endsWith(".gpx") || path.endsWith(".GPX")) {
                     src = new File(rootdir + path);
 
-                    Gpx2Fit loader = new Gpx2Fit(src, mGpxToFitOptions);
-                    src = new File(cacheDir, path + ".fit");
-                    Log.w("Httpd", "Generating " + src.getAbsolutePath());
-                    loader.writeFit(src);
-                    mime_type = MIME_FIT;
+                    if (doGPXonly) {
+                        mime_type = MIME_GPX;
+                    } else {
+                        Gpx2Fit loader = new Gpx2Fit(src, mGpxToFitOptions);
+                        src = new File(cacheDir, path + ".fit");
+                        Log.w("Httpd", "Generating " + src.getAbsolutePath());
+                        loader.writeFit(src);
+                        mime_type = MIME_FIT;
+                    }
                 }
             }catch(Exception e){
                 Log.e("Httpd", "Error Serving:", e);
 
                 return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_JSON, "{ error: \"" + e.toString() + "\" } ");
             }
+
             if (src == null) {
                 Log.w("Httpd", "src == null");
 

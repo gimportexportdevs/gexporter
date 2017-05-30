@@ -4,15 +4,25 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import org.surfsite.gexporter.WebServer;
@@ -22,62 +32,262 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
-    private WebServer server;
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    @Nullable
+    private WebServer server = null;
     private TextView mTextView;
     private Spinner mSpeedUnit;
+    private ArrayAdapter<CharSequence> mSpeedUnitAdapter;
     private EditText mSpeed;
     private CheckBox mForceSpeed;
     private CheckBox mUse3DDistance;
     private CheckBox mInjectCoursePoints;
-
-    private GpxToFitOptions mGpxToFitOptions = new GpxToFitOptions();
+    private CheckBox mUseWalkingGrade;
+    private CheckBox mReducePoints;
+    private EditText mMaxPoints;
+    private GpxToFitOptions mGpxToFitOptions = null;
+    private NumberFormat mNumberFormat = NumberFormat.getInstance(Locale.getDefault());
 
     private final static int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 300;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        mSpeedUnit = (Spinner) findViewById(R.id.SPspeedUnits);
+        mSpeedUnitAdapter = ArrayAdapter.createFromResource(this,
+                R.array.speedunits, android.R.layout.simple_spinner_item);
+        mSpeedUnitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpeedUnit.setAdapter(mSpeedUnitAdapter);
+        mSpeedUnit.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long selId) {
+                if (mGpxToFitOptions != null)
+                    mGpxToFitOptions.setSpeedUnit(pos);
+                setSpeedText(pos);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                if (mGpxToFitOptions != null)
+                    mGpxToFitOptions.setSpeedUnit(0);
+            }
+        });
+
+        mSpeed = (EditText) findViewById(R.id.editSpeed);
+        char separator = DecimalFormatSymbols.getInstance().getDecimalSeparator();
+        mSpeed.setKeyListener(DigitsKeyListener.getInstance("0123456789" + separator));
+        mSpeed.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (getCurrentFocus() != mSpeed) {
+                        return;
+                }
+
+                if (editable.length() > 0 && mGpxToFitOptions != null) {
+                    double speed;
+                    try {
+                        speed = mNumberFormat.parse(editable.toString()).doubleValue();
+                    } catch (ParseException e) {
+                        speed = .0;
+                    }
+                    if (speed > .0) {
+                        System.err.println("Speed: " + speed);
+                        System.err.println("Unit: " + mGpxToFitOptions.getSpeedUnit());
+                        switch (mGpxToFitOptions.getSpeedUnit()) {
+                            case 0:
+                                speed = 1000.0 / 60.0 / speed;
+                                break;
+                            case 1:
+                                speed = speed * 1000.0 / 3600.0;
+                                break;
+                            case 2:
+                                speed = 1609.344 / 60.0 / speed;
+                                break;
+                            case 3:
+                                speed = speed * 1609.344 / 3600.0;
+                        }
+                        System.err.println("ResSpeed: " + speed);
+                    }
+                    mGpxToFitOptions.setSpeed(speed);
+                }
+            }
+        });
+
+        mForceSpeed = (CheckBox) findViewById(R.id.CBforceSpeed);
+        mForceSpeed.setOnClickListener(this);
+
+        mUse3DDistance = (CheckBox) findViewById(R.id.CBuse3D);
+        mUse3DDistance.setOnClickListener(this);
+
+        mInjectCoursePoints = (CheckBox) findViewById(R.id.CBinject);
+        mInjectCoursePoints.setOnClickListener(this);
+
+        mUseWalkingGrade = (CheckBox) findViewById(R.id.CBuseWalkingGrade);
+        mUseWalkingGrade.setOnClickListener(this);
+
+        mReducePoints = (CheckBox) findViewById(R.id.CBreducePoints);
+        mReducePoints.setOnClickListener(this);
+
+        mMaxPoints = (EditText) findViewById(R.id.editPointNumber);
+        mMaxPoints.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.length() > 0 && mGpxToFitOptions != null && mReducePoints.isChecked())
+                    mGpxToFitOptions.setMaxPoints(Integer.valueOf(editable.toString()));
+            }
+        });
+
         mTextView = (TextView) findViewById(R.id.textv);
+    }
 
-        if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
+    private void setSpeedText(int pos) {
+        double speed = mGpxToFitOptions.getSpeed();
+        System.err.println("xx Speed: " + speed);
+        System.err.println("xx Unit: " + pos);
 
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-        } else {
-            serveFiles();
+        switch (pos) {
+            case 0:
+                speed = 1000.0 / speed / 60.0;
+                break;
+            case 1:
+                speed = speed / 1000.0 * 3600.0;
+                break;
+            case 2:
+                speed = 1609.344 / speed / 60.0;
+                break;
+            case 3:
+                speed = speed / 1609.344 * 3600.0;
+        }
+        if (mSpeed != null)
+            mSpeed.setText(String.format(Locale.getDefault(), "%.2f", speed));
+        System.err.println("xx Speed: " + speed);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (mGpxToFitOptions == null)
+            return;
+
+        switch (v.getId()) {
+            case R.id.CBforceSpeed:
+                mGpxToFitOptions.setForceSpeed(mForceSpeed.isChecked());
+                break;
+            case R.id.CBinject:
+                mGpxToFitOptions.setInjectCoursePoints(mInjectCoursePoints.isChecked());
+                break;
+            case R.id.CBreducePoints:
+                if (mReducePoints.isChecked()) {
+                    String t = mMaxPoints.getText().toString();
+                    if (t.length() > 0)
+                        mGpxToFitOptions.setMaxPoints(Integer.decode(t));
+                } else
+                    mGpxToFitOptions.setMaxPoints(0);
+                break;
+            case R.id.CBuse3D:
+                mGpxToFitOptions.setUse3dDistance(mUse3DDistance.isChecked());
+                break;
+            case R.id.CBuseWalkingGrade:
+                mGpxToFitOptions.setWalkingGrade(mUseWalkingGrade.isChecked());
+                break;
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           @Nullable String permissions[], @Nullable int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
+                if (grantResults != null && grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                     serveFiles();
 
                 } else {
-                    mTextView.setText("No permission to read files.");
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
+                    mTextView.setText(R.string.no_permission);
                 }
-                return;
             }
+        }
+    }
 
-            // other 'case' lines to check for other
-            // permissions this app might request
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (server != null) {
+            server.stop();
+            server = null;
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mGpxToFitOptions.save(getApplication());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+
+        mGpxToFitOptions = GpxToFitOptions.load(getApplication());
+        double speed = mGpxToFitOptions.getSpeed();
+        if (Double.isNaN(speed))
+            speed = 10.0;
+        setSpeedText(mGpxToFitOptions.getSpeedUnit());
+
+        mForceSpeed.setChecked(mGpxToFitOptions.isForceSpeed());
+        mUse3DDistance.setChecked(mGpxToFitOptions.isUse3dDistance());
+        mInjectCoursePoints.setChecked(mGpxToFitOptions.isInjectCoursePoints());
+        mUseWalkingGrade.setChecked(mGpxToFitOptions.isWalkingGrade());
+
+        mReducePoints.setChecked(mGpxToFitOptions.getMaxPoints() > 0);
+        int maxp = mGpxToFitOptions.getMaxPoints();
+        if (maxp == 0)
+            maxp = 1000;
+        mMaxPoints.setText(Integer.toString(maxp));
+
+        mSpeedUnit.setSelection(mGpxToFitOptions.getSpeedUnit());
+
+        if (server == null) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+            } else {
+                serveFiles();
+            }
         }
     }
 
@@ -92,28 +302,13 @@ public class MainActivity extends AppCompatActivity {
 
             server = new WebServer(keystore, keyManagerFactory, getCacheDir(), 22222);
 */
-            // default speed to 14 min/km in m/s
-            mGpxToFitOptions.setSpeed(1000.0 / (14.0 * 60.0) );
-            mGpxToFitOptions.setUse3dDistance(true);
-            mGpxToFitOptions.setForceSpeed(false);
 
             server = new WebServer(getCacheDir(), 22222, mGpxToFitOptions);
             server.start();
             Log.w("Httpd", "Web server initialized.");
-        } catch (IOException e) {
+        } catch (IOException | NoSuchAlgorithmException e) {
             Log.w("Httpd", "The server could not start. " + e.getLocalizedMessage());
-        } catch (NoSuchAlgorithmException e) {
-            Log.w("Httpd", "The server could not start. " + e.getLocalizedMessage());
-            /*
-        } catch (KeyManagementException e) {
-            Log.w("Httpd", "The server could not start. " + e.getLocalizedMessage());
-        } catch (CertificateException e) {
-            Log.w("Httpd", "The server could not start. " + e.getLocalizedMessage());
-        } catch (UnrecoverableKeyException e) {
-            e.printStackTrace();
-        } catch (KeyStoreException e) {
-            Log.w("Httpd", "The server could not start. " + e.getLocalizedMessage());
-            */
+            mTextView.setText(R.string.no_server);
         }
 
         String rootdir = Environment.getExternalStorageDirectory().getAbsolutePath() +
@@ -130,19 +325,10 @@ public class MainActivity extends AppCompatActivity {
         String[] filelist = new File(rootdir).list(filenameFilter);
 
         if (filelist == null) {
-            mTextView.setText("Set the correct permissions for this app.");
+            mTextView.setText(R.string.no_permission);
         } else {
             Arrays.sort(filelist);
-            String txt = "Serving from " + rootdir + ":\n\n" + TextUtils.join("\n", filelist);
-            mTextView.setText(txt);
+            mTextView.setText(String.format(getResources().getString(R.string.serving_from), rootdir, TextUtils.join("\n", filelist)));
         }
-    }
-
-    // DON'T FORGET to stop the server
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (server != null)
-            server.stop();
     }
 }
