@@ -1,5 +1,13 @@
 package org.surfsite.gexporter;
 
+import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
+
 /**
  * Created by harald on 27.05.17.
  */
@@ -12,7 +20,8 @@ public class GpxToFitOptions {
     private boolean walkingGrade;
     private double minRoutePointDistance;
     private double minCoursePointDistance;
-    private long maxPoints;
+    private int maxPoints;
+    private int speedUnit;
 
     public GpxToFitOptions() {
         speed = Double.NaN;
@@ -20,8 +29,8 @@ public class GpxToFitOptions {
         walkingGrade = false;
         forceSpeed = false;
         injectCoursePoints = false;
-        minRoutePointDistance = 5.0;
-        minCoursePointDistance = 1000.0;
+        minRoutePointDistance = .0;
+        minCoursePointDistance = .0;
         maxPoints = 1000;
     }
 
@@ -81,11 +90,41 @@ public class GpxToFitOptions {
         this.walkingGrade = walkingGrade;
     }
 
-    public long getMaxPoints() {
+    public int getMaxPoints() {
         return maxPoints;
     }
 
-    public void setMaxPoints(long maxPoints) {
+    public void setMaxPoints(int maxPoints) {
         this.maxPoints = maxPoints;
+    }
+
+    public int getSpeedUnit() {
+        return speedUnit;
+    }
+
+    public void setSpeedUnit(int speedUnit) {
+        this.speedUnit = speedUnit;
+    }
+
+    public void save(Application app) {
+        SharedPreferences mPrefs=app.getSharedPreferences(app.getApplicationInfo().name, Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed=mPrefs.edit();
+        Gson gson = new Gson();
+        ed.putString(this.getClass().getName(), gson.toJson(this));
+        ed.apply();
+    }
+
+    static public GpxToFitOptions load(Application app) {
+        Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().create();
+        JsonParser parser=new JsonParser();
+        SharedPreferences mPrefs=app.getSharedPreferences(app.getApplicationInfo().name, Context.MODE_PRIVATE);
+        String json = mPrefs.getString(GpxToFitOptions.class.getName(), null);
+        GpxToFitOptions opts = null;
+        if (json != null && json.length() > 0)
+            opts = gson.fromJson(parser.parse(json).getAsJsonObject(), GpxToFitOptions.class);
+        if (opts != null)
+            return opts;
+        else
+            return new GpxToFitOptions();
     }
 }
