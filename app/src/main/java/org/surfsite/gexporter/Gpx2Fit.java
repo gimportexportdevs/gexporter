@@ -443,7 +443,9 @@ public class Gpx2Fit {
         if (cp_min_dist < mGpxToFitOptions.getMinCoursePointDistance())
             cp_min_dist = mGpxToFitOptions.getMinCoursePointDistance();
 
-        double pt_min_dist = totaldist / 1000.0;
+        double pt_min_dist = 0;
+        if (mGpxToFitOptions.getMaxPoints() != 0)
+            pt_min_dist = totaldist / mGpxToFitOptions.getMaxPoints();
         if (pt_min_dist < mGpxToFitOptions.getMinRoutePointDistance())
             pt_min_dist = mGpxToFitOptions.getMinRoutePointDistance();
 
