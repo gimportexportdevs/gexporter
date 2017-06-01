@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -19,20 +18,17 @@ import android.text.method.DigitsKeyListener;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 
-import org.surfsite.gexporter.WebServer;
 import org.tracks.exporter.R;
 
 import java.io.File;
@@ -58,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private CheckBox mUseWalkingGrade;
     private CheckBox mReducePoints;
     private EditText mMaxPoints;
-    private GpxToFitOptions mGpxToFitOptions = null;
+    private Gpx2FitOptions mGpx2FitOptions = null;
     private NumberFormat mNumberFormat = NumberFormat.getInstance(Locale.getDefault());
 
     private final static int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 300;
@@ -78,15 +74,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mSpeedUnit.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long selId) {
-                if (mGpxToFitOptions != null)
-                    mGpxToFitOptions.setSpeedUnit(pos);
+                if (mGpx2FitOptions != null)
+                    mGpx2FitOptions.setSpeedUnit(pos);
                 setSpeedText(pos);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                if (mGpxToFitOptions != null)
-                    mGpxToFitOptions.setSpeedUnit(0);
+                if (mGpx2FitOptions != null)
+                    mGpx2FitOptions.setSpeedUnit(0);
             }
         });
 
@@ -109,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         return;
                 }
 
-                if (editable.length() > 0 && mGpxToFitOptions != null) {
+                if (editable.length() > 0 && mGpx2FitOptions != null) {
                     double speed;
                     try {
                         speed = mNumberFormat.parse(editable.toString()).doubleValue();
@@ -117,9 +113,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         speed = .0;
                     }
                     if (speed > .0) {
-                        //System.err.println("Speed: " + speed);
-                        //System.err.println("Unit: " + mGpxToFitOptions.getSpeedUnit());
-                        switch (mGpxToFitOptions.getSpeedUnit()) {
+                        switch (mGpx2FitOptions.getSpeedUnit()) {
                             case 0:
                                 speed = 1000.0 / 60.0 / speed;
                                 break;
@@ -132,9 +126,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             case 3:
                                 speed = speed * 1609.344 / 3600.0;
                         }
-                        //System.err.println("ResSpeed: " + speed);
                     }
-                    mGpxToFitOptions.setSpeed(speed);
+                    mGpx2FitOptions.setSpeed(speed);
                 }
             }
         });
@@ -168,8 +161,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (editable.length() > 0 && mGpxToFitOptions != null && mReducePoints.isChecked())
-                    mGpxToFitOptions.setMaxPoints(Integer.valueOf(editable.toString()));
+                if (editable.length() > 0 && mGpx2FitOptions != null && mReducePoints.isChecked())
+                    mGpx2FitOptions.setMaxPoints(Integer.valueOf(editable.toString()));
             }
         });
 
@@ -177,9 +170,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setSpeedText(int pos) {
-        double speed = mGpxToFitOptions.getSpeed();
-        //System.err.println("xx Speed: " + speed);
-        //System.err.println("xx Unit: " + pos);
+        double speed = mGpx2FitOptions.getSpeed();
+        if (Double.isNaN(speed))
+            speed = 10.0;
 
         switch (pos) {
             case 0:
@@ -196,34 +189,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (mSpeed != null)
             mSpeed.setText(String.format(Locale.getDefault(), "%.2f", speed));
-        //System.err.println("xx Speed: " + speed);
     }
 
     @Override
     public void onClick(View v) {
-        if (mGpxToFitOptions == null)
+        if (mGpx2FitOptions == null)
             return;
 
         switch (v.getId()) {
             case R.id.CBforceSpeed:
-                mGpxToFitOptions.setForceSpeed(mForceSpeed.isChecked());
+                mGpx2FitOptions.setForceSpeed(mForceSpeed.isChecked());
                 break;
             case R.id.CBinject:
-                mGpxToFitOptions.setInjectCoursePoints(mInjectCoursePoints.isChecked());
+                mGpx2FitOptions.setInjectCoursePoints(mInjectCoursePoints.isChecked());
                 break;
             case R.id.CBreducePoints:
                 if (mReducePoints.isChecked()) {
                     String t = mMaxPoints.getText().toString();
                     if (t.length() > 0)
-                        mGpxToFitOptions.setMaxPoints(Integer.decode(t));
+                        mGpx2FitOptions.setMaxPoints(Integer.decode(t));
                 } else
-                    mGpxToFitOptions.setMaxPoints(0);
+                    mGpx2FitOptions.setMaxPoints(0);
                 break;
             case R.id.CBuse3D:
-                mGpxToFitOptions.setUse3dDistance(mUse3DDistance.isChecked());
+                mGpx2FitOptions.setUse3dDistance(mUse3DDistance.isChecked());
                 break;
             case R.id.CBuseWalkingGrade:
-                mGpxToFitOptions.setWalkingGrade(mUseWalkingGrade.isChecked());
+                mGpx2FitOptions.setWalkingGrade(mUseWalkingGrade.isChecked());
                 break;
         }
     }
@@ -255,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void save(GpxToFitOptions options) {
+    public void save(Gpx2FitOptions options) {
         Application app = getApplication();
         SharedPreferences mPrefs=app.getSharedPreferences(app.getApplicationInfo().name, Context.MODE_PRIVATE);
         SharedPreferences.Editor ed=mPrefs.edit();
@@ -264,50 +256,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ed.apply();
     }
 
-    public GpxToFitOptions load() {
+    public Gpx2FitOptions load() {
         Application app = getApplication();
         Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().create();
         JsonParser parser=new JsonParser();
         SharedPreferences mPrefs=app.getSharedPreferences(app.getApplicationInfo().name, Context.MODE_PRIVATE);
-        String json = mPrefs.getString(GpxToFitOptions.class.getName(), null);
-        GpxToFitOptions opts = null;
+        String json = mPrefs.getString(Gpx2FitOptions.class.getName(), null);
+        Gpx2FitOptions opts = null;
         if (json != null && json.length() > 0)
-            opts = gson.fromJson(parser.parse(json).getAsJsonObject(), GpxToFitOptions.class);
+            opts = gson.fromJson(parser.parse(json).getAsJsonObject(), Gpx2FitOptions.class);
         if (opts != null)
             return opts;
         else
-            return new GpxToFitOptions();
+            return new Gpx2FitOptions();
     }
 
 
     @Override
     public void onPause() {
         super.onPause();
-        save(mGpxToFitOptions);
+        save(mGpx2FitOptions);
     }
 
     @Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first
 
-        mGpxToFitOptions = load();
-        double speed = mGpxToFitOptions.getSpeed();
-        if (Double.isNaN(speed))
-            speed = 10.0;
-        setSpeedText(mGpxToFitOptions.getSpeedUnit());
+        mGpx2FitOptions = load();
 
-        mForceSpeed.setChecked(mGpxToFitOptions.isForceSpeed());
-        mUse3DDistance.setChecked(mGpxToFitOptions.isUse3dDistance());
-        mInjectCoursePoints.setChecked(mGpxToFitOptions.isInjectCoursePoints());
-        mUseWalkingGrade.setChecked(mGpxToFitOptions.isWalkingGrade());
+        setSpeedText(mGpx2FitOptions.getSpeedUnit());
 
-        mReducePoints.setChecked(mGpxToFitOptions.getMaxPoints() > 0);
-        int maxp = mGpxToFitOptions.getMaxPoints();
+        mForceSpeed.setChecked(mGpx2FitOptions.isForceSpeed());
+        mUse3DDistance.setChecked(mGpx2FitOptions.isUse3dDistance());
+        mInjectCoursePoints.setChecked(mGpx2FitOptions.isInjectCoursePoints());
+        mUseWalkingGrade.setChecked(mGpx2FitOptions.isWalkingGrade());
+
+        mReducePoints.setChecked(mGpx2FitOptions.getMaxPoints() > 0);
+        int maxp = mGpx2FitOptions.getMaxPoints();
         if (maxp == 0)
             maxp = 1000;
         mMaxPoints.setText(Integer.toString(maxp));
 
-        mSpeedUnit.setSelection(mGpxToFitOptions.getSpeedUnit());
+        mSpeedUnit.setSelection(mGpx2FitOptions.getSpeedUnit());
 
         if (server == null) {
             if (ContextCompat.checkSelfPermission(this,
@@ -325,19 +315,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     protected void serveFiles() {
         try {
-/*
-            InputStream keystoreStream = getResources().openRawResource(R.raw.keystore);
-            KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-            keystore.load(keystoreStream, "123456".toCharArray());
-            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            keyManagerFactory.init(keystore, "123456".toCharArray());
-
-            server = new WebServer(keystore, keyManagerFactory, getCacheDir(), 22222);
-*/
             String rootdir = Environment.getExternalStorageDirectory().getAbsolutePath() +
                     "/Download/";
 
-            server = new WebServer(new File(rootdir), getCacheDir(), 22222, mGpxToFitOptions);
+            server = new WebServer(new File(rootdir), getCacheDir(), 22222, mGpx2FitOptions);
             server.start();
             Log.w("Httpd", "Web server initialized.");
         } catch (IOException | NoSuchAlgorithmException e) {
@@ -347,6 +328,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         String rootdir = Environment.getExternalStorageDirectory().getAbsolutePath() +
                 "/Download/";
+
         FilenameFilter filenameFilter = new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -356,6 +338,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return false;
             }
         };
+
         String[] filelist = new File(rootdir).list(filenameFilter);
 
         if (filelist == null) {

@@ -14,6 +14,8 @@ import com.garmin.fit.LapMesg;
 import com.garmin.fit.Manufacturer;
 import com.garmin.fit.RecordMesg;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -27,30 +29,26 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import fi.iki.elonen.NanoHTTPD;
+
 public class Gpx2Fit {
+    private static final Logger Log = LoggerFactory.getLogger(Gpx2Fit.class);
+
     private static final String HTTP_WWW_TOPOGRAFIX_COM_GPX_1_0 = "http://www.topografix.com/GPX/1/0";
     private static final String HTTP_WWW_TOPOGRAFIX_COM_GPX_1_1 = "http://www.topografix.com/GPX/1/1";
 
     private final List<WayPoint> wayPoints = new ArrayList<>();
     private String courseName;
     private String ns = HTTP_WWW_TOPOGRAFIX_COM_GPX_1_0;
-    GpxToFitOptions mGpxToFitOptions;
+    Gpx2FitOptions mGpx2FitOptions;
 
-    public Gpx2Fit(File file, GpxToFitOptions options) throws Exception {
-        mGpxToFitOptions = options;
+    public Gpx2Fit(String name, File file, Gpx2FitOptions options) throws Exception {
+        mGpx2FitOptions = options;
         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
         factory.setNamespaceAware(true);
         XmlPullParser parser = factory.newPullParser();
         //parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-        courseName = file.getName();
-        if (courseName.endsWith(".fit") || courseName.endsWith(".FIT")
-                || courseName.endsWith(".gpx") || courseName.endsWith(".GPX")  ) {
-            courseName = courseName.substring(0, courseName.length()-4);
-        }
-
-        if (courseName.length() > 15) {
-            courseName = courseName.substring(0, 15);
-        }
+        courseName = name;
 
         FileInputStream in = new FileInputStream(file);
 
@@ -312,7 +310,7 @@ public class Gpx2Fit {
         double cp_min_dist = .0;
         double lcdist = .0;
         double ldist = .0;
-        double speed = mGpxToFitOptions.getSpeed();
+        double speed = mGpx2FitOptions.getSpeed();
 
         FileEncoder encode = new FileEncoder(outfile, Fit.ProtocolVersion.V2_0);
 
@@ -340,13 +338,13 @@ public class Gpx2Fit {
         CoursePointMesg cp = new CoursePointMesg();
         cp.setLocalNum(5);
 
-        System.out.println(String.format("Track: %s", getName()));
+        Log.debug("Track: {}", getName());
         WayPoint firstWayPoint = wayPoints.get(0);
         Date startDate = firstWayPoint.getTime();
 
         WayPoint lastWayPoint = wayPoints.get(wayPoints.size() - 1);
 
-        boolean forceSpeed = mGpxToFitOptions.isForceSpeed();
+        boolean forceSpeed = mGpx2FitOptions.isForceSpeed();
         if (firstWayPoint.getTime().getTime() == lastWayPoint.getTime().getTime()) {
             if (!Double.isNaN(speed))
                 forceSpeed = true;
@@ -376,7 +374,7 @@ public class Gpx2Fit {
                 double d = wpt.distance(last);
                 double gradedist = d;
 
-                if (mGpxToFitOptions.isUse3dDistance()) {
+                if (mGpx2FitOptions.isUse3dDistance()) {
                     totaldist += wpt.distance3D(last);
                 } else {
                     totaldist += d;
@@ -391,7 +389,7 @@ public class Gpx2Fit {
                     else
                         totalDesc += Math.abs(dele);
 
-                    if (mGpxToFitOptions.isWalkingGrade()) {
+                    if (mGpx2FitOptions.isWalkingGrade()) {
                         grade = dele / gradedist;
                         gspeed = getWalkingGradeFactor(grade) * speed;
                     }
@@ -403,7 +401,7 @@ public class Gpx2Fit {
                 }
             }
             last = wpt;
-            System.out.println(String.format("%s [%s , %s] %s - %s", endDate, wpt.getLat(), wpt.getLon(), ele, wpt.getTotaldist()));
+            Log.debug("{} [{} , {}] {} - {}", endDate, wpt.getLat(), wpt.getLon(), ele, wpt.getTotaldist());
         }
 
         lapMesg.setTotalDistance((float) totaldist);
@@ -429,7 +427,7 @@ public class Gpx2Fit {
         lapMesg.setEndPositionLat(lastWayPoint.getLatSemi());
         lapMesg.setEndPositionLong(lastWayPoint.getLonSemi());
 
-        System.out.println(String.format("Start: %s - End: %s", startDate.toString(), endDate.toString()));
+        Log.debug("Start: {} - End: {}", startDate.toString(), endDate.toString());
 
         long duration = endDate.getTime() - startDate.getTime();
 
@@ -440,14 +438,14 @@ public class Gpx2Fit {
         encode.write(lapMesg);
 
         cp_min_dist = totaldist / 48.0;
-        if (cp_min_dist < mGpxToFitOptions.getMinCoursePointDistance())
-            cp_min_dist = mGpxToFitOptions.getMinCoursePointDistance();
+        if (cp_min_dist < mGpx2FitOptions.getMinCoursePointDistance())
+            cp_min_dist = mGpx2FitOptions.getMinCoursePointDistance();
 
         double pt_min_dist = 0;
-        if (mGpxToFitOptions.getMaxPoints() != 0)
-            pt_min_dist = totaldist / mGpxToFitOptions.getMaxPoints();
-        if (pt_min_dist < mGpxToFitOptions.getMinRoutePointDistance())
-            pt_min_dist = mGpxToFitOptions.getMinRoutePointDistance();
+        if (mGpx2FitOptions.getMaxPoints() != 0)
+            pt_min_dist = totaldist / mGpx2FitOptions.getMaxPoints();
+        if (pt_min_dist < mGpx2FitOptions.getMinRoutePointDistance())
+            pt_min_dist = mGpx2FitOptions.getMinRoutePointDistance();
 
         eventMesg.setEvent(Event.TIMER);
         eventMesg.setEventType(EventType.START);
@@ -515,7 +513,7 @@ public class Gpx2Fit {
                 cp.setTimestamp(timestamp);
                 encode.write(cp);
                 written = true;
-            } else if (mGpxToFitOptions.isInjectCoursePoints() && ((dist - lcdist) > cp_min_dist)) {
+            } else if (mGpx2FitOptions.isInjectCoursePoints() && ((dist - lcdist) > cp_min_dist)) {
                 cp.setName("");
                 cp.setType(CoursePoint.GENERIC);
                 cp.setPositionLat(wpt.getLatSemi());
@@ -529,8 +527,8 @@ public class Gpx2Fit {
 
             last = wpt;
             if (written) {
-                System.out.println(String.format("%s [%s , %s] %s - %f - %f", timestamp.toString(),
-                        wpt.getLat(), wpt.getLon(), wpt.getEle(), dist, gspeed));
+                Log.debug("{} [{} , {}] {} - {} - {}", timestamp.toString(),
+                        wpt.getLat(), wpt.getLon(), wpt.getEle(), dist, gspeed);
             }
         }
 

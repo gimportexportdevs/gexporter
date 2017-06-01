@@ -1,5 +1,7 @@
 package org.surfsite.gexporter;
 
+import android.support.annotation.NonNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,25 +20,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-
-class WebServer extends NanoHTTPD {
+public class WebServer extends NanoHTTPD {
     private static final Logger Log = LoggerFactory.getLogger(NanoHTTPD.class);
 
     private File mRootDir;
     private File mCacheDir;
-    private GpxToFitOptions mGpxToFitOptions;
+    private Gpx2FitOptions mGpx2FitOptions;
 
-    WebServer(
-            /* KeyStore keystore, KeyManagerFactory keyManagerFactory, */
-            File rootDir, File cacheDir, int port, GpxToFitOptions options) throws IOException, NoSuchAlgorithmException /*, KeyManagementException, KeyStoreException*/ {
+    public WebServer(File rootDir, File cacheDir, int port, Gpx2FitOptions options)
+            throws IOException, NoSuchAlgorithmException {
 
         super(port);
         mRootDir = rootDir;
         mCacheDir = cacheDir;
-        mGpxToFitOptions = options;
-
-        //System.setProperty("javax.net.ssl.trustStore", new File("src/test/resources/keystore.jks").getAbsolutePath());
-        // makeSecure(NanoHTTPD.makeSSLSocketFactory(keystore, keyManagerFactory), null);
+        mGpx2FitOptions = options;
     }
 
     private static final String MIME_JSON = "application/json";
@@ -49,8 +46,7 @@ class WebServer extends NanoHTTPD {
         Map<String, List<String>> parms = session.getParameters();
 
         String uri = session.getUri();
-        System.out.println(method + " '" + uri + "' ");
-        // Open file from SD Card
+        Log.info("{} '{}'", method, uri);
 
         if(method.toString().equalsIgnoreCase("GET")) {
             boolean doGPXonly = false;
@@ -79,7 +75,7 @@ class WebServer extends NanoHTTPD {
                 String[] filelist = mRootDir.list(filenameFilter);
 
                 if (filelist == null) {
-                    return NanoHTTPD.newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_JSON, "{ error: \"No permission or no files\" } ");
+                    return NanoHTTPD.newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_JSON, "{ \"error\" : \"No permission or no files\" } ");
                 }
 
                 Arrays.sort(filelist);
@@ -93,10 +89,12 @@ class WebServer extends NanoHTTPD {
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
                         }
-                        ret += "{ \"title\": \"" + aFilelist + "\", \"url\": \"" + url + "\" },";
+                        String courseName = getCourseName(aFilelist);
+
+                        ret += String.format("{ \"name\" : \"%s\", \"title\": \"%s\", \"url\": \"%s\"  },\n", courseName, aFilelist, url);
                     }
                 }
-                ret = ret.substring(0, ret.length()-1);
+                ret = ret.substring(0, ret.length()-2);
                 ret += "]}";
                 return NanoHTTPD.newFixedLengthResponse(Response.Status.OK, MIME_JSON, ret);
             }
@@ -115,21 +113,23 @@ class WebServer extends NanoHTTPD {
                     if (doGPXonly) {
                         mime_type = MIME_GPX;
                     } else {
-                        Gpx2Fit loader = new Gpx2Fit(src, mGpxToFitOptions);
+                        String courseName = getCourseName(src.getName());
+
+                        Gpx2Fit loader = new Gpx2Fit(courseName, src, mGpx2FitOptions);
                         src = new File(mCacheDir, path + ".fit");
-                        Log.warn("Httpd", "Generating " + src.getAbsolutePath());
+                        Log.warn("Generating {}", src.getAbsolutePath());
                         loader.writeFit(src);
                         mime_type = MIME_FIT;
                     }
                 }
             }catch(Exception e){
-                Log.error("Httpd", "Error Serving:", e);
+                Log.error("Error Serving:", e);
 
-                return NanoHTTPD.newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_JSON, "{ error: \"" + e.toString() + "\" } ");
+                return errorResponse(e);
             }
 
             if (src == null) {
-                Log.warn("Httpd", "src == null");
+                Log.warn("src == null");
 
                 return NanoHTTPD.newFixedLengthResponse(Response.Status.NOT_FOUND, "text/html", "Not found");
             }
@@ -137,15 +137,35 @@ class WebServer extends NanoHTTPD {
             try {
                 // Open file from SD Card
                 InputStream descriptor = new FileInputStream(src);
-                Log.warn("Httpd", "Serving bytes: " + src.length());
-                return NanoHTTPD.newFixedLengthResponse(Response.Status.OK, mime_type, descriptor, src.length());
+                Log.warn("Serving bytes: {}", src.length());
+                return NanoHTTPD.newFixedLengthResponse(Response.Status.OK, mime_type,
+                        descriptor, src.length());
 
             } catch(IOException ioe) {
-                Log.warn("Httpd", ioe.toString());
-                return NanoHTTPD.newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_JSON, "{ error: \"" + ioe.toString() + "\" } ");
+                Log.error("Serving exception {}", ioe.toString());
+                return errorResponse(ioe);
             }
 
         }
         return NanoHTTPD.newFixedLengthResponse(Response.Status.NOT_FOUND, "text/html", "Not found");
+    }
+
+    @NonNull
+    private Response errorResponse(Exception e) {
+        return NanoHTTPD.newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_JSON,
+                "{ \"error\" : \"" + e.toString() + "\" } ");
+    }
+
+    @NonNull
+    public static String getCourseName(String courseName) {
+        if (courseName.endsWith(".fit") || courseName.endsWith(".FIT")
+                || courseName.endsWith(".gpx") || courseName.endsWith(".GPX")  ) {
+            courseName = courseName.substring(0, courseName.length()-4);
+        }
+
+        if (courseName.length() > 15) {
+            courseName = courseName.substring(0, 15);
+        }
+        return courseName;
     }
 }

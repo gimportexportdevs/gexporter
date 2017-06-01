@@ -5,7 +5,7 @@ package org.surfsite.gexporter;
  * Created by harald on 27.05.17.
  */
 
-public class GpxToFitOptions {
+public class Gpx2FitOptions {
     private double speed;
     private boolean use3dDistance;
     private boolean forceSpeed;
@@ -16,7 +16,7 @@ public class GpxToFitOptions {
     private int maxPoints;
     private int speedUnit;
 
-    public GpxToFitOptions() {
+    public Gpx2FitOptions() {
         speed = 1000.0 / 14.0 / 60.0;
         use3dDistance = true;
         walkingGrade = false;

@@ -13,9 +13,10 @@ public class TestPlay {
     @Test
     public void test10() {
         ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource("sample10.gpx").getFile());
+        String filename = "sample10.gpx";
+        File file = new File(classLoader.getResource(filename).getFile());
         try {
-            Gpx2Fit loader = new Gpx2Fit(file, new GpxToFitOptions());
+            Gpx2Fit loader = new Gpx2Fit(WebServer.getCourseName(filename), file, new Gpx2FitOptions());
             System.out.println(String.format("Track: %s", loader.getName()));
             assertEquals("sample10", loader.getName());
             for (WayPoint wpt : loader.getWaypoints()) {
@@ -30,9 +31,10 @@ public class TestPlay {
     @Test
     public void test11() {
         ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource("sample11.gpx").getFile());
+        String filename = "sample11.gpx";
+        File file = new File(classLoader.getResource(filename).getFile());
         try {
-            Gpx2Fit loader = new Gpx2Fit(file, new GpxToFitOptions());
+            Gpx2Fit loader = new Gpx2Fit(WebServer.getCourseName(filename), file, new Gpx2FitOptions());
             System.out.println(String.format("Track: %s", loader.getName()));
             assertEquals("sample11", loader.getName());
 
@@ -65,8 +67,8 @@ public class TestPlay {
 
         Gpx2Fit loader;
         try {
-            GpxToFitOptions options = new GpxToFitOptions();
-            loader = new Gpx2Fit(file, options);
+            Gpx2FitOptions options = new Gpx2FitOptions();
+            loader = new Gpx2Fit(WebServer.getCourseName(inFileName), file, options);
             loader.writeFit(new File(outFileName));
             options.setSpeed(1000.0 / (13.0 * 60.0) );
             options.setMaxPoints(1000);
