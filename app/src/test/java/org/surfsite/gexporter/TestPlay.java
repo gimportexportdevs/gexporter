@@ -3,6 +3,7 @@ package org.surfsite.gexporter;
 import org.junit.Test;
 
 import java.io.File;
+import java.net.URL;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -55,9 +56,12 @@ public class TestPlay {
         testFit("sample2.gpx", "sample2.fit");
     }
 
-    void testFit(String inFileName, String outFileName) {
+    private void testFit(String inFileName, String outFileName) {
+
         ClassLoader classLoader = getClass().getClassLoader();
-        File file = new File(classLoader.getResource(inFileName).getFile());
+        URL resource = classLoader.getResource(inFileName);
+        if (resource == null) throw new AssertionError();
+        File file = new File(resource.getFile());
 
         Gpx2Fit loader;
         try {

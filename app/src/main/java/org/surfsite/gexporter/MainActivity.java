@@ -1,6 +1,9 @@
 package org.surfsite.gexporter;
 
 import android.Manifest;
+import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -24,6 +27,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 
 import org.surfsite.gexporter.WebServer;
 import org.tracks.exporter.R;
@@ -248,17 +255,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    public void save(GpxToFitOptions options) {
+        Application app = getApplication();
+        SharedPreferences mPrefs=app.getSharedPreferences(app.getApplicationInfo().name, Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed=mPrefs.edit();
+        Gson gson = new Gson();
+        ed.putString(options.getClass().getName(), gson.toJson(options));
+        ed.apply();
+    }
+
+    public GpxToFitOptions load() {
+        Application app = getApplication();
+        Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().create();
+        JsonParser parser=new JsonParser();
+        SharedPreferences mPrefs=app.getSharedPreferences(app.getApplicationInfo().name, Context.MODE_PRIVATE);
+        String json = mPrefs.getString(GpxToFitOptions.class.getName(), null);
+        GpxToFitOptions opts = null;
+        if (json != null && json.length() > 0)
+            opts = gson.fromJson(parser.parse(json).getAsJsonObject(), GpxToFitOptions.class);
+        if (opts != null)
+            return opts;
+        else
+            return new GpxToFitOptions();
+    }
+
+
     @Override
     public void onPause() {
         super.onPause();
-        mGpxToFitOptions.save(getApplication());
+        save(mGpxToFitOptions);
     }
 
     @Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first
 
-        mGpxToFitOptions = GpxToFitOptions.load(getApplication());
+        mGpxToFitOptions = load();
         double speed = mGpxToFitOptions.getSpeed();
         if (Double.isNaN(speed))
             speed = 10.0;
@@ -302,8 +334,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             server = new WebServer(keystore, keyManagerFactory, getCacheDir(), 22222);
 */
+            String rootdir = Environment.getExternalStorageDirectory().getAbsolutePath() +
+                    "/Download/";
 
-            server = new WebServer(getCacheDir(), 22222, mGpxToFitOptions);
+            server = new WebServer(new File(rootdir), getCacheDir(), 22222, mGpxToFitOptions);
             server.start();
             Log.w("Httpd", "Web server initialized.");
         } catch (IOException | NoSuchAlgorithmException e) {

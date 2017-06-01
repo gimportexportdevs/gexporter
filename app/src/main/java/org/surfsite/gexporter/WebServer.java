@@ -1,7 +1,7 @@
 package org.surfsite.gexporter;
 
-import android.os.Environment;
-import android.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,14 +20,21 @@ import java.util.Map;
 
 
 class WebServer extends NanoHTTPD {
-    File cacheDir;
-    GpxToFitOptions mGpxToFitOptions;
+    private static final Logger Log = LoggerFactory.getLogger(NanoHTTPD.class);
+
+    private File mRootDir;
+    private File mCacheDir;
+    private GpxToFitOptions mGpxToFitOptions;
+
     WebServer(
             /* KeyStore keystore, KeyManagerFactory keyManagerFactory, */
-            File cacheDir, int port, GpxToFitOptions options) throws IOException, NoSuchAlgorithmException /*, KeyManagementException, KeyStoreException*/ {
+            File rootDir, File cacheDir, int port, GpxToFitOptions options) throws IOException, NoSuchAlgorithmException /*, KeyManagementException, KeyStoreException*/ {
+
         super(port);
-        this.cacheDir = cacheDir;
-        this.mGpxToFitOptions = options;
+        mRootDir = rootDir;
+        mCacheDir = cacheDir;
+        mGpxToFitOptions = options;
+
         //System.setProperty("javax.net.ssl.trustStore", new File("src/test/resources/keystore.jks").getAbsolutePath());
         // makeSecure(NanoHTTPD.makeSSLSocketFactory(keystore, keyManagerFactory), null);
     }
@@ -44,8 +51,6 @@ class WebServer extends NanoHTTPD {
         String uri = session.getUri();
         System.out.println(method + " '" + uri + "' ");
         // Open file from SD Card
-        String rootdir = Environment.getExternalStorageDirectory().getAbsolutePath() +
-                "/Download/";
 
         if(method.toString().equalsIgnoreCase("GET")) {
             boolean doGPXonly = false;
@@ -60,27 +65,21 @@ class WebServer extends NanoHTTPD {
                     filenameFilter = new FilenameFilter() {
                         @Override
                         public boolean accept(File dir, String name) {
-                            if (name.endsWith(".gpx") || name.endsWith(".GPX")) {
-                                return true;
-                            }
-                            return false;
+                            return name.endsWith(".gpx") || name.endsWith(".GPX");
                         }
                     };
                 } else {
                     filenameFilter = new FilenameFilter() {
                         @Override
                         public boolean accept(File dir, String name) {
-                            if (name.endsWith(".fit") || name.endsWith(".FIT") || name.endsWith(".gpx") || name.endsWith(".GPX")) {
-                                return true;
-                            }
-                            return false;
+                            return name.endsWith(".fit") || name.endsWith(".FIT") || name.endsWith(".gpx") || name.endsWith(".GPX");
                         }
                     };
                 }
-                String[] filelist = new File(rootdir).list(filenameFilter);
+                String[] filelist = mRootDir.list(filenameFilter);
 
                 if (filelist == null) {
-                    return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_JSON, "{ error: \"No permission or no files\" } ");
+                    return NanoHTTPD.newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_JSON, "{ error: \"No permission or no files\" } ");
                 }
 
                 Arrays.sort(filelist);
@@ -99,7 +98,7 @@ class WebServer extends NanoHTTPD {
                 }
                 ret = ret.substring(0, ret.length()-1);
                 ret += "]}";
-                return newFixedLengthResponse(Response.Status.OK, MIME_JSON, ret);
+                return NanoHTTPD.newFixedLengthResponse(Response.Status.OK, MIME_JSON, ret);
             }
 
             path = uri;
@@ -109,44 +108,44 @@ class WebServer extends NanoHTTPD {
                     mime_type = MIME_JSON;
                 } else if(path.endsWith(".fit") || path.endsWith(".FIT")) {
                     mime_type = MIME_FIT;
-                    src = new File(rootdir + path);
+                    src = new File(mRootDir, path);
                 } else if(path.endsWith(".gpx") || path.endsWith(".GPX")) {
-                    src = new File(rootdir + path);
+                    src = new File(mRootDir, path);
 
                     if (doGPXonly) {
                         mime_type = MIME_GPX;
                     } else {
                         Gpx2Fit loader = new Gpx2Fit(src, mGpxToFitOptions);
-                        src = new File(cacheDir, path + ".fit");
-                        Log.w("Httpd", "Generating " + src.getAbsolutePath());
+                        src = new File(mCacheDir, path + ".fit");
+                        Log.warn("Httpd", "Generating " + src.getAbsolutePath());
                         loader.writeFit(src);
                         mime_type = MIME_FIT;
                     }
                 }
             }catch(Exception e){
-                Log.e("Httpd", "Error Serving:", e);
+                Log.error("Httpd", "Error Serving:", e);
 
-                return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_JSON, "{ error: \"" + e.toString() + "\" } ");
+                return NanoHTTPD.newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_JSON, "{ error: \"" + e.toString() + "\" } ");
             }
 
             if (src == null) {
-                Log.w("Httpd", "src == null");
+                Log.warn("Httpd", "src == null");
 
-                return newFixedLengthResponse(Response.Status.NOT_FOUND, "text/html", "Not found");
+                return NanoHTTPD.newFixedLengthResponse(Response.Status.NOT_FOUND, "text/html", "Not found");
             }
 
             try {
                 // Open file from SD Card
                 InputStream descriptor = new FileInputStream(src);
-                Log.w("Httpd", "Serving bytes: " + src.length());
-                return newFixedLengthResponse(Response.Status.OK, mime_type, descriptor, src.length());
+                Log.warn("Httpd", "Serving bytes: " + src.length());
+                return NanoHTTPD.newFixedLengthResponse(Response.Status.OK, mime_type, descriptor, src.length());
 
             } catch(IOException ioe) {
-                Log.w("Httpd", ioe.toString());
-                return newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_JSON, "{ error: \"" + ioe.toString() + "\" } ");
+                Log.warn("Httpd", ioe.toString());
+                return NanoHTTPD.newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_JSON, "{ error: \"" + ioe.toString() + "\" } ");
             }
 
         }
-        return newFixedLengthResponse(Response.Status.NOT_FOUND, "text/html", "Not found");
+        return NanoHTTPD.newFixedLengthResponse(Response.Status.NOT_FOUND, "text/html", "Not found");
     }
 }
