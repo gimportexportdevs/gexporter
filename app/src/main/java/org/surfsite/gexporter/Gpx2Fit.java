@@ -338,7 +338,8 @@ public class Gpx2Fit {
         CoursePointMesg cp = new CoursePointMesg();
         cp.setLocalNum(5);
 
-        Log.debug("Track: {}", getName());
+        if (Log.isDebugEnabled())
+            Log.debug("Track: {}", getName());
         WayPoint firstWayPoint = wayPoints.get(0);
         Date startDate = firstWayPoint.getTime();
 
@@ -401,24 +402,38 @@ public class Gpx2Fit {
                 }
             }
             last = wpt;
-            Log.debug("{} [{} , {}] {} - {}", endDate, wpt.getLat(), wpt.getLon(), ele, wpt.getTotaldist());
+/*
+            if (Log.isDebugEnabled())
+                Log.debug("{} [{} , {}] {} - {}", endDate, wpt.getLat(), wpt.getLon(), ele, wpt.getTotaldist());
+            */
         }
 
         lapMesg.setTotalDistance((float) totaldist);
 
         if (!Double.isNaN(totalAsc)) {
             totalAsc += 0.5;
+            if (Log.isDebugEnabled())
+                Log.debug("Total Ascent: {}", (int) totalAsc);
             lapMesg.setTotalAscent((int) totalAsc);
         }
         if (!Double.isNaN(totalDesc)) {
             totalDesc += 0.5;
+            if (Log.isDebugEnabled())
+                Log.debug("Total Descent: {}", (int) totalDesc);
             lapMesg.setTotalDescent((int) totalDesc);
         }
-        if (!Double.isNaN(maxEle))
+        if (!Double.isNaN(maxEle)) {
+            if (Log.isDebugEnabled())
+                Log.debug("Max. Elevation: {}", (int) maxEle);
             lapMesg.setMaxAltitude((float) maxEle);
+        }
 
-        if (!Double.isNaN(minEle))
+        if (!Double.isNaN(minEle)) {
+            if (Log.isDebugEnabled())
+                Log.debug("Min. Elevation: {}", (int) minEle);
+
             lapMesg.setMinAltitude((float) minEle);
+        }
 
         lapMesg.setStartPositionLat(firstWayPoint.getLatSemi());
         lapMesg.setStartPositionLong(firstWayPoint.getLonSemi());
@@ -427,7 +442,8 @@ public class Gpx2Fit {
         lapMesg.setEndPositionLat(lastWayPoint.getLatSemi());
         lapMesg.setEndPositionLong(lastWayPoint.getLonSemi());
 
-        Log.debug("Start: {} - End: {}", startDate.toString(), endDate.toString());
+        if (Log.isDebugEnabled())
+            Log.debug("Start: {} - End: {}", startDate.toString(), endDate.toString());
 
         long duration = endDate.getTime() - startDate.getTime();
 
@@ -526,9 +542,11 @@ public class Gpx2Fit {
             }
 
             last = wpt;
-            if (written) {
-                Log.debug("{} [{} , {}] {} - {} - {}", timestamp.toString(),
-                        wpt.getLat(), wpt.getLon(), wpt.getEle(), dist, gspeed);
+            if (Log.isDebugEnabled()) {
+                if (written) {
+                    Log.debug("{} [{} , {}] {} - {} - {}", timestamp.toString(),
+                            wpt.getLat(), wpt.getLon(), wpt.getEle(), dist, gspeed);
+                }
             }
         }
 

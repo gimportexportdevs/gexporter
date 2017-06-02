@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -19,13 +20,11 @@ public class TestPlay {
             Gpx2Fit loader = new Gpx2Fit(WebServer.getCourseName(filename), file, new Gpx2FitOptions());
             System.out.println(String.format("Track: %s", loader.getName()));
             assertEquals("sample10", loader.getName());
-            for (WayPoint wpt : loader.getWaypoints()) {
-                System.out.println(String.format("[%s , %s] %s", wpt.getLat(), wpt.getLon(), wpt.getEle()));
-            }
+            List<WayPoint> wpts = loader.getWaypoints();
+            assertEquals(wpts.size(), 35);
         } catch (Exception e) {
             fail(e.toString());
         }
-
     }
 
     @Test
@@ -37,10 +36,8 @@ public class TestPlay {
             Gpx2Fit loader = new Gpx2Fit(WebServer.getCourseName(filename), file, new Gpx2FitOptions());
             System.out.println(String.format("Track: %s", loader.getName()));
             assertEquals("sample11", loader.getName());
-
-            for (WayPoint wpt : loader.getWaypoints()) {
-                System.out.println(String.format("[%s , %s] %s", wpt.getLat(), wpt.getLon(), wpt.getEle()));
-            }
+            List<WayPoint> wpts = loader.getWaypoints();
+            assertEquals(wpts.size(), 339);
         } catch (Exception e) {
             fail(e.toString());
         }
@@ -75,6 +72,8 @@ public class TestPlay {
             options.setInjectCoursePoints(true);
             options.setForceSpeed(true);
             options.setWalkingGrade(true);
+            options.setMinRoutePointDistance(5.0);
+            options.setMinCoursePointDistance(1000.0);
             loader.writeFit(new File(outFileName));
         } catch (Exception e) {
             fail(e.toString());

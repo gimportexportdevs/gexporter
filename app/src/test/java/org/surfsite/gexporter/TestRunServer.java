@@ -7,18 +7,15 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
-/**
- * Created by harald on 01.06.17.
- */
-
 public class TestRunServer {
     private static Logger Log = LoggerFactory.getLogger(TestRunServer.class);
 
-    public void test() {
+    static public void main(String [] args) {
         WebServer server = null;
         try {
             String homedir = System.getProperty("user.home");
             Log.debug("Serving from homedir {}", homedir);
+
             server = new WebServer(new File(homedir + "/Downloads/"),
                     new File("/tmp"), 22222, new Gpx2FitOptions());
             server.start();
@@ -33,11 +30,6 @@ public class TestRunServer {
                 e.printStackTrace();
             }
         }
-    }
-
-    static public void main(String [] args) {
-        TestRunServer server = new TestRunServer();
-        server.test();
     }
 }
 
