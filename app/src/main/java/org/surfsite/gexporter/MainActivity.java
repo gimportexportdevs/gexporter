@@ -7,10 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -49,7 +50,6 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -70,12 +70,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     File mDirectory = null;
     private NumberFormat mNumberFormat = NumberFormat.getInstance(Locale.getDefault());
     ArrayList<Uri> mUris;
+    String mType;
+    ContentResolver mCR;
 
     private final static int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 300;
+    private final static int MY_PERMISSIONS_REQUEST_INTERNET = 301;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mCR = getContentResolver();
 
         setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -182,44 +186,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mTextView = (TextView) findViewById(R.id.textv);
 
-        // Get intent, action and MIME type
-        Intent intent = getIntent();
-        String action = intent.getAction();
-
-        if (Intent.ACTION_SEND.equals(action)) {
-            Log.debug("ACTION_SEND");
-            Uri uri = intent.getData();
-            String URL;
-            if (uri == null)
-                uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-            if (uri == null) {
-                uri = Uri.parse(intent.getStringExtra(Intent.EXTRA_TEXT));
-            }
-
-            if (uri == null) {
-                Log.debug("{}", intent.toString());
-            }
-
-            if (uri != null) {
-                Log.debug("URI {}: type {} scheme {}", uri, intent.getType(), intent.getScheme());
-                mUris = new ArrayList<>();
-                mUris.add(uri);
-            }
-        }
-        if (Intent.ACTION_VIEW.equals(action)) {
-            Log.debug("ACTION_VIEW");
-            Uri uri = intent.getData();
-            if (uri != null) {
-                Log.debug("URI {}: type '{}'", uri, intent.getType());
-                mUris = new ArrayList<>();
-                mUris.add(uri);
-            }
-        }
-        if (Intent.ACTION_SEND_MULTIPLE.equals(action)) {
-            Log.debug("ACTION_SEND_MULTIPLE");
-
-            mUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-        }
     }
 
     private void setSpeedText(int pos) {
@@ -310,14 +276,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (server != null) {
             server.stop();
             server = null;
-            if (mDirectory != null) {
-                try {
-                    rmdir(mDirectory);
-                } catch (IOException e) {
-                    Log.error("Failed to delete {} {}", mDirectory.getAbsolutePath(), e);
-                }
-            }
-            mDirectory = null;
+            clearTempDir();
         }
     }
 
@@ -369,14 +328,59 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int maxp = mGpx2FitOptions.getMaxPoints();
         if (maxp == 0)
             maxp = 1000;
-        mMaxPoints.setText(Integer.toString(maxp));
+        mMaxPoints.setText(String.format(Locale.getDefault(), "%d", maxp));
 
         mSpeedUnit.setSelection(mGpx2FitOptions.getSpeedUnit());
+        // Get intent, action and MIME type
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        Log.debug("{}", intent);
+        mType = intent.getType();
+
+        if (Intent.ACTION_SEND.equals(action)) {
+            Log.debug("ACTION_SEND");
+            Uri uri = intent.getData();
+            String URL;
+            if (uri == null)
+                uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+            if (uri == null) {
+                uri = Uri.parse(intent.getStringExtra(Intent.EXTRA_TEXT));
+            }
+
+            if (uri == null) {
+                Log.debug("{}", intent.toString());
+            }
+
+            if (uri != null) {
+                Log.debug("URI {}: type {} scheme {}", uri, intent.getType(), intent.getScheme());
+                mUris = new ArrayList<>();
+                mUris.add(uri);
+            }
+        }
+        if (Intent.ACTION_VIEW.equals(action)) {
+            Log.debug("ACTION_VIEW");
+            Uri uri = intent.getData();
+            if (uri != null) {
+                Log.debug("URI {}: type '{}'", uri, intent.getType());
+                mUris = new ArrayList<>();
+                mUris.add(uri);
+            }
+        }
+        if (Intent.ACTION_SEND_MULTIPLE.equals(action)) {
+            Log.debug("ACTION_SEND_MULTIPLE");
+
+            mUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+        }
+
+        if (mUris != null && server != null) {
+            server.stop();
+        }
 
         if (server == null) {
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
+                    != PackageManager.PERMISSION_GRANTED
+                    ) {
 
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
@@ -401,8 +405,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (!(name.endsWith(".fit") || name.endsWith(".FIT") || name.endsWith(".gpx") || name.endsWith(".GPX"))) {
                 String sig = new String(Arrays.copyOf(buf, 8), "UTF-8");
                 if (sig.length() > 5 && (sig.startsWith("<?xml") || sig.endsWith("<?xml"))) {
+                    //noinspection ResultOfMethodCallIgnored
                     file.renameTo(new File(name + ".gpx"));
                 } else {
+                    //noinspection ResultOfMethodCallIgnored
                     file.renameTo(new File(name + ".fit"));
                 }
             }
@@ -422,6 +428,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
+
+    public String getFileName(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = mCR.query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
+    }
+
     protected void serveFiles() throws IOException {
         String rootdir;
 
@@ -429,18 +460,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             rootdir = Environment.getExternalStorageDirectory().getAbsolutePath() +
                     "/Download/";
         } else {
+            clearTempDir();
+
             mDirectory = new File(getCacheDir(), Long.toString(System.nanoTime()));
+            //noinspection ResultOfMethodCallIgnored
             mDirectory.mkdir();
 
             rootdir = mDirectory.getAbsolutePath();
-            ContentResolver cr = getContentResolver();
 
             for (Uri uri : mUris) {
-                Log.debug("Open URI {}", uri);
+                if (!uri.getScheme().equals("content") && !uri.getScheme().equals("file")) {
+                    Log.debug("Skip URI {} scheme {}", uri, uri.getScheme());
+                    continue;
+                }
+                Log.debug("Open URI {} scheme {}", uri, uri.getScheme());
                 try {
-                    InputStream is = cr.openInputStream(uri);
-                    List<String> segs = uri.getPathSegments();
-                    String name = segs.get(segs.size()-1);
+                    InputStream is = mCR.openInputStream(uri);
+                    String name = getFileName(uri);
                     copyInputStreamToFile(is, new File(mDirectory, name));
                 } catch (FileNotFoundException e) {
                     Log.error("Exception Open URI:", e);
@@ -474,6 +510,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } else {
                 Arrays.sort(filelist);
                 mTextView.setText(String.format(getResources().getString(R.string.serving_from), rootdir, TextUtils.join("\n", filelist)));
+            }
+        }
+    }
+
+    private void clearTempDir() {
+        if (mDirectory != null) {
+            try {
+                rmdir(mDirectory);
+            } catch (IOException e) {
+                Log.error("Failed to delete {} {}", mDirectory.getAbsolutePath(), e);
+            } finally {
+                mDirectory = null;
             }
         }
     }

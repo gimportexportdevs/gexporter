@@ -10,7 +10,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:fullBackupContent="@xml/backup_descriptor">
         <activity
             android:name="org.surfsite.gexporter.MainActivity"
             android:windowSoftInputMode="stateHidden">
@@ -27,13 +28,17 @@
                 <action android:name="android.intent.action.SEND" />
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
 
+                <data android:scheme="content" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:mimeType="application/xml+gpx" />
                 <data android:mimeType="application/gpx+xml" />
                 <data android:mimeType="application/gpx" />
                 <data android:mimeType="text/plain" />
                 <data android:mimeType="application/xml" />
+                <data android:mimeType="application/fit" />
                 <data android:mimeType="text/xml" />
                 <data android:mimeType="application/octet-stream" />
             </intent-filter>
@@ -47,15 +52,23 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="file" />
-                <data android:scheme="http" />
-                <data android:scheme="https" />
-                <data android:scheme="ftp" />
 
                 <data android:mimeType="*/*" />
                 <data android:host="*" />
                 <data android:pathPattern=".*\\.gpx" />
                 <data android:pathPattern=".*\\.fit" />
             </intent-filter>
+            <!-- Workaround for stupid file browsers -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:mimeType="application/octet-stream" />
+            </intent-filter>
+
         </activity>
     </application>
 </manifest>
