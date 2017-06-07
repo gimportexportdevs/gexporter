@@ -20,9 +20,12 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PushbackInputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,39 +42,40 @@ public class Gpx2Fit {
 
     private final List<WayPoint> wayPoints = new ArrayList<>();
     private String courseName;
-    private String ns = HTTP_WWW_TOPOGRAFIX_COM_GPX_1_0;
+    private String ns = HTTP_WWW_TOPOGRAFIX_COM_GPX_1_1;
     Gpx2FitOptions mGpx2FitOptions;
 
-    public Gpx2Fit(String name, File file, Gpx2FitOptions options) throws Exception {
+    public Gpx2Fit(String name, InputStream in, Gpx2FitOptions options) throws Exception {
         mGpx2FitOptions = options;
         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
         factory.setNamespaceAware(true);
         XmlPullParser parser = factory.newPullParser();
         //parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
         courseName = name;
+        BufferedInputStream inputStream = new BufferedInputStream(in);
+        inputStream.mark(64000);
 
-        FileInputStream in = new FileInputStream(file);
+        //FileInputStream in = new FileInputStream(file);
 
         try {
-            parser.setInput(in, null);
+            parser.setInput(inputStream, null);
             parser.nextTag();
             readGPX(parser);
-            in.close();
+            inputStream.close();
             return;
         } catch (Exception e) {
-            ns = HTTP_WWW_TOPOGRAFIX_COM_GPX_1_1;
-        } finally {
-            in.close();
+            ns = HTTP_WWW_TOPOGRAFIX_COM_GPX_1_0;
+            Log.debug("Ex {}", e);
         }
 
-        in = new FileInputStream(file);
+        inputStream.reset();
 
         try {
-            parser.setInput(in, null);
+            parser.setInput(inputStream, null);
             parser.nextTag();
             readGPX(parser);
         } finally {
-            in.close();
+            inputStream.close();
         }
     }
 

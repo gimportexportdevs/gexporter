@@ -13,6 +13,7 @@ import java.io.InputStream;
 
 import fi.iki.elonen.NanoHTTPD;
 
+import java.io.PushbackInputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
@@ -85,13 +86,14 @@ public class WebServer extends NanoHTTPD {
                     if (aFilelist.endsWith(".fit") || aFilelist.endsWith(".FIT") || aFilelist.endsWith(".gpx") || aFilelist.endsWith(".GPX")  ) {
                         String url = null;
                         try {
-                            url = "http://127.0.0.1:" + this.getListeningPort() + "/" + URLEncoder.encode(aFilelist, "UTF-8");
+                            //url = "http://127.0.0.1:" + this.getListeningPort() + "/" + URLEncoder.encode(aFilelist, "UTF-8");
+                            url = URLEncoder.encode(aFilelist, "UTF-8");
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
                         }
                         String courseName = getCourseName(aFilelist);
 
-                        ret += String.format("{ \"name\" : \"%s\", \"title\": \"%s\", \"url\": \"%s\"  },\n", courseName, aFilelist, url);
+                        ret += String.format("{ \"title\": \"%s\", \"url\": \"%s\"  },\n", courseName, url);
                     }
                 }
                 ret = ret.substring(0, ret.length()-2);
@@ -115,7 +117,7 @@ public class WebServer extends NanoHTTPD {
                     } else {
                         String courseName = getCourseName(src.getName());
 
-                        Gpx2Fit loader = new Gpx2Fit(courseName, src, mGpx2FitOptions);
+                        Gpx2Fit loader = new Gpx2Fit(courseName, new FileInputStream(src), mGpx2FitOptions);
                         src = new File(mCacheDir, path + ".fit");
                         Log.warn("Generating {}", src.getAbsolutePath());
                         loader.writeFit(src);
@@ -163,8 +165,10 @@ public class WebServer extends NanoHTTPD {
             courseName = courseName.substring(0, courseName.length()-4);
         }
 
-        if (courseName.length() > 15) {
+        if (courseName.getBytes().length > 15) {
             courseName = courseName.substring(0, 15);
+            while (courseName.getBytes().length > 15)
+                courseName = courseName.substring(0, courseName.length()-1);
         }
         return courseName;
     }

@@ -3,6 +3,7 @@ package org.surfsite.gexporter;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.net.URL;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class TestPlay {
         String filename = "sample10.gpx";
         File file = new File(classLoader.getResource(filename).getFile());
         try {
-            Gpx2Fit loader = new Gpx2Fit(WebServer.getCourseName(filename), file, new Gpx2FitOptions());
+            Gpx2Fit loader = new Gpx2Fit(WebServer.getCourseName(filename), new FileInputStream(file), new Gpx2FitOptions());
             System.out.println(String.format("Track: %s", loader.getName()));
             assertEquals("sample10", loader.getName());
             List<WayPoint> wpts = loader.getWaypoints();
@@ -33,7 +34,7 @@ public class TestPlay {
         String filename = "sample11.gpx";
         File file = new File(classLoader.getResource(filename).getFile());
         try {
-            Gpx2Fit loader = new Gpx2Fit(WebServer.getCourseName(filename), file, new Gpx2FitOptions());
+            Gpx2Fit loader = new Gpx2Fit(WebServer.getCourseName(filename), new FileInputStream(file), new Gpx2FitOptions());
             System.out.println(String.format("Track: %s", loader.getName()));
             assertEquals("sample11", loader.getName());
             List<WayPoint> wpts = loader.getWaypoints();
@@ -65,7 +66,7 @@ public class TestPlay {
         Gpx2Fit loader;
         try {
             Gpx2FitOptions options = new Gpx2FitOptions();
-            loader = new Gpx2Fit(WebServer.getCourseName(inFileName), file, options);
+            loader = new Gpx2Fit(WebServer.getCourseName(inFileName), new FileInputStream(file), options);
             loader.writeFit(new File(outFileName));
             options.setSpeed(1000.0 / (13.0 * 60.0) );
             options.setMaxPoints(1000);

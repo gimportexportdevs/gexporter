@@ -2,11 +2,15 @@ package org.surfsite.gexporter;
 
 import android.Manifest;
 import android.app.Application;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -15,7 +19,6 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -29,24 +32,33 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tracks.exporter.R;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final Logger Log = LoggerFactory.getLogger(MainActivity.class);
+
     @Nullable
     private WebServer server = null;
     private TextView mTextView;
     private Spinner mSpeedUnit;
-    private ArrayAdapter<CharSequence> mSpeedUnitAdapter;
     private EditText mSpeed;
     private CheckBox mForceSpeed;
     private CheckBox mUse3DDistance;
@@ -55,7 +67,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private CheckBox mReducePoints;
     private EditText mMaxPoints;
     private Gpx2FitOptions mGpx2FitOptions = null;
+    File mDirectory = null;
     private NumberFormat mNumberFormat = NumberFormat.getInstance(Locale.getDefault());
+    ArrayList<Uri> mUris;
 
     private final static int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 300;
 
@@ -67,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         mSpeedUnit = (Spinner) findViewById(R.id.SPspeedUnits);
-        mSpeedUnitAdapter = ArrayAdapter.createFromResource(this,
+        ArrayAdapter<CharSequence> mSpeedUnitAdapter = ArrayAdapter.createFromResource(this,
                 R.array.speedunits, android.R.layout.simple_spinner_item);
         mSpeedUnitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpeedUnit.setAdapter(mSpeedUnitAdapter);
@@ -167,6 +181,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         mTextView = (TextView) findViewById(R.id.textv);
+
+        // Get intent, action and MIME type
+        Intent intent = getIntent();
+        String action = intent.getAction();
+
+        if (Intent.ACTION_SEND.equals(action)) {
+            Log.debug("ACTION_SEND");
+            Uri uri = intent.getData();
+            String URL;
+            if (uri == null)
+                uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+            if (uri == null) {
+                uri = Uri.parse(intent.getStringExtra(Intent.EXTRA_TEXT));
+            }
+
+            if (uri == null) {
+                Log.debug("{}", intent.toString());
+            }
+
+            if (uri != null) {
+                Log.debug("URI {}: type {} scheme {}", uri, intent.getType(), intent.getScheme());
+                mUris = new ArrayList<>();
+                mUris.add(uri);
+            }
+        }
+        if (Intent.ACTION_VIEW.equals(action)) {
+            Log.debug("ACTION_VIEW");
+            Uri uri = intent.getData();
+            if (uri != null) {
+                Log.debug("URI {}: type '{}'", uri, intent.getType());
+                mUris = new ArrayList<>();
+                mUris.add(uri);
+            }
+        }
+        if (Intent.ACTION_SEND_MULTIPLE.equals(action)) {
+            Log.debug("ACTION_SEND_MULTIPLE");
+
+            mUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+        }
     }
 
     private void setSpeedText(int pos) {
@@ -229,7 +282,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (grantResults != null && grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    serveFiles();
+                    try {
+                        serveFiles();
+                    } catch (IOException e) {
+                        Log.error("Serving files failed: {}", e);
+                    }
 
                 } else {
                     mTextView.setText(R.string.no_permission);
@@ -238,12 +295,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    void rmdir(File f) throws IOException {
+        if (f.isDirectory()) {
+            for (File c : f.listFiles())
+                rmdir(c);
+        }
+        if (!f.delete())
+            throw new FileNotFoundException("Failed to delete file: " + f);
+    }
+
     @Override
     public void onStop() {
         super.onStop();
         if (server != null) {
             server.stop();
             server = null;
+            if (mDirectory != null) {
+                try {
+                    rmdir(mDirectory);
+                } catch (IOException e) {
+                    Log.error("Failed to delete {} {}", mDirectory.getAbsolutePath(), e);
+                }
+            }
+            mDirectory = null;
         }
     }
 
@@ -308,34 +382,85 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                         MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
             } else {
-                serveFiles();
+                try {
+                    serveFiles();
+                } catch (IOException e) {
+                    Log.error("Serving files failed: {}", e);
+                }
             }
         }
     }
 
-    protected void serveFiles() {
+    private void copyInputStreamToFile( InputStream in, File file ) {
         try {
-            String rootdir = Environment.getExternalStorageDirectory().getAbsolutePath() +
-                    "/Download/";
+            OutputStream out = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
+            int len;
+            len=in.read(buf);
+            String name = file.getAbsolutePath();
+            if (!(name.endsWith(".fit") || name.endsWith(".FIT") || name.endsWith(".gpx") || name.endsWith(".GPX"))) {
+                String sig = new String(Arrays.copyOf(buf, 8), "UTF-8");
+                if (sig.length() > 5 && (sig.startsWith("<?xml") || sig.endsWith("<?xml"))) {
+                    file.renameTo(new File(name + ".gpx"));
+                } else {
+                    file.renameTo(new File(name + ".fit"));
+                }
+            }
+            while(len>0){
+                out.write(buf,0,len);
+                len=in.read(buf);
+            }
+            out.close();
+            in.close();
+        } catch (Exception e) {
+            Log.error("copyInputStreamToFile {}", e);
+        } finally {
+            try {
+                in.close();
+            } catch (Exception e) {
+                Log.error("Closing InputStream {}", e);
+            }
+        }
+    }
+    protected void serveFiles() throws IOException {
+        String rootdir;
 
-            server = new WebServer(new File(rootdir), getCacheDir(), 22222, mGpx2FitOptions);
-            server.start();
-            Log.w("Httpd", "Web server initialized.");
-        } catch (IOException | NoSuchAlgorithmException e) {
-            Log.w("Httpd", "The server could not start. " + e.getLocalizedMessage());
-            mTextView.setText(R.string.no_server);
+        if (mUris == null) {
+            rootdir = Environment.getExternalStorageDirectory().getAbsolutePath() +
+                    "/Download/";
+        } else {
+            mDirectory = new File(getCacheDir(), Long.toString(System.nanoTime()));
+            mDirectory.mkdir();
+
+            rootdir = mDirectory.getAbsolutePath();
+            ContentResolver cr = getContentResolver();
+
+            for (Uri uri : mUris) {
+                Log.debug("Open URI {}", uri);
+                try {
+                    InputStream is = cr.openInputStream(uri);
+                    List<String> segs = uri.getPathSegments();
+                    String name = segs.get(segs.size()-1);
+                    copyInputStreamToFile(is, new File(mDirectory, name));
+                } catch (FileNotFoundException e) {
+                    Log.error("Exception Open URI:", e);
+                }
+            }
         }
 
-        String rootdir = Environment.getExternalStorageDirectory().getAbsolutePath() +
-                "/Download/";
+        try {
+            server = new WebServer(new File(rootdir), getCacheDir(), 22222, mGpx2FitOptions);
+            server.start();
+            Log.info("Web server initialized.");
+        } catch (IOException | NoSuchAlgorithmException e) {
+            Log.error("The server could not start: {}", e);
+            mTextView.setText(R.string.no_server);
+        }
 
         FilenameFilter filenameFilter = new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                if (name.endsWith(".fit") || name.endsWith(".FIT") || name.endsWith(".gpx") || name.endsWith(".GPX")) {
-                    return true;
-                }
-                return false;
+                return name.endsWith(".fit") || name.endsWith(".FIT") || name.endsWith(".gpx") || name.endsWith(".GPX");
             }
         };
 
@@ -344,8 +469,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (filelist == null) {
             mTextView.setText(R.string.no_permission);
         } else {
-            Arrays.sort(filelist);
-            mTextView.setText(String.format(getResources().getString(R.string.serving_from), rootdir, TextUtils.join("\n", filelist)));
+            if (filelist.length == 0) {
+                mTextView.setText(R.string.no_files_to_serve);
+            } else {
+                Arrays.sort(filelist);
+                mTextView.setText(String.format(getResources().getString(R.string.serving_from), rootdir, TextUtils.join("\n", filelist)));
+            }
         }
     }
 }

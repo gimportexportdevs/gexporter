@@ -12,7 +12,7 @@
     <!--
         <logger name="org.surfsite.gexporter.Gpx2Fit" level="debug" />
      -->
-    <root level="error">
+    <root level="debug">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>
