@@ -55,6 +55,12 @@ public class WebServer extends NanoHTTPD {
                 doGPXonly = true;
             }
 
+            boolean doShort = false;
+            if (parms.containsKey("short") && parms.get("short").get(0).equals("1")) {
+                doShort = true;
+                Log.debug("doShort == true");
+            }
+
             String path;
             if(uri.equals("/dir.json")){
                 FilenameFilter filenameFilter;
@@ -86,8 +92,12 @@ public class WebServer extends NanoHTTPD {
                     if (aFilelist.endsWith(".fit") || aFilelist.endsWith(".FIT") || aFilelist.endsWith(".gpx") || aFilelist.endsWith(".GPX")  ) {
                         String url = null;
                         try {
-                            //url = "http://127.0.0.1:" + this.getListeningPort() + "/" + URLEncoder.encode(aFilelist, "UTF-8");
-                            url = URLEncoder.encode(aFilelist, "UTF-8");
+                            if (doShort) {
+                                url = URLEncoder.encode(aFilelist, "UTF-8");
+                            }
+                            else {
+                                url = "http://127.0.0.1:" + this.getListeningPort() + "/" + URLEncoder.encode(aFilelist, "UTF-8");
+                            }
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
                         }
