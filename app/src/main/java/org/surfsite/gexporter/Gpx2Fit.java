@@ -329,18 +329,18 @@ public class Gpx2Fit {
         encode.write(fileIdMesg); // Encode the FileIDMesg
 
         CourseMesg courseMesg = new CourseMesg();
-        courseMesg.setLocalNum(1);
+        courseMesg.setLocalNum(0);
         courseMesg.setName(getName());
         encode.write(courseMesg);
 
         LapMesg lapMesg = new LapMesg();
-        lapMesg.setLocalNum(2);
+        lapMesg.setLocalNum(0);
         EventMesg eventMesg = new EventMesg();
-        eventMesg.setLocalNum(3);
+        eventMesg.setLocalNum(0);
         RecordMesg r = new RecordMesg();
-        r.setLocalNum(4);
+        r.setLocalNum(0);
         CoursePointMesg cp = new CoursePointMesg();
-        cp.setLocalNum(5);
+        cp.setLocalNum(0);
 
         if (Log.isDebugEnabled())
             Log.debug("Track: {}", getName());
