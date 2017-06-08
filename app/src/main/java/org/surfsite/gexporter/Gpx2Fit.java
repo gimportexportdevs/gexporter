@@ -377,7 +377,6 @@ public class Gpx2Fit {
                 wpt.setTotaldist(.0);
             } else {
                 double d = wpt.distance(last);
-                double gradedist = d;
 
                 if (mGpx2FitOptions.isUse3dDistance()) {
                     totaldist += wpt.distance3D(last);
@@ -387,15 +386,20 @@ public class Gpx2Fit {
 
                 wpt.setTotaldist(totaldist);
 
-                if (! Double.isNaN(ele) && ! Double.isNaN(last.getEle())) {
+                if ((!Double.isNaN(ele)) && (!Double.isNaN(last.getEle()))) {
                     double dele = ele - last.getEle();
-                    if (dele > 0.0)
+                    if (dele > 0.0) {
+                        if (Double.isNaN(totalAsc))
+                            totalAsc = .0;
                         totalAsc += dele;
-                    else
+                    } else {
+                        if (Double.isNaN(totalDesc))
+                            totalDesc = .0;
                         totalDesc += Math.abs(dele);
+                    }
 
                     if (mGpx2FitOptions.isWalkingGrade()) {
-                        grade = dele / gradedist;
+                        grade = dele / d;
                         gspeed = getWalkingGradeFactor(grade) * speed;
                     }
                 }
