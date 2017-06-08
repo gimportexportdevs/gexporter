@@ -7,12 +7,15 @@ import com.garmin.fit.DateTime;
 import com.garmin.fit.Event;
 import com.garmin.fit.EventMesg;
 import com.garmin.fit.EventType;
+import com.garmin.fit.Field;
 import com.garmin.fit.FileEncoder;
 import com.garmin.fit.FileIdMesg;
 import com.garmin.fit.Fit;
 import com.garmin.fit.LapMesg;
 import com.garmin.fit.Manufacturer;
+import com.garmin.fit.Profile;
 import com.garmin.fit.RecordMesg;
+import com.garmin.fit.Sport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,17 +25,15 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PushbackInputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import fi.iki.elonen.NanoHTTPD;
 
 public class Gpx2Fit {
     private static final Logger Log = LoggerFactory.getLogger(Gpx2Fit.class);
@@ -294,12 +295,11 @@ public class Gpx2Fit {
     /**
      * Grade adjusted pace based on a study by Alberto E. Minetti on the energy cost of
      * walking and running at extreme slopes.
-     *
+     * <p>
      * see Minetti, A. E. et al. (2002). Energy cost of walking and running at extreme uphill and downhill slopes.
-     *      Journal of Applied Physiology 93, 1039-1046, http://jap.physiology.org/content/93/3/1039.full
+     * Journal of Applied Physiology 93, 1039-1046, http://jap.physiology.org/content/93/3/1039.full
      */
-    public double getWalkingGradeFactor(double g)
-    {
+    public double getWalkingGradeFactor(double g) {
         return 1.0 + (g * (19.5 + g * (46.3 + g * (-43.3 + g * (-30.4 + g * 155.4))))) / 3.6;
     }
 
@@ -315,6 +315,8 @@ public class Gpx2Fit {
         double lcdist = .0;
         double ldist = .0;
         double speed = mGpx2FitOptions.getSpeed();
+        double minLat = 1000.0 , minLong = 1000.0;
+        double maxLat = .0, maxLong = .0;
 
         FileEncoder encode = new FileEncoder(outfile, Fit.ProtocolVersion.V2_0);
 
@@ -331,6 +333,7 @@ public class Gpx2Fit {
         CourseMesg courseMesg = new CourseMesg();
         courseMesg.setLocalNum(0);
         courseMesg.setName(getName());
+        courseMesg.setSport(Sport.GENERIC);
         encode.write(courseMesg);
 
         LapMesg lapMesg = new LapMesg();
@@ -370,6 +373,11 @@ public class Gpx2Fit {
                 if (maxEle < ele || Double.isNaN(maxEle))
                     maxEle = ele;
             }
+
+            minLat = Math.min(minLat, wpt.getLat());
+            minLong = Math.min(minLong, wpt.getLon());
+            maxLat = Math.max(maxLat, wpt.getLat());
+            maxLong = Math.max(maxLong, wpt.getLon());
 
             double grade = .0;
             double gspeed = speed;
@@ -461,6 +469,31 @@ public class Gpx2Fit {
             lapMesg.setMinAltitude((float) minEle);
         }
 
+        // Add the bounding box of the course in the undocumented fields
+        try {
+            Constructor c = Field.class.getDeclaredConstructor(String.class, int.class, int.class,
+                                                                  double.class, double.class, String.class,
+                                                                  boolean.class, Profile.Type.class);
+            c.setAccessible(true);
+            lapMesg.addField((Field) c.newInstance("bound_max_position_lat", 27, 133, 1.0D, 0.0D, "semicircles", false, Profile.Type.SINT32));
+            lapMesg.addField((Field) c.newInstance("bound_max_position_long", 28, 133, 1.0D, 0.0D, "semicircles", false, Profile.Type.SINT32));
+            lapMesg.addField((Field) c.newInstance("bound_min_position_lat", 29, 133, 1.0D, 0.0D, "semicircles", false, Profile.Type.SINT32));
+            lapMesg.addField((Field) c.newInstance("bound_min_position_long", 30, 133, 1.0D, 0.0D, "semicircles", false, Profile.Type.SINT32));
+            lapMesg.setFieldValue(27, 0, (Integer) WayPoint.toSemiCircles(maxLat), '\uffff');
+            lapMesg.setFieldValue(28, 0, (Integer) WayPoint.toSemiCircles(maxLong), '\uffff');
+            lapMesg.setFieldValue(29, 0, (Integer) WayPoint.toSemiCircles(minLat), '\uffff');
+            lapMesg.setFieldValue(30, 0, (Integer) WayPoint.toSemiCircles(minLong), '\uffff');
+        } catch (NoSuchMethodException e) {
+            ;
+        } catch (IllegalAccessException e) {
+            ;
+        } catch (InstantiationException e) {
+            ;
+        } catch (InvocationTargetException e) {
+            ;
+        }
+
+
         encode.write(lapMesg);
 
         cp_min_dist = totaldist / 48.0;
@@ -485,61 +518,65 @@ public class Gpx2Fit {
         long i = 0;
         last = null;
 
-        for (WayPoint wpt : wayPoints) {
-            boolean written = false;
-            i += 1;
+        if (mGpx2FitOptions.isInjectCoursePoints()) {
+            for (WayPoint wpt : wayPoints) {
+                boolean written = false;
+                i += 1;
 
-            if (duration != 0)
-                timestamp = new DateTime(wpt.getTime());
-            else
-                timestamp = new DateTime(new Date(WayPoint.RefMilliSec + i * 1000));
+                if (duration != 0)
+                    timestamp = new DateTime(wpt.getTime());
+                else
+                    timestamp = new DateTime(new Date(WayPoint.RefMilliSec + i * 1000));
 
-            double gspeed = Double.NaN;
-            dist = wpt.getTotaldist();
+                double gspeed = Double.NaN;
+                dist = wpt.getTotaldist();
 
-            if (last == null) {
-                cp.setPositionLat(wpt.getLatSemi());
-                cp.setPositionLong(wpt.getLonSemi());
-                cp.setName("Start");
-                cp.setType(CoursePoint.GENERIC);
-                cp.setDistance((float) dist);
-                cp.setTimestamp(timestamp);
-                encode.write(cp);
-                written = true;
-            }
+                if (last == null) {
+                    cp.setPositionLat(wpt.getLatSemi());
+                    cp.setPositionLong(wpt.getLonSemi());
+                    cp.setName("Start");
+                    cp.setType(CoursePoint.GENERIC);
 
-            if (wpt == lastWayPoint) {
-                cp.setPositionLat(wpt.getLatSemi());
-                cp.setPositionLong(wpt.getLonSemi());
-                cp.setName("End");
-                cp.setType(CoursePoint.GENERIC);
-                cp.setDistance((float) dist);
-                cp.setTimestamp(timestamp);
-                encode.write(cp);
-                written = true;
-            } else if (mGpx2FitOptions.isInjectCoursePoints() && ((dist - lcdist) > cp_min_dist)) {
-                cp.setName("");
-                cp.setType(CoursePoint.GENERIC);
-                cp.setPositionLat(wpt.getLatSemi());
-                cp.setPositionLong(wpt.getLonSemi());
-                cp.setDistance((float) dist);
-                cp.setTimestamp(timestamp);
-                encode.write(cp);
-                lcdist = dist;
-                written = true;
-            }
+                    cp.setDistance((float) dist);
+                    cp.setTimestamp(timestamp);
+                    encode.write(cp);
+                    written = true;
+                }
 
-            last = wpt;
-            if (Log.isDebugEnabled()) {
-                if (written) {
-                    Log.debug("{} [{} , {}] {} - {} - {}", timestamp.toString(),
-                            wpt.getLat(), wpt.getLon(), wpt.getEle(), dist, gspeed);
+                if (wpt == lastWayPoint) {
+                    cp.setPositionLat(wpt.getLatSemi());
+                    cp.setPositionLong(wpt.getLonSemi());
+                    cp.setName("End");
+                    cp.setType(CoursePoint.GENERIC);
+                    cp.setDistance((float) dist);
+                    cp.setTimestamp(timestamp);
+                    encode.write(cp);
+                    written = true;
+                } else if ((dist - lcdist) > cp_min_dist) {
+                    cp.setName("");
+                    cp.setType(CoursePoint.GENERIC);
+                    cp.setPositionLat(wpt.getLatSemi());
+                    cp.setPositionLong(wpt.getLonSemi());
+                    cp.setDistance((float) dist);
+                    cp.setTimestamp(timestamp);
+                    encode.write(cp);
+                    lcdist = dist;
+                    written = true;
+                }
+
+                last = wpt;
+                if (Log.isDebugEnabled()) {
+                    if (written) {
+                        Log.debug("{} [{} , {}] {} - {} - {}", timestamp.toString(),
+                                wpt.getLat(), wpt.getLon(), wpt.getEle(), dist, gspeed);
+                    }
                 }
             }
-        }
 
-        i = 0;
-        last = null;
+            i = 0;
+            last = null;
+
+        }
 
         for (WayPoint wpt : wayPoints) {
             boolean written = false;

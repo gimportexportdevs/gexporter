@@ -70,7 +70,7 @@ public class TestPlay {
             loader.writeFit(new File(outFileName));
             options.setSpeed(1000.0 / (13.0 * 60.0) );
             options.setMaxPoints(1000);
-            options.setInjectCoursePoints(true);
+            options.setInjectCoursePoints(false);
             options.setForceSpeed(true);
             options.setWalkingGrade(true);
             options.setMinRoutePointDistance(5.0);
