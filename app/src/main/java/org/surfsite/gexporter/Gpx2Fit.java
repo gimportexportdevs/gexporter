@@ -416,7 +416,25 @@ public class Gpx2Fit {
             */
         }
 
+        lapMesg.setTimestamp(new DateTime(startDate));
+        lapMesg.setStartTime(new DateTime(startDate));
+
+        lapMesg.setStartPositionLat(firstWayPoint.getLatSemi());
+        lapMesg.setStartPositionLong(firstWayPoint.getLonSemi());
+
+        lapMesg.setEndPositionLat(lastWayPoint.getLatSemi());
+        lapMesg.setEndPositionLong(lastWayPoint.getLonSemi());
+
+        if (Log.isDebugEnabled())
+            Log.debug("Start: {} - End: {}", startDate.toString(), endDate.toString());
+
+        long duration = endDate.getTime() - startDate.getTime();
+
+        lapMesg.setTotalTimerTime((float) (duration / 1000.0));
         lapMesg.setTotalDistance((float) totaldist);
+        lapMesg.setAvgSpeed((float) (totaldist * 1000.0 / (double) duration));
+
+        lapMesg.setTotalElapsedTime((float) (duration / 1000.0));
 
         if (!Double.isNaN(totalAsc)) {
             totalAsc += 0.5;
@@ -443,22 +461,6 @@ public class Gpx2Fit {
             lapMesg.setMinAltitude((float) minEle);
         }
 
-        lapMesg.setStartPositionLat(firstWayPoint.getLatSemi());
-        lapMesg.setStartPositionLong(firstWayPoint.getLonSemi());
-        lapMesg.setStartTime(new DateTime(startDate));
-
-        lapMesg.setEndPositionLat(lastWayPoint.getLatSemi());
-        lapMesg.setEndPositionLong(lastWayPoint.getLonSemi());
-
-        if (Log.isDebugEnabled())
-            Log.debug("Start: {} - End: {}", startDate.toString(), endDate.toString());
-
-        long duration = endDate.getTime() - startDate.getTime();
-
-        lapMesg.setTotalElapsedTime((float) (duration / 1000.0));
-        lapMesg.setTotalTimerTime((float) (duration / 1000.0));
-        lapMesg.setAvgSpeed((float) (totaldist * 1000.0 / (double) duration));
-
         encode.write(lapMesg);
 
         cp_min_dist = totaldist / 48.0;
@@ -476,12 +478,12 @@ public class Gpx2Fit {
         eventMesg.setEventGroup((short) 0);
         eventMesg.setTimestamp(new DateTime(startDate));
         encode.write(eventMesg);
-        last = null;
 
         DateTime timestamp = new DateTime(new Date(WayPoint.RefMilliSec));
         long ltimestamp = startDate.getTime();
 
         long i = 0;
+        last = null;
 
         for (WayPoint wpt : wayPoints) {
             boolean written = false;
@@ -506,6 +508,51 @@ public class Gpx2Fit {
                 written = true;
             }
 
+            if (wpt == lastWayPoint) {
+                cp.setPositionLat(wpt.getLatSemi());
+                cp.setPositionLong(wpt.getLonSemi());
+                cp.setName("End");
+                cp.setType(CoursePoint.GENERIC);
+                cp.setDistance((float) dist);
+                cp.setTimestamp(timestamp);
+                encode.write(cp);
+                written = true;
+            } else if (mGpx2FitOptions.isInjectCoursePoints() && ((dist - lcdist) > cp_min_dist)) {
+                cp.setName("");
+                cp.setType(CoursePoint.GENERIC);
+                cp.setPositionLat(wpt.getLatSemi());
+                cp.setPositionLong(wpt.getLonSemi());
+                cp.setDistance((float) dist);
+                cp.setTimestamp(timestamp);
+                encode.write(cp);
+                lcdist = dist;
+                written = true;
+            }
+
+            last = wpt;
+            if (Log.isDebugEnabled()) {
+                if (written) {
+                    Log.debug("{} [{} , {}] {} - {} - {}", timestamp.toString(),
+                            wpt.getLat(), wpt.getLon(), wpt.getEle(), dist, gspeed);
+                }
+            }
+        }
+
+        i = 0;
+        last = null;
+
+        for (WayPoint wpt : wayPoints) {
+            boolean written = false;
+            i += 1;
+
+            if (duration != 0)
+                timestamp = new DateTime(wpt.getTime());
+            else
+                timestamp = new DateTime(new Date(WayPoint.RefMilliSec + i * 1000));
+
+            double gspeed = Double.NaN;
+            dist = wpt.getTotaldist();
+
             if ((last == null) || (dist - ldist) > pt_min_dist) {
                 r.setPositionLat(wpt.getLatSemi());
                 r.setPositionLong(wpt.getLonSemi());
@@ -525,27 +572,6 @@ public class Gpx2Fit {
                 encode.write(r);
                 ldist = dist;
                 ltimestamp = l;
-                written = true;
-            }
-
-            if (wpt == lastWayPoint) {
-                cp.setPositionLat(wpt.getLatSemi());
-                cp.setPositionLong(wpt.getLonSemi());
-                cp.setName("End");
-                cp.setType(CoursePoint.GENERIC);
-                cp.setDistance((float) dist);
-                cp.setTimestamp(timestamp);
-                encode.write(cp);
-                written = true;
-            } else if (mGpx2FitOptions.isInjectCoursePoints() && ((dist - lcdist) > cp_min_dist)) {
-                cp.setName("");
-                cp.setType(CoursePoint.GENERIC);
-                cp.setPositionLat(wpt.getLatSemi());
-                cp.setPositionLong(wpt.getLonSemi());
-                cp.setDistance((float) dist);
-                cp.setTimestamp(timestamp);
-                encode.write(cp);
-                lcdist = dist;
                 written = true;
             }
 
