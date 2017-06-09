@@ -53,6 +53,7 @@ public class WebServer extends NanoHTTPD {
             boolean doGPXonly = false;
             if (parms.containsKey("type") && parms.get("type").get(0).equals("GPX")) {
                 doGPXonly = true;
+                Log.debug("doGPXonly == true");
             }
 
             boolean doShort = false;
@@ -62,8 +63,8 @@ public class WebServer extends NanoHTTPD {
             }
 
             boolean doLongname = false;
-            if (parms.containsKey("longname") && parms.get("short").get(0).equals("1")) {
-                doShort = true;
+            if (parms.containsKey("longname") && parms.get("longname").get(0).equals("1")) {
+                doLongname = true;
                 Log.debug("doLongname == true");
             }
 
