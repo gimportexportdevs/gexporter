@@ -54,6 +54,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -110,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mSpeed = (EditText) findViewById(R.id.editSpeed);
         char separator = DecimalFormatSymbols.getInstance().getDecimalSeparator();
-        mSpeed.setKeyListener(DigitsKeyListener.getInstance("0123456789" + separator));
+        mSpeed.setKeyListener(DigitsKeyListener.getInstance("0123456789:" + separator));
         mSpeed.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -130,7 +131,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (editable.length() > 0 && mGpx2FitOptions != null) {
                     double speed;
                     try {
-                        speed = mNumberFormat.parse(editable.toString()).doubleValue();
+                        String s = editable.toString();
+                        String[] as = s.split(":");
+                        Collections.reverse(Arrays.asList(as));
+                        speed = mNumberFormat.parse(as[0]).doubleValue();
+                        if (as.length > 1) {
+                            speed = mNumberFormat.parse(as[1]).doubleValue() + speed/60.0;
+                        }
+                        if (as.length > 2) {
+                            speed = mNumberFormat.parse(as[2]).doubleValue() * 60 + speed;
+                        }
                     } catch (ParseException e) {
                         speed = .0;
                     }
@@ -217,21 +227,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (Double.isNaN(speed))
             speed = 10.0;
 
+        String val = null;
         switch (pos) {
             case 0:
                 speed = 1000.0 / speed / 60.0;
+                if (speed < 60) {
+                    val = String.format(Locale.getDefault(), "%d:%02d", (int) speed, ((int) (speed * 60.0 + 0.5) % 60));
+                } else {
+                    val = String.format(Locale.getDefault(), "%d:%02d:%02d",((int) speed) / 60,
+                            ((int) speed % 60), ((int) (speed * 60.0 + 0.5) % 60));
+                }
                 break;
             case 1:
                 speed = speed / 1000.0 * 3600.0;
+                val = String.format(Locale.getDefault(), "%.2f", speed);
                 break;
             case 2:
                 speed = 1609.344 / speed / 60.0;
+                if (speed < 60) {
+                    val = String.format(Locale.getDefault(), "%d:%02d", (int) speed, ((int) (speed * 60.0 + 0.5) % 60));
+                } else {
+                    val = String.format(Locale.getDefault(), "%d:%02d:%02d",((int) speed) / 60,
+                            ((int) speed % 60), ((int) (speed * 60.0 + 0.5) % 60));
+                }
                 break;
             case 3:
                 speed = speed / 1609.344 * 3600.0;
+                val = String.format(Locale.getDefault(), "%.2f", speed);
         }
-        if (mSpeed != null)
-            mSpeed.setText(String.format(Locale.getDefault(), "%.2f", speed));
+        if (mSpeed != null && val != null)
+            mSpeed.setText(val);
     }
 
     @Override
