@@ -316,7 +316,7 @@ public class Gpx2Fit {
         double ldist = .0;
         double speed = mGpx2FitOptions.getSpeed();
         double minLat = 1000.0 , minLong = 1000.0;
-        double maxLat = .0, maxLong = .0;
+        double maxLat = -1000.0, maxLong = -1000.0;
 
         FileEncoder encode = new FileEncoder(outfile, Fit.ProtocolVersion.V2_0);
 
