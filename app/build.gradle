@@ -31,11 +31,14 @@ dependencies {
 
     compile 'org.nanohttpd:nanohttpd:2.3.1'
     compile 'org.gavaghan:geodesy:1.1.3'
-    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    apk 'org.slf4j:slf4j-android:1.7.25'
+
     compile 'com.google.code.gson:gson:2.8.0'
 
     compile files('libs/fit.jar')
 
+    testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     testCompile group: 'xpp3', name: 'xpp3_min', version: '1.1.4c'
     testCompile group: 'xmlpull', name: 'xmlpull', version: '1.1.3.1'
     testCompile 'junit:junit:4.12'
