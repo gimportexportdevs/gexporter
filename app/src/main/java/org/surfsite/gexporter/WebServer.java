@@ -61,55 +61,17 @@ public class WebServer extends NanoHTTPD {
                 Log.debug("doShort == true");
             }
 
-            String path;
-            if(uri.equals("/dir.json")){
-                FilenameFilter filenameFilter;
-                if (doGPXonly) {
-                    filenameFilter = new FilenameFilter() {
-                        @Override
-                        public boolean accept(File dir, String name) {
-                            return name.endsWith(".gpx") || name.endsWith(".GPX");
-                        }
-                    };
-                } else {
-                    filenameFilter = new FilenameFilter() {
-                        @Override
-                        public boolean accept(File dir, String name) {
-                            return name.endsWith(".fit") || name.endsWith(".FIT") || name.endsWith(".gpx") || name.endsWith(".GPX");
-                        }
-                    };
-                }
-                String[] filelist = mRootDir.list(filenameFilter);
-
-                if (filelist == null) {
-                    return NanoHTTPD.newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_JSON, "{ \"error\" : \"No permission or no files\" } ");
-                }
-
-                Arrays.sort(filelist);
-
-                String ret="{ \"tracks\" : [";
-                for (String aFilelist : filelist) {
-                    if (aFilelist.endsWith(".fit") || aFilelist.endsWith(".FIT") || aFilelist.endsWith(".gpx") || aFilelist.endsWith(".GPX")  ) {
-                        String url = null;
-                        try {
-                            if (doShort) {
-                                url = URLEncoder.encode(aFilelist, "UTF-8");
-                            }
-                            else {
-                                url = "http://127.0.0.1:" + this.getListeningPort() + "/" + URLEncoder.encode(aFilelist, "UTF-8");
-                            }
-                        } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
-                        }
-                        String courseName = getCourseName(aFilelist);
-
-                        ret += String.format("{ \"title\": \"%s\", \"url\": \"%s\"  },\n", courseName, url);
-                    }
-                }
-                ret = ret.substring(0, ret.length()-2);
-                ret += "]}";
-                return NanoHTTPD.newFixedLengthResponse(Response.Status.OK, MIME_JSON, ret);
+            boolean doLongname = false;
+            if (parms.containsKey("longname") && parms.get("short").get(0).equals("1")) {
+                doShort = true;
+                Log.debug("doLongname == true");
             }
+
+            if(uri.equals("/dir.json")){
+                return getDir(doGPXonly, doShort, doLongname);
+            }
+
+            String path;
 
             path = uri;
             File src = null;
@@ -125,7 +87,7 @@ public class WebServer extends NanoHTTPD {
                     if (doGPXonly) {
                         mime_type = MIME_GPX;
                     } else {
-                        String courseName = getCourseName(src.getName());
+                        String courseName = (doLongname ? src.getName() : getCourseName(src.getName()));
 
                         Gpx2Fit loader = new Gpx2Fit(courseName, new FileInputStream(src), mGpx2FitOptions);
                         src = new File(mCacheDir, path + ".fit");
@@ -160,6 +122,56 @@ public class WebServer extends NanoHTTPD {
 
         }
         return NanoHTTPD.newFixedLengthResponse(Response.Status.NOT_FOUND, "text/html", "Not found");
+    }
+
+    @NonNull
+    private Response getDir(boolean doGPXonly, boolean doShort, boolean doLongname) {
+        FilenameFilter filenameFilter;
+        if (doGPXonly) {
+            filenameFilter = new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.endsWith(".gpx") || name.endsWith(".GPX");
+                }
+            };
+        } else {
+            filenameFilter = new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.endsWith(".fit") || name.endsWith(".FIT") || name.endsWith(".gpx") || name.endsWith(".GPX");
+                }
+            };
+        }
+        String[] filelist = mRootDir.list(filenameFilter);
+
+        if (filelist == null) {
+            return NanoHTTPD.newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_JSON, "{ \"error\" : \"No permission or no files\" } ");
+        }
+
+        Arrays.sort(filelist);
+
+        String ret="{ \"tracks\" : [";
+        for (String aFilelist : filelist) {
+            if (aFilelist.endsWith(".fit") || aFilelist.endsWith(".FIT") || aFilelist.endsWith(".gpx") || aFilelist.endsWith(".GPX")  ) {
+                String url = null;
+                try {
+                    if (doShort) {
+                        url = URLEncoder.encode(aFilelist, "UTF-8");
+                    }
+                    else {
+                        url = "http://127.0.0.1:" + this.getListeningPort() + "/" + URLEncoder.encode(aFilelist, "UTF-8");
+                    }
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                String courseName = (doLongname ? aFilelist : getCourseName(aFilelist));
+
+                ret += String.format("{ \"title\": \"%s\", \"url\": \"%s\"  },\n", courseName, url);
+            }
+        }
+        ret = ret.substring(0, ret.length()-2);
+        ret += "]}";
+        return NanoHTTPD.newFixedLengthResponse(Response.Status.OK, MIME_JSON, ret);
     }
 
     @NonNull
