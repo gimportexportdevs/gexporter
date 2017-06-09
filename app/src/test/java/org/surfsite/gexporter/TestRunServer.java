@@ -13,10 +13,10 @@ public class TestRunServer {
     static public void main(String [] args) {
         WebServer server = null;
         try {
-            String homedir = System.getProperty("user.home");
+            String homedir = System.getProperty("user.home") + "/Downloads/";
             Log.debug("Serving from homedir {}", homedir);
 
-            server = new WebServer(new File(homedir + "/Downloads/"),
+            server = new WebServer(new File(homedir),
                     new File("/tmp"), 22222, new Gpx2FitOptions());
             server.start();
         } catch (IOException | NoSuchAlgorithmException e) {
