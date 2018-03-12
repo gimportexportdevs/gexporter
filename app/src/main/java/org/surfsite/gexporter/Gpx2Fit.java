@@ -605,7 +605,7 @@ public class Gpx2Fit {
                     gspeed = (dist - ldist) / (l - ltimestamp) * 1000.0;
                     r.setSpeed((float) gspeed);
                 } else {
-                    r.setSpeed(0.0);
+                    r.setSpeed((float) 0.0);
                 }
 
                 encode.write(r);
