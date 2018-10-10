@@ -1,12 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 28
     defaultConfig {
         applicationId "org.surfsite.gexporter"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 28
         versionCode 7
         versionName "7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -20,30 +19,30 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 
-    compile 'org.nanohttpd:nanohttpd:2.3.1'
-    compile 'org.gavaghan:geodesy:1.1.3'
-    compile 'org.slf4j:slf4j-api:1.7.25'
-    apk 'org.slf4j:slf4j-android:1.7.25'
+    implementation 'org.nanohttpd:nanohttpd:2.3.1'
+    implementation 'org.gavaghan:geodesy:1.1.3'
+    implementation 'org.slf4j:slf4j-api:1.7.25'
+    runtimeOnly 'org.slf4j:slf4j-android:1.7.25'
 
-    compile 'com.google.code.gson:gson:2.8.0'
+    implementation 'com.google.code.gson:gson:2.8.2'
 
-    compile files('libs/fit.jar')
+    implementation files('libs/fit.jar')
 
-    testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
-    testCompile group: 'xpp3', name: 'xpp3_min', version: '1.1.4c'
-    testCompile group: 'xmlpull', name: 'xmlpull', version: '1.1.3.1'
-    testCompile 'junit:junit:4.12'
-    testCompile 'xpp3:xpp3_min:1.1.4c'
-    testCompile 'xmlpull:xmlpull:1.1.3.1'
-    testCompile 'org.mockito:mockito-core:1.10.19'
+    androidTestImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    androidTestImplementation group: 'xpp3', name: 'xpp3_min', version: '1.1.4c'
+    androidTestImplementation group: 'xmlpull', name: 'xmlpull', version: '1.1.3.1'
+    androidTestImplementation 'junit:junit:4.12'
+    androidTestImplementation 'xpp3:xpp3_min:1.1.4c'
+    androidTestImplementation 'xmlpull:xmlpull:1.1.3.1'
+    androidTestImplementation 'org.mockito:mockito-core:1.10.19'
 }
 
