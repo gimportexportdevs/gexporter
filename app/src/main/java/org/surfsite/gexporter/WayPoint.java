@@ -22,15 +22,21 @@ public class WayPoint {
     private double ele = Double.NaN;
     private Date time = null;
     private double totaldist = Double.NaN;
+    private String name = null;
 
-    public WayPoint(double lat, double lon, double ele, Date time) {
+    public WayPoint(String name, double lat, double lon, double ele, Date time) {
         this.lat = lat;
         this.lon = lon;
         this.ele = ele;
         this.time = time;
+        this.name = name;
         if (this.time == null) {
             this.time = RefDate;
         }
+    }
+
+    public String getName() {
+        return name;
     }
 
     public double getLat() {
