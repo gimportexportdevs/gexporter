@@ -39,7 +39,7 @@ import com.google.gson.JsonParser;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tracks.exporter.R;
+import org.surfsite.gexporter.R;
 
 import java.io.File;
 import java.io.FileNotFoundException;
