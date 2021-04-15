@@ -1,5 +1,7 @@
 package org.surfsite.gexporter;
 
+import android.annotation.SuppressLint;
+
 import com.garmin.fit.CourseMesg;
 import com.garmin.fit.CoursePoint;
 import com.garmin.fit.CoursePointMesg;
@@ -71,7 +73,8 @@ public class Gpx2Fit {
             return;
         } catch (Exception e) {
             ns = HTTP_WWW_TOPOGRAFIX_COM_GPX_1_0;
-            Log.debug("Ex {}", e);
+            if (Log.isDebugEnabled())
+                Log.debug("Ex {}", e);
         }
 
         in.getChannel().position(0);
@@ -311,7 +314,10 @@ public class Gpx2Fit {
     private Date readTime(XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, ns, "time");
         String txt = readText(parser);
+
+        @SuppressLint("SimpleDateFormat")
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
         Date time;
         try {
             time = dateFormat.parse(txt);

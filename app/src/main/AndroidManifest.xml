@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="org.surfsite.gexporter">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -23,7 +24,7 @@
                 <category android:name="android.intent.category.CATEGORY_APP_MAPS" />
             </intent-filter>
 
-            <intent-filter>
+            <intent-filter tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.SEND" />
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
