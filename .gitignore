@@ -1,8 +1,6 @@
 *.iml
 .gradle
 /local.properties
-/.idea/workspace.xml
-/.idea/libraries
 .DS_Store
 /build
 /Application/build
@@ -11,3 +9,4 @@
 /*.fit
 /*.csv
 /app/libs/fit.jar
+/.idea
