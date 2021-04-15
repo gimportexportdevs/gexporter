@@ -9,14 +9,17 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.menu.MenuBuilder;
+
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -39,7 +42,6 @@ import com.google.gson.JsonParser;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.surfsite.gexporter.R;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -48,6 +50,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -56,6 +59,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
+
+import static android.os.Environment.DIRECTORY_DOWNLOADS;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final Logger Log = LoggerFactory.getLogger(MainActivity.class);
@@ -73,13 +78,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText mMaxPoints;
     private Gpx2FitOptions mGpx2FitOptions = null;
     File mDirectory = null;
-    private NumberFormat mNumberFormat = NumberFormat.getInstance(Locale.getDefault());
+    private final NumberFormat mNumberFormat = NumberFormat.getInstance(Locale.getDefault());
     ArrayList<Uri> mUris;
     String mType;
     ContentResolver mCR;
 
     private final static int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 300;
-    private final static int MY_PERMISSIONS_REQUEST_INTERNET = 301;
+    //private final static int MY_PERMISSIONS_REQUEST_INTERNET = 301;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void afterTextChanged(Editable editable) {
                 if (getCurrentFocus() != mSpeed) {
-                        return;
+                    return;
                 }
 
                 if (editable.length() > 0 && mGpx2FitOptions != null) {
@@ -136,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Collections.reverse(Arrays.asList(as));
                         speed = mNumberFormat.parse(as[0]).doubleValue();
                         if (as.length > 1) {
-                            speed = mNumberFormat.parse(as[1]).doubleValue() + speed/60.0;
+                            speed = mNumberFormat.parse(as[1]).doubleValue() + speed / 60.0;
                         }
                         if (as.length > 2) {
                             speed = mNumberFormat.parse(as[2]).doubleValue() * 60 + speed;
@@ -194,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void afterTextChanged(Editable editable) {
                 if (editable.length() > 0 && mGpx2FitOptions != null && mReducePoints.isChecked())
-                    mGpx2FitOptions.setMaxPoints(Integer.valueOf(editable.toString()));
+                    mGpx2FitOptions.setMaxPoints(Integer.parseInt(editable.toString()));
             }
         });
 
@@ -212,12 +217,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId())
-        {
-            case R.id.help:
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/gimportexportdevs/gexporter/wiki/Help"));
-                startActivity(browserIntent);
-                break;
+        if (item.getItemId() == R.id.help) {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/gimportexportdevs/gexporter/wiki/Help"));
+            startActivity(browserIntent);
         }
         return true;
     }
@@ -234,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (speed < 60) {
                     val = String.format(Locale.getDefault(), "%d:%02d", (int) speed, ((int) (speed * 60.0 + 0.5) % 60));
                 } else {
-                    val = String.format(Locale.getDefault(), "%d:%02d:%02d",((int) speed) / 60,
+                    val = String.format(Locale.getDefault(), "%d:%02d:%02d", ((int) speed) / 60,
                             ((int) speed % 60), ((int) (speed * 60.0 + 0.5) % 60));
                 }
                 break;
@@ -247,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (speed < 60) {
                     val = String.format(Locale.getDefault(), "%d:%02d", (int) speed, ((int) (speed * 60.0 + 0.5) % 60));
                 } else {
-                    val = String.format(Locale.getDefault(), "%d:%02d:%02d",((int) speed) / 60,
+                    val = String.format(Locale.getDefault(), "%d:%02d:%02d", ((int) speed) / 60,
                             ((int) speed % 60), ((int) (speed * 60.0 + 0.5) % 60));
                 }
                 break;
@@ -264,48 +266,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (mGpx2FitOptions == null)
             return;
 
-        switch (v.getId()) {
-            case R.id.CBforceSpeed:
-                mGpx2FitOptions.setForceSpeed(mForceSpeed.isChecked());
-                break;
-            case R.id.CBinject:
-                mGpx2FitOptions.setInjectCoursePoints(mInjectCoursePoints.isChecked());
-                break;
-            case R.id.CBreducePoints:
-                if (mReducePoints.isChecked()) {
-                    String t = mMaxPoints.getText().toString();
-                    if (t.length() > 0)
-                        mGpx2FitOptions.setMaxPoints(Integer.decode(t));
-                } else
-                    mGpx2FitOptions.setMaxPoints(0);
-                break;
-            case R.id.CBuse3D:
-                mGpx2FitOptions.setUse3dDistance(mUse3DDistance.isChecked());
-                break;
-            case R.id.CBuseWalkingGrade:
-                mGpx2FitOptions.setWalkingGrade(mUseWalkingGrade.isChecked());
-                break;
+        int id = v.getId();
+        if (id == R.id.CBforceSpeed) {
+            mGpx2FitOptions.setForceSpeed(mForceSpeed.isChecked());
+        } else if (id == R.id.CBinject) {
+            mGpx2FitOptions.setInjectCoursePoints(mInjectCoursePoints.isChecked());
+        } else if (id == R.id.CBreducePoints) {
+            if (mReducePoints.isChecked()) {
+                String t = mMaxPoints.getText().toString();
+                if (t.length() > 0)
+                    mGpx2FitOptions.setMaxPoints(Integer.decode(t));
+            } else
+                mGpx2FitOptions.setMaxPoints(0);
+        } else if (id == R.id.CBuse3D) {
+            mGpx2FitOptions.setUse3dDistance(mUse3DDistance.isChecked());
+        } else if (id == R.id.CBuseWalkingGrade) {
+            mGpx2FitOptions.setWalkingGrade(mUseWalkingGrade.isChecked());
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           @Nullable String permissions[], @Nullable int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults != null && grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                                           @Nullable String[] permissions, @Nullable int[] grantResults) {
+        if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {// If request is cancelled, the result arrays are empty.
+            if (grantResults != null && grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    try {
-                        serveFiles();
-                    } catch (IOException e) {
-                        Log.error("Serving files failed: {}", e);
-                    }
+                serveFiles();
 
-                } else {
-                    mTextView.setText(R.string.no_permission);
-                }
+            } else {
+                Log.error("Permissions: {}", grantResults);
+                mTextView.setText(R.string.no_permission);
             }
         }
     }
@@ -331,8 +322,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void save(Gpx2FitOptions options) {
         Application app = getApplication();
-        SharedPreferences mPrefs=app.getSharedPreferences(app.getApplicationInfo().name, Context.MODE_PRIVATE);
-        SharedPreferences.Editor ed=mPrefs.edit();
+        SharedPreferences mPrefs = app.getSharedPreferences(app.getApplicationInfo().name, Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = mPrefs.edit();
         Gson gson = new Gson();
         ed.putString(options.getClass().getName(), gson.toJson(options));
         ed.apply();
@@ -341,12 +332,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public Gpx2FitOptions load() {
         Application app = getApplication();
         Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().create();
-        JsonParser parser=new JsonParser();
-        SharedPreferences mPrefs=app.getSharedPreferences(app.getApplicationInfo().name, Context.MODE_PRIVATE);
+        SharedPreferences mPrefs = app.getSharedPreferences(app.getApplicationInfo().name, Context.MODE_PRIVATE);
         String json = mPrefs.getString(Gpx2FitOptions.class.getName(), null);
         Gpx2FitOptions opts = null;
         if (json != null && json.length() > 0)
-            opts = gson.fromJson(parser.parse(json).getAsJsonObject(), Gpx2FitOptions.class);
+            opts = gson.fromJson(JsonParser.parseString(json).getAsJsonObject(), Gpx2FitOptions.class);
         if (opts != null)
             return opts;
         else
@@ -374,10 +364,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mUseWalkingGrade.setChecked(mGpx2FitOptions.isWalkingGrade());
 
         mReducePoints.setChecked(mGpx2FitOptions.getMaxPoints() > 0);
-        int maxp = mGpx2FitOptions.getMaxPoints();
-        if (maxp == 0)
-            maxp = 1000;
-        mMaxPoints.setText(String.format(Locale.getDefault(), "%d", maxp));
+        int maxPoints = mGpx2FitOptions.getMaxPoints();
+        if (maxPoints == 0)
+            maxPoints = 1000;
+        mMaxPoints.setText(String.format(Locale.getDefault(), "%d", maxPoints));
 
         mSpeedUnit.setSelection(mGpx2FitOptions.getSpeedUnit());
         // Get intent, action and MIME type
@@ -389,7 +379,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (Intent.ACTION_SEND.equals(action)) {
             Log.debug("ACTION_SEND");
             Uri uri = intent.getData();
-            String URL;
             if (uri == null)
                 uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
             if (uri == null) {
@@ -429,30 +418,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED
-                    ) {
+            ) {
 
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                         MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
             } else {
-                try {
-                    serveFiles();
-                } catch (IOException e) {
-                    Log.error("Serving files failed: {}", e);
-                }
+                serveFiles();
+
             }
         }
     }
 
-    private void copyInputStreamToFile( InputStream in, File file ) {
+    private void copyInputStreamToFile(InputStream in, File file) {
         try {
             OutputStream out = new FileOutputStream(file);
             byte[] buf = new byte[1024];
             int len;
-            len=in.read(buf);
+            len = in.read(buf);
             String name = file.getAbsolutePath();
             if (!(name.endsWith(".fit") || name.endsWith(".FIT") || name.endsWith(".gpx") || name.endsWith(".GPX"))) {
-                String sig = new String(Arrays.copyOf(buf, 8), "UTF-8");
+                String sig = new String(Arrays.copyOf(buf, 8), StandardCharsets.UTF_8);
                 if (sig.length() > 5 && (sig.startsWith("<?xml") || sig.endsWith("<?xml"))) {
                     //noinspection ResultOfMethodCallIgnored
                     file.renameTo(new File(name + ".gpx"));
@@ -461,19 +447,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     file.renameTo(new File(name + ".fit"));
                 }
             }
-            while(len>0){
-                out.write(buf,0,len);
-                len=in.read(buf);
+            while (len > 0) {
+                out.write(buf, 0, len);
+                len = in.read(buf);
             }
             out.close();
             in.close();
         } catch (Exception e) {
-            Log.error("copyInputStreamToFile {}", e);
+            Log.error("copyInputStreamToFile {}", e.toString());
         } finally {
             try {
                 in.close();
             } catch (Exception e) {
-                Log.error("Closing InputStream {}", e);
+                Log.error("Closing InputStream {}", e.toString());
             }
         }
     }
@@ -481,14 +467,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public String getFileName(Uri uri) {
         String result = null;
         if (uri.getScheme().equals("content")) {
-            Cursor cursor = mCR.query(uri, null, null, null, null);
-            try {
+            try (Cursor cursor = mCR.query(uri, null, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
                     result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                }
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
                 }
             }
         }
@@ -502,12 +483,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return result;
     }
 
-    protected void serveFiles() throws IOException {
-        String rootdir;
-
+    protected void serveFiles() {
+        String rootDirectory;
+        String downloadDirectory = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS).getAbsolutePath();
         if (mUris == null) {
-            rootdir = Environment.getExternalStorageDirectory().getAbsolutePath() +
-                    "/Download/";
+            rootDirectory = downloadDirectory;
         } else {
             clearTempDir();
 
@@ -515,7 +495,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //noinspection ResultOfMethodCallIgnored
             mDirectory.mkdir();
 
-            rootdir = mDirectory.getAbsolutePath();
+            rootDirectory = mDirectory.getAbsolutePath();
 
             for (Uri uri : mUris) {
                 if (!uri.getScheme().equals("content") && !uri.getScheme().equals("file")) {
@@ -533,12 +513,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
+        File directory;
+
+        if (rootDirectory.equals(downloadDirectory)) {
+            directory = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS);
+            Log.error("Using DIRECTORY_DOWNLOADS");
+        } else {
+            directory = new File(rootDirectory);
+            Log.error("OpenDir {}", rootDirectory);
+        }
+
         try {
-            server = new WebServer(new File(rootdir), getCacheDir(), 22222, mGpx2FitOptions);
+            server = new WebServer(directory, getCacheDir(), 22222, mGpx2FitOptions);
             server.start();
             Log.info("Web server initialized.");
         } catch (IOException | NoSuchAlgorithmException e) {
-            Log.error("The server could not start: {}", e);
+            Log.error("The server could not start: {}", e.toString());
             mTextView.setText(R.string.no_server);
         }
 
@@ -549,17 +539,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         };
 
-        String[] filelist = new File(rootdir).list(filenameFilter);
+        String[] fileList = directory.list(filenameFilter);
 
-        if (filelist == null) {
-            mTextView.setText(R.string.no_permission);
+        if ((fileList == null) || (fileList.length == 0))
+        {
+            mTextView.setText(String.format(getResources().getString(R.string.no_files_to_serve), rootDirectory));
         } else {
-            if (filelist.length == 0) {
-                mTextView.setText(R.string.no_files_to_serve);
-            } else {
-                Arrays.sort(filelist);
-                mTextView.setText(String.format(getResources().getString(R.string.serving_from), rootdir, TextUtils.join("\n", filelist)));
-            }
+            Arrays.sort(fileList);
+            mTextView.setText(String.format(getResources().getString(R.string.serving_from), rootDirectory, TextUtils.join("\n", fileList)));
         }
     }
 

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">GPX/FIT Exporter</string>
-    <string name="starting">Starting...</string>
+    <string name="starting">Starting …</string>
     <string name="force_speed">Force Speed</string>
     <string name="speed">Default Speed:</string>
     <string name="inject_course_points">Inject Course Points</string>
@@ -11,7 +11,7 @@
     <string name="no_permission">No permission to read files.</string>
     <string name="no_server">Server could not be started</string>
     <string name="serving_from">Serving from: %1$s\n%2$s</string>
-    <string name="no_files_to_serve">No files to serve</string>
+    <string name="no_files_to_serve">No files to serve from %1$s</string>
     <string name="help">Help</string>
     <string name="menu">Menu</string>
 

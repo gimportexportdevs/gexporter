@@ -13,10 +13,8 @@
     android:layout_margin="0dp"
     android:padding="0dp">
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:focusableInTouchMode="true"
     tools:context="org.surfsite.gexporter.MainActivity"
@@ -149,5 +147,5 @@
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginLeft="8dp"
             app:layout_constraintLeft_toLeftOf="parent" />
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

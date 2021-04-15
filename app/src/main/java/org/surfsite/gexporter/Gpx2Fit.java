@@ -50,7 +50,7 @@ public class Gpx2Fit {
     private final List<WayPoint> trkPoints = new ArrayList<>();
     private final List<WayPoint> rtePoints = new ArrayList<>();
     private final List<WayPoint> wayPoints = new ArrayList<>();
-    private String courseName;
+    private final String courseName;
     private String ns = HTTP_WWW_TOPOGRAFIX_COM_GPX_1_1;
 
     Gpx2FitOptions mGpx2FitOptions;

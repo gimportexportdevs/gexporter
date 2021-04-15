@@ -1,6 +1,6 @@
 package org.surfsite.gexporter;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,6 @@ import java.io.InputStream;
 
 import fi.iki.elonen.NanoHTTPD;
 
-import java.io.PushbackInputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
@@ -152,6 +151,7 @@ public class WebServer extends NanoHTTPD {
         Arrays.sort(filelist);
 
         String ret="{ \"tracks\" : [";
+        int num = 0;
         for (String aFilelist : filelist) {
             if (aFilelist.endsWith(".fit") || aFilelist.endsWith(".FIT") || aFilelist.endsWith(".gpx") || aFilelist.endsWith(".GPX")  ) {
                 String url = null;
@@ -168,10 +168,13 @@ public class WebServer extends NanoHTTPD {
                 String courseName = (doLongname ? aFilelist : getCourseName(aFilelist));
 
                 ret += String.format("{ \"title\": \"%s\", \"url\": \"%s\"  },\n", courseName, url);
+                num += 1;
             }
         }
-        ret = ret.substring(0, ret.length()-2);
+        if (num > 0)
+            ret = ret.substring(0, ret.length()-2);
         ret += "]}";
+        Log.error("Return {}", ret);
         return NanoHTTPD.newFixedLengthResponse(Response.Status.OK, MIME_JSON, ret);
     }
 
