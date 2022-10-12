@@ -1,151 +1,224 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/SCROLLER_ID"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:layout_margin="0dp"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     android:fillViewport="true"
-    android:scrollbars="vertical"
-    android:layout_margin="0dp"
-    android:padding="0dp">
+    android:padding="0dp"
+    android:scrollbars="vertical">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:focusableInTouchMode="true"
-    tools:context="org.surfsite.gexporter.MainActivity"
-    tools:layout_editor_absoluteY="81dp"
-    tools:layout_editor_absoluteX="0dp">
-
-    <CheckBox
-        android:id="@+id/CBforceSpeed"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/force_speed"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/editSpeed"
-        android:layout_marginLeft="16dp"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/editSpeed"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="numberDecimal"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="16dp"
-        app:layout_constraintLeft_toRightOf="@+id/textView2"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintRight_toLeftOf="@+id/SPspeedUnits"
-        android:layout_marginRight="8dp"
-        app:layout_constraintHorizontal_bias="0.0" />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:text="@string/speed"
-        app:layout_constraintBaseline_toBaselineOf="@+id/editSpeed"
-        app:layout_constraintLeft_toLeftOf="parent" />
-
-    <Spinner
-        android:id="@+id/SPspeedUnits"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:entries="@array/speedunits"
-        android:spinnerMode="dropdown"
-        app:layout_constraintBaseline_toBaselineOf="@+id/editSpeed"
-        app:layout_constraintRight_toRightOf="parent" />
-
-    <CheckBox
-        android:id="@+id/CBuse3D"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/use_3d_distance"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/CBforceSpeed"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        app:layout_constraintLeft_toLeftOf="parent" />
-
-    <CheckBox
-        android:id="@+id/CBinject"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/inject_course_points"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/CBuse3D" />
-
-    <CheckBox
-        android:id="@+id/CBuseWalkingGrade"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/use_walking_grade_factor"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/CBinject" />
-
-    <CheckBox
-        android:id="@+id/CBreducePoints"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:text="@string/reduce_points_to"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBaseline_toBaselineOf="@+id/editPointNumber" />
-
-    <EditText
-        android:id="@+id/editPointNumber"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:ems="4"
-        android:minEms="1"
-        android:maxEms="5"
-        android:maxLength="5"
-        android:inputType="number"
-        app:layout_constraintLeft_toRightOf="@+id/CBreducePoints"
-        app:layout_constraintTop_toBottomOf="@+id/CBuseWalkingGrade"
-        app:layout_constraintRight_toLeftOf="@+id/textView"
-        android:layout_marginRight="8dp" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/points"
-        app:layout_constraintBaseline_toBaselineOf="@+id/editPointNumber"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent" />
-
-        <TextView
-            android:id="@+id/textv"
-            android:layout_width="0dp"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/connect_card"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/starting"
-            android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@+id/editPointNumber"
-            android:layout_marginRight="8dp"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginLeft="8dp"
-            app:layout_constraintLeft_toLeftOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_margin="10dp"
+            app:cardBackgroundColor="@android:color/darker_gray"
+            app:cardCornerRadius="16dp">
+
+            <TextView
+                android:id="@+id/connect_infotext"
+                style="@style/TextAppearance.AppCompat.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:text="@string/connect_ongoing"
+                app:drawableStartCompat="@drawable/ic_watch" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/settings_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            app:cardBackgroundColor="@android:color/darker_gray"
+            app:cardCornerRadius="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/expand_touch_area"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="16dp">
+
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Title"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/settings" />
+
+                    <ImageButton
+                        android:id="@+id/expand_settings"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_expand_more" />
+                </LinearLayout>
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/settings_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusableInTouchMode="true"
+                    android:visibility="gone"
+                    tools:context="org.surfsite.gexporter.MainActivity"
+                    tools:layout_editor_absoluteX="0dp"
+                    tools:layout_editor_absoluteY="81dp"
+                    tools:visibility="visible">
+
+                    <CheckBox
+                        android:id="@+id/CBforceSpeed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/force_speed"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/editSpeed" />
+
+                    <EditText
+                        android:id="@+id/editSpeed"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginRight="8dp"
+                        android:ems="10"
+                        android:inputType="numberDecimal"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintLeft_toRightOf="@+id/textView2"
+                        app:layout_constraintRight_toLeftOf="@+id/SPspeedUnits"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:text="@string/speed"
+                        app:layout_constraintBaseline_toBaselineOf="@+id/editSpeed"
+                        app:layout_constraintLeft_toLeftOf="parent" />
+
+                    <Spinner
+                        android:id="@+id/SPspeedUnits"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginRight="16dp"
+                        android:entries="@array/speedunits"
+                        android:spinnerMode="dropdown"
+                        app:layout_constraintBaseline_toBaselineOf="@+id/editSpeed"
+                        app:layout_constraintRight_toRightOf="parent" />
+
+                    <CheckBox
+                        android:id="@+id/CBuse3D"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/use_3d_distance"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/CBforceSpeed" />
+
+                    <CheckBox
+                        android:id="@+id/CBinject"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/inject_course_points"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/CBuse3D" />
+
+                    <CheckBox
+                        android:id="@+id/CBuseWalkingGrade"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/use_walking_grade_factor"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/CBinject" />
+
+                    <CheckBox
+                        android:id="@+id/CBreducePoints"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:text="@string/reduce_points_to"
+                        app:layout_constraintBaseline_toBaselineOf="@+id/editPointNumber"
+                        app:layout_constraintLeft_toLeftOf="parent" />
+
+                    <EditText
+                        android:id="@+id/editPointNumber"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginRight="8dp"
+                        android:ems="4"
+                        android:inputType="number"
+                        android:maxEms="5"
+                        android:maxLength="5"
+                        android:minEms="1"
+                        app:layout_constraintLeft_toRightOf="@+id/CBreducePoints"
+                        app:layout_constraintRight_toLeftOf="@+id/textView"
+                        app:layout_constraintTop_toBottomOf="@+id/CBuseWalkingGrade" />
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:text="@string/points"
+                        app:layout_constraintBaseline_toBaselineOf="@+id/editPointNumber"
+                        app:layout_constraintRight_toRightOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/files_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            app:cardBackgroundColor="@android:color/darker_gray"
+            app:cardCornerRadius="16dp">
+
+            <TextView
+                android:id="@+id/textv"
+                style="@style/TextAppearance.AppCompat.Body1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="@string/starting" />
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
 </ScrollView>

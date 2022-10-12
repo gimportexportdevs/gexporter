@@ -1,5 +1,7 @@
 package org.surfsite.gexporter;
 
+import static android.os.Environment.DIRECTORY_DOWNLOADS;
+
 import android.Manifest;
 import android.app.Application;
 import android.content.ContentResolver;
@@ -9,17 +11,9 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -33,9 +27,23 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.transition.AutoTransition;
+import androidx.transition.TransitionManager;
+
+import com.garmin.android.connectiq.ConnectIQ;
+import com.garmin.android.connectiq.IQApp;
+import com.garmin.android.connectiq.IQDevice;
+import com.garmin.android.connectiq.exception.InvalidStateException;
+import com.garmin.android.connectiq.exception.ServiceUnavailableException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
@@ -58,9 +66,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
-
-import static android.os.Environment.DIRECTORY_DOWNLOADS;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final Logger Log = LoggerFactory.getLogger(MainActivity.class);
@@ -84,7 +91,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ContentResolver mCR;
 
     private final static int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 300;
-    //private final static int MY_PERMISSIONS_REQUEST_INTERNET = 301;
+
+    private final static String CONNECT_IQ_GIMPORTER_APP = "9B0A09CF-C89E-4F7C-A5E4-AB21400EE424";
+    private final static String CONNECT_IQ_GIMPORTER_APP_STOREENTRY = "DE11ADC4-FDBB-40B5-86AC-7F93B47EA5BB";
+
+    // doesn't seem to work for widgets unfortunately
+    //private final static String CONNECT_IQ_GIMPORTER_WIDGET = "B5FD4C5F-E0F8-48E8-8A03-E37E86971CEB";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -205,6 +218,82 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mTextView = (TextView) findViewById(R.id.textv);
 
+        View settingsView = findViewById(R.id.settings_content);
+        ImageButton expandButton = findViewById(R.id.expand_settings);
+        findViewById(R.id.expand_touch_area).setOnClickListener(v -> expandButton.performClick());
+        expandButton.setOnClickListener(v -> {
+            TransitionManager.beginDelayedTransition(findViewById(android.R.id.content), new AutoTransition());
+            if (settingsView.getVisibility() == View.VISIBLE) {
+                settingsView.setVisibility(View.GONE);
+                expandButton.setImageResource(R.drawable.ic_expand_more);
+            } else {
+                settingsView.setVisibility(View.VISIBLE);
+                expandButton.setImageResource(R.drawable.ic_expand_less);
+            }
+        });
+
+        initConnectIQ();
+    }
+
+    private void initConnectIQ() {
+        ConnectIQ connectIQ = ConnectIQ.getInstance();
+        connectIQ.initialize(this, true, new ConnectIQ.ConnectIQListener() {
+            @Override
+            public void onSdkReady() {
+                try {
+                    List<IQDevice> devices = connectIQ.getConnectedDevices();
+                    if (devices != null && devices.size() > 0) {
+                        for (final IQDevice device : devices) {
+
+                            connectIQ.getApplicationInfo(CONNECT_IQ_GIMPORTER_APP, device, new ConnectIQ.IQApplicationInfoListener() {
+
+                                @Override
+                                public void onApplicationInfoReceived(IQApp iqApp) {
+                                    try {
+                                        connectIQ.openApplication(device, iqApp, (iqDevice, iqApp1, iqOpenApplicationStatus) -> {
+                                            if (iqOpenApplicationStatus == ConnectIQ.IQOpenApplicationStatus.PROMPT_SHOWN_ON_DEVICE || iqOpenApplicationStatus == ConnectIQ.IQOpenApplicationStatus.APP_IS_ALREADY_RUNNING) {
+                                                ((TextView) findViewById(R.id.connect_infotext)).setText(R.string.connect_connected);
+                                                ((CardView) findViewById(R.id.connect_card)).setCardBackgroundColor(0xff77cc77);
+                                            }
+                                        });
+                                    } catch (InvalidStateException | ServiceUnavailableException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                @Override
+                                public void onApplicationNotInstalled(String s) {
+                                    ((TextView) findViewById(R.id.connect_infotext)).setText(R.string.connect_app_not_installed);
+                                    ((CardView) findViewById(R.id.connect_card)).setCardBackgroundColor(0xffee7777);
+                                    findViewById(R.id.connect_card).setOnClickListener(v -> {
+                                        try {
+                                            connectIQ.openStore(CONNECT_IQ_GIMPORTER_APP_STOREENTRY);
+                                        } catch (InvalidStateException | ServiceUnavailableException e) {
+                                            e.printStackTrace();
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    } else {
+                        ((TextView) findViewById(R.id.connect_infotext)).setText(R.string.connect_no_device);
+                        ((CardView) findViewById(R.id.connect_card)).setCardBackgroundColor(0xffee7777);
+                    }
+                } catch (InvalidStateException | ServiceUnavailableException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onInitializeError(ConnectIQ.IQSdkErrorStatus iqSdkErrorStatus) {
+                ((TextView) findViewById(R.id.connect_infotext)).setText(R.string.connect_init_failed);
+            }
+
+            @Override
+            public void onSdkShutDown() {
+                // nothing needed
+            }
+        });
     }
 
     @Override

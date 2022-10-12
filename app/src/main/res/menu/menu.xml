@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/empty"
-        android:icon="@drawable/ic_action_menu_light"
+        android:icon="@drawable/ic_more"
         android:orderInCategory="101"
         android:title="@string/menu"
         app:showAsAction="always">
         <menu>
             <item
                 android:id="@+id/help"
-                android:icon="@drawable/ic_action_help"
+                android:icon="@drawable/ic_help"
                 android:title="@string/help"
                 app:showAsAction="always|withText" />
         </menu>

@@ -8,5 +8,5 @@
 .externalNativeBuild
 /*.fit
 /*.csv
-/app/libs/fit.jar
+/app/libs/*.jar
 /.idea
