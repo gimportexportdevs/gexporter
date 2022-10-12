@@ -1,6 +1,15 @@
 <resources>
     <string name="app_name">GPX/FIT Exporter</string>
     <string name="starting">Starting …</string>
+
+    <string name="connect_ongoing">Try to connect with Garmin device…</string>
+    <string name="connect_no_device">No Garmin device connected!</string>
+    <string name="connect_app_not_installed">gimporter CIQ app doesn\'t seem to be installed. Tap to download.</string>
+    <string name="connect_connected">Connected</string>
+    <string name="connect_init_failed">Couldn\'t communicate with Garmin Connect</string>
+
+
+    <string name="settings">Settings</string>
     <string name="force_speed">Force Speed</string>
     <string name="speed">Default Speed:</string>
     <string name="inject_course_points">Inject Course Points</string>
@@ -10,7 +19,7 @@
     <string name="points">points</string>
     <string name="no_permission">No permission to read files.</string>
     <string name="no_server">Server could not be started</string>
-    <string name="serving_from">Serving from: %1$s\n%2$s</string>
+    <string name="serving_from">Serving from: %1$s\n\n%2$s</string>
     <string name="no_files_to_serve">No files to serve from %1$s</string>
     <string name="help">Help</string>
     <string name="menu">Menu</string>
