@@ -5,6 +5,7 @@
     <string name="connect_ongoing">Try to connect with Garmin device…</string>
     <string name="connect_no_device">No Garmin device connected!</string>
     <string name="connect_app_not_installed">gimporter CIQ app doesn\'t seem to be installed. Tap to download.</string>
+    <string name="connect_app_only_widget_installed">The widget version of gimporter doesn\'t support auto launch. Tap to download the device app for an even more seamless experience.</string>
     <string name="connect_connected">Connected</string>
     <string name="connect_init_failed">Couldn\'t communicate with Garmin Connect</string>
 
