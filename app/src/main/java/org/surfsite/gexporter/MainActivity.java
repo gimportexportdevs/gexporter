@@ -95,8 +95,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private final static String CONNECT_IQ_GIMPORTER_APP = "9B0A09CF-C89E-4F7C-A5E4-AB21400EE424";
     private final static String CONNECT_IQ_GIMPORTER_APP_STOREENTRY = "DE11ADC4-FDBB-40B5-86AC-7F93B47EA5BB";
 
-    // doesn't seem to work for widgets unfortunately
-    //private final static String CONNECT_IQ_GIMPORTER_WIDGET = "B5FD4C5F-E0F8-48E8-8A03-E37E86971CEB";
+    // auto launch doesn't seem to work for widgets unfortunately
+    private final static String CONNECT_IQ_GIMPORTER_WIDGET = "B5FD4C5F-E0F8-48E8-8A03-E37E86971CEB";
 
 
     @Override
@@ -240,48 +240,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         connectIQ.initialize(this, true, new ConnectIQ.ConnectIQListener() {
             @Override
             public void onSdkReady() {
-                try {
-                    List<IQDevice> devices = connectIQ.getConnectedDevices();
-                    if (devices != null && devices.size() > 0) {
-                        for (final IQDevice device : devices) {
-
-                            connectIQ.getApplicationInfo(CONNECT_IQ_GIMPORTER_APP, device, new ConnectIQ.IQApplicationInfoListener() {
-
-                                @Override
-                                public void onApplicationInfoReceived(IQApp iqApp) {
-                                    try {
-                                        connectIQ.openApplication(device, iqApp, (iqDevice, iqApp1, iqOpenApplicationStatus) -> {
-                                            if (iqOpenApplicationStatus == ConnectIQ.IQOpenApplicationStatus.PROMPT_SHOWN_ON_DEVICE || iqOpenApplicationStatus == ConnectIQ.IQOpenApplicationStatus.APP_IS_ALREADY_RUNNING) {
-                                                ((TextView) findViewById(R.id.connect_infotext)).setText(R.string.connect_connected);
-                                                ((CardView) findViewById(R.id.connect_card)).setCardBackgroundColor(0xff77cc77);
-                                            }
-                                        });
-                                    } catch (InvalidStateException | ServiceUnavailableException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-
-                                @Override
-                                public void onApplicationNotInstalled(String s) {
-                                    ((TextView) findViewById(R.id.connect_infotext)).setText(R.string.connect_app_not_installed);
-                                    ((CardView) findViewById(R.id.connect_card)).setCardBackgroundColor(0xffee7777);
-                                    findViewById(R.id.connect_card).setOnClickListener(v -> {
-                                        try {
-                                            connectIQ.openStore(CONNECT_IQ_GIMPORTER_APP_STOREENTRY);
-                                        } catch (InvalidStateException | ServiceUnavailableException e) {
-                                            e.printStackTrace();
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    } else {
-                        ((TextView) findViewById(R.id.connect_infotext)).setText(R.string.connect_no_device);
-                        ((CardView) findViewById(R.id.connect_card)).setCardBackgroundColor(0xffee7777);
-                    }
-                } catch (InvalidStateException | ServiceUnavailableException e) {
-                    e.printStackTrace();
-                }
+                launchIQApp(connectIQ);
             }
 
             @Override
@@ -294,6 +253,67 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // nothing needed
             }
         });
+    }
+
+    private void launchIQApp(ConnectIQ connectIQ) {
+        try {
+            List<IQDevice> devices = connectIQ.getConnectedDevices();
+            if (devices != null && devices.size() > 0) {
+                for (final IQDevice device : devices) {
+
+                    connectIQ.getApplicationInfo(CONNECT_IQ_GIMPORTER_APP, device, new ConnectIQ.IQApplicationInfoListener() {
+
+                        @Override
+                        public void onApplicationInfoReceived(IQApp iqApp) {
+                            try {
+                                connectIQ.openApplication(device, iqApp, (iqDevice, iqApp1, iqOpenApplicationStatus) -> {
+                                    if (iqOpenApplicationStatus == ConnectIQ.IQOpenApplicationStatus.PROMPT_SHOWN_ON_DEVICE || iqOpenApplicationStatus == ConnectIQ.IQOpenApplicationStatus.APP_IS_ALREADY_RUNNING) {
+                                        ((TextView) findViewById(R.id.connect_infotext)).setText(R.string.connect_connected);
+                                        ((CardView) findViewById(R.id.connect_card)).setCardBackgroundColor(0xff77cc77);
+                                    }
+                                });
+                            } catch (InvalidStateException | ServiceUnavailableException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onApplicationNotInstalled(String s) {
+                            findViewById(R.id.connect_card).setOnClickListener(v -> {
+                                try {
+                                    connectIQ.openStore(CONNECT_IQ_GIMPORTER_APP_STOREENTRY);
+                                } catch (InvalidStateException | ServiceUnavailableException e) {
+                                    e.printStackTrace();
+                                }
+                            });
+
+                            try {
+                                connectIQ.getApplicationInfo(CONNECT_IQ_GIMPORTER_WIDGET, device, new ConnectIQ.IQApplicationInfoListener() {
+                                    @Override
+                                    public void onApplicationInfoReceived(IQApp iqApp) {
+                                        ((TextView) findViewById(R.id.connect_infotext)).setText(R.string.connect_app_only_widget_installed);
+                                    }
+
+                                    @Override
+                                    public void onApplicationNotInstalled(String s) {
+                                        ((TextView) findViewById(R.id.connect_infotext)).setText(R.string.connect_app_not_installed);
+                                        ((CardView) findViewById(R.id.connect_card)).setCardBackgroundColor(0xffee7777);
+                                    }
+                                });
+                            } catch (InvalidStateException | ServiceUnavailableException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    });
+                }
+            } else {
+                ((TextView) findViewById(R.id.connect_infotext)).setText(R.string.connect_no_device);
+                ((CardView) findViewById(R.id.connect_card)).setCardBackgroundColor(0xffee7777);
+            }
+        } catch (InvalidStateException | ServiceUnavailableException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
