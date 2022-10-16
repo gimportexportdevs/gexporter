@@ -90,7 +90,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginLeft="16dp"
-                        android:layout_marginTop="8dp"
                         android:text="@string/force_speed"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/editSpeed" />
@@ -101,7 +100,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginLeft="8dp"
-                        android:layout_marginTop="16dp"
                         android:layout_marginRight="8dp"
                         android:ems="10"
                         android:inputType="numberDecimal"
@@ -137,7 +135,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginLeft="16dp"
-                        android:layout_marginTop="8dp"
                         android:text="@string/use_3d_distance"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/CBforceSpeed" />
@@ -148,7 +145,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginLeft="16dp"
-                        android:layout_marginTop="8dp"
                         android:text="@string/inject_course_points"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/CBuse3D" />
@@ -159,7 +155,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginLeft="16dp"
-                        android:layout_marginTop="8dp"
                         android:text="@string/use_walking_grade_factor"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/CBinject" />
@@ -179,7 +174,6 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="8dp"
-                        android:layout_marginTop="8dp"
                         android:layout_marginRight="8dp"
                         android:ems="4"
                         android:inputType="number"
@@ -194,7 +188,7 @@
                         android:id="@+id/textView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="8dp"
+                        android:layout_marginRight="16dp"
                         android:text="@string/points"
                         app:layout_constraintBaseline_toBaselineOf="@+id/editPointNumber"
                         app:layout_constraintRight_toRightOf="parent" />
