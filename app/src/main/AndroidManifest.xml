@@ -17,7 +17,9 @@
 
         <activity
             android:name="org.surfsite.gexporter.MainActivity"
-            android:windowSoftInputMode="stateHidden">
+            android:configChanges="orientation|screenSize"
+            android:windowSoftInputMode="stateHidden"
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
