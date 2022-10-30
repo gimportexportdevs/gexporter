@@ -1,6 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
+    namespace 'org.surfsite.gexporter'
+
     compileSdkVersion 31
     defaultConfig {
         applicationId "org.surfsite.gexporter"
