@@ -8,8 +8,8 @@ android {
         applicationId "org.surfsite.gexporter"
         minSdkVersion 21
         targetSdkVersion 32
-        versionCode 11
-        versionName "11"
+        versionCode 12
+        versionName "12"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
