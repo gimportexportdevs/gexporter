@@ -198,22 +198,6 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/file_select_card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            app:cardBackgroundColor="@android:color/darker_gray"
-            app:cardCornerRadius="16dp">
-
-            <Button
-                android:id="@+id/file_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="onClick"
-                android:text="@string/select_file" />
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
             android:id="@+id/files_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -221,14 +205,27 @@
             app:cardBackgroundColor="@android:color/darker_gray"
             app:cardCornerRadius="16dp">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:orientation="vertical">
+
+            <Button
+                android:id="@+id/file_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onClick"
+                android:text="@string/select_file" />
+
             <TextView
                 android:id="@+id/textv"
                 style="@style/TextAppearance.AppCompat.Body1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
                 android:text="@string/starting" />
-        </com.google.android.material.card.MaterialCardView>
 
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 </ScrollView>
