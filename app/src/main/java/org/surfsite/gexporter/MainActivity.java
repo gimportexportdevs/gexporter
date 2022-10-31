@@ -643,7 +643,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     continue;
                 }
 
-                DocumentFile file = DocumentFile.fromTreeUri(getApplicationContext(), uri);
+                DocumentFile file = null;
+
+                try {
+                    file = DocumentFile.fromTreeUri(getApplicationContext(), uri);
+                } catch (IllegalArgumentException e) {
+                    try {
+                        file = DocumentFile.fromSingleUri(getApplicationContext(), uri);
+                    } catch (IllegalArgumentException _e) {
+                        ;
+                    }
+                }
                 if (file == null)
                     continue;
 
