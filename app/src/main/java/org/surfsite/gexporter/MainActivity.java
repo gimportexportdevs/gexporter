@@ -652,7 +652,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if ((fileList == null) || (fileList.length == 0))
         {
-            mTextView.setText(String.format(getResources().getString(R.string.no_files_to_serve), rootDirectory));
+            mTextView.setText("Please use the File Explorer and share files with this app!");
         } else {
             Arrays.sort(fileList);
             mTextView.setText(String.format(getResources().getString(R.string.serving_from), rootDirectory, TextUtils.join("\n", fileList)));
