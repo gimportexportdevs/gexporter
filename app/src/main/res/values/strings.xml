@@ -22,6 +22,7 @@
     <string name="no_server">Server could not be started</string>
     <string name="serving_from">Serving from: %1$s\n\n%2$s</string>
     <string name="no_files_to_serve">No files to serve from %1$s</string>
+    <string name="serving_not_possible">Please use the File Explorer and share files with this app!</string>
     <string name="help">Help</string>
     <string name="menu">Menu</string>
     <string name="select_file">Select a directory to export</string>
