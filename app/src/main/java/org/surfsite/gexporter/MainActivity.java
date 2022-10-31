@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -36,6 +37,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.documentfile.provider.DocumentFile;
 import androidx.transition.AutoTransition;
 import androidx.transition.TransitionManager;
 
@@ -71,6 +73,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final Logger Log = LoggerFactory.getLogger(MainActivity.class);
+    private static final int GEXPORTER_OPEN_DIR = 1;
 
     @Nullable
     private WebServer server = null;
@@ -97,7 +100,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     // auto launch doesn't seem to work for widgets unfortunately
     private final static String CONNECT_IQ_GIMPORTER_WIDGET = "B5FD4C5F-E0F8-48E8-8A03-E37E86971CEB";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -391,12 +393,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mGpx2FitOptions.setUse3dDistance(mUse3DDistance.isChecked());
         } else if (id == R.id.CBuseWalkingGrade) {
             mGpx2FitOptions.setWalkingGrade(mUseWalkingGrade.isChecked());
+        } else if (id == R.id.file_button) {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            startActivityForResult(intent, GEXPORTER_OPEN_DIR);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @Nullable String[] permissions, @Nullable int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {// If request is cancelled, the result arrays are empty.
             if (grantResults != null && grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -534,7 +540,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
             } else {
                 serveFiles();
+            }
+        }
+    }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode,
+                                 Intent returnIntent) {
+        super.onActivityResult(requestCode, resultCode, returnIntent);
+
+        // If the selection didn't work
+        if (resultCode != RESULT_OK) {
+            // Exit without doing anything else
+            return;
+        } else {
+            if (requestCode == GEXPORTER_OPEN_DIR) {
+                Uri uri = null;
+                if (returnIntent != null) {
+                    uri = returnIntent.getData();
+                    mUris = new ArrayList<>();
+                    mUris.add(uri);
+                }
             }
         }
     }
@@ -578,7 +604,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (uri.getScheme().equals("content")) {
             try (Cursor cursor = mCR.query(uri, null, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
-                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                    int idx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    if (idx >= 0) {
+                        result = cursor.getString(idx);
+                    }
                 }
             }
         }
@@ -607,17 +636,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             rootDirectory = mDirectory.getAbsolutePath();
 
             for (Uri uri : mUris) {
-                if (!uri.getScheme().equals("content") && !uri.getScheme().equals("file")) {
+                String scheme = uri.getScheme();
+
+                if (!scheme.equals("content") && !scheme.equals("file")) {
                     Log.debug("Skip URI {} scheme {}", uri, uri.getScheme());
                     continue;
                 }
-                Log.debug("Open URI {} scheme {}", uri, uri.getScheme());
-                try {
-                    InputStream is = mCR.openInputStream(uri);
-                    String name = getFileName(uri);
-                    copyInputStreamToFile(is, new File(mDirectory, name));
-                } catch (FileNotFoundException e) {
-                    Log.error("Exception Open URI:", e);
+
+                DocumentFile file = DocumentFile.fromTreeUri(getApplicationContext(), uri);
+                if (file == null)
+                    continue;
+
+                if (file.isFile()) {
+                    Log.debug("Open URI {} scheme {}", uri, scheme);
+                    try {
+                        InputStream is = mCR.openInputStream(uri);
+                        String name = getFileName(uri);
+                        copyInputStreamToFile(is, new File(mDirectory, name));
+                    } catch (FileNotFoundException e) {
+                        Log.error("Exception Open URI:", e);
+                    }
+                } else if (file.isDirectory()) {
+                    for (DocumentFile doc : file.listFiles()) {
+                        Log.info("Open URI {} scheme {}", uri, scheme);
+                        if (!doc.isFile())
+                            continue;
+                        try {
+                            String name = getFileName(doc.getUri());
+                            if (name.endsWith(".fit") || name.endsWith(".FIT") || name.endsWith(".gpx") || name.endsWith(".GPX")) {
+                                InputStream is = mCR.openInputStream(doc.getUri());
+                                copyInputStreamToFile(is, new File(mDirectory, name));
+                            }
+                        } catch (FileNotFoundException e) {
+                            Log.error("Exception Open URI:", e);
+                        }
+                    }
                 }
             }
         }
@@ -641,12 +694,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mTextView.setText(R.string.no_server);
         }
 
-        FilenameFilter filenameFilter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".fit") || name.endsWith(".FIT") || name.endsWith(".gpx") || name.endsWith(".GPX");
-            }
-        };
+        FilenameFilter filenameFilter = (dir, name) -> name.endsWith(".fit") || name.endsWith(".FIT") || name.endsWith(".gpx") || name.endsWith(".GPX");
 
         String[] fileList = directory.list(filenameFilter);
 

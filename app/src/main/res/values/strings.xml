@@ -24,6 +24,7 @@
     <string name="no_files_to_serve">No files to serve from %1$s</string>
     <string name="help">Help</string>
     <string name="menu">Menu</string>
+    <string name="select_file">Select a directory to export</string>
 
     <string-array name="speedunits">
         <item name="minkm">min/km</item>
