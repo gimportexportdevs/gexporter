@@ -13,7 +13,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -565,6 +564,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**
+     * An android Uri might look like something like this:
+     * /tree/raw:/storage/emulated/0/Download/document/raw:/storage/emulated/0/Download/my_file.gpx
+     * /tree/primary:Pictures/Camera
+     *
+     * Only the last part after ":" is interesting for displaying the Uri
+     */
+    private String formatUriForUserDisplay(Uri uri) {
+        Log.error(uri.getPath());
+        String[] pathParts = uri.getPath().split(":");
+        String displayString = pathParts[pathParts.length - 1];
+        if (!displayString.startsWith("/")) displayString = "/" + displayString;
+        return displayString;
+    }
+
     private void copyInputStreamToFile(InputStream in, File file) {
         try {
             OutputStream out = new FileOutputStream(file);
@@ -622,10 +636,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     protected void serveFiles() {
-        String rootDirectory;
-        String downloadDirectory = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS).getAbsolutePath();
+        String rootDirectoryUserDisplayable;
+        File directory;
+
         if (mUris == null) {
-            rootDirectory = downloadDirectory;
+            directory = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS);
+            rootDirectoryUserDisplayable = directory.getAbsolutePath();
+            Log.error("Using DIRECTORY_DOWNLOADS");
         } else {
             clearTempDir();
 
@@ -633,7 +650,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //noinspection ResultOfMethodCallIgnored
             mDirectory.mkdir();
 
-            rootDirectory = mDirectory.getAbsolutePath();
+            directory = mDirectory;
+            rootDirectoryUserDisplayable = mUris.isEmpty() ? "unknown" : formatUriForUserDisplay(mUris.get(0));
+            if (mUris.size() > 1) rootDirectoryUserDisplayable += " and others";
+            Log.error("OpenDir {}", mDirectory.getAbsolutePath());
 
             for (Uri uri : mUris) {
                 String scheme = uri.getScheme();
@@ -643,21 +663,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     continue;
                 }
 
-                DocumentFile file = DocumentFile.fromTreeUri(getApplicationContext(), uri);
-                if (file == null)
-                    continue;
+                DocumentFile treeFile = null;
+                try {
+                    treeFile = DocumentFile.fromTreeUri(getApplicationContext(), uri);
+                } catch (Exception e) {
+                    Log.error("cannot create TreeUri", e);
+                }
 
-                if (file.isFile()) {
-                    Log.debug("Open URI {} scheme {}", uri, scheme);
-                    try {
-                        InputStream is = mCR.openInputStream(uri);
-                        String name = getFileName(uri);
-                        copyInputStreamToFile(is, new File(mDirectory, name));
-                    } catch (FileNotFoundException e) {
-                        Log.error("Exception Open URI:", e);
-                    }
-                } else if (file.isDirectory()) {
-                    for (DocumentFile doc : file.listFiles()) {
+                if (treeFile != null && treeFile.isDirectory()) {
+                    for (DocumentFile doc : treeFile.listFiles()) {
                         Log.info("Open URI {} scheme {}", uri, scheme);
                         if (!doc.isFile())
                             continue;
@@ -671,18 +685,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             Log.error("Exception Open URI:", e);
                         }
                     }
+                } else {
+                    // try to open as file. Don't use DocumentFile.isFile() which seems to be unreliable when serving a gpx from a different app
+                    Log.debug("Open URI {} scheme {}", uri, scheme);
+                    try {
+                        InputStream is = mCR.openInputStream(uri);
+                        String name = getFileName(uri);
+                        copyInputStreamToFile(is, new File(mDirectory, name));
+                    } catch (FileNotFoundException e) {
+                        Log.error("Exception Open URI:", e);
+                    }
                 }
             }
-        }
-
-        File directory;
-
-        if (rootDirectory.equals(downloadDirectory)) {
-            directory = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS);
-            Log.error("Using DIRECTORY_DOWNLOADS");
-        } else {
-            directory = new File(rootDirectory);
-            Log.error("OpenDir {}", rootDirectory);
         }
 
         try {
@@ -700,10 +714,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if ((fileList == null) || (fileList.length == 0))
         {
-            mTextView.setText("Please use the File Explorer and share files with this app!");
+            mTextView.setText(mDirectory == null ? getString(R.string.serving_not_possible) : getString(R.string.no_files_to_serve, rootDirectoryUserDisplayable));
         } else {
             Arrays.sort(fileList);
-            mTextView.setText(String.format(getResources().getString(R.string.serving_from), rootDirectory, TextUtils.join("\n", fileList)));
+            mTextView.setText(String.format(getResources().getString(R.string.serving_from), rootDirectoryUserDisplayable, TextUtils.join("\n", fileList)));
         }
     }
 
