@@ -175,6 +175,20 @@ public class Gpx2Fit {
         return txt;
     }
 
+    private String readType(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, ns, "type");
+        String txt = readText(parser);
+        parser.require(XmlPullParser.END_TAG, ns, "type");
+        return txt;
+    }
+
+    private String readSymbol(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, ns, "sym");
+        String txt = readText(parser);
+        parser.require(XmlPullParser.END_TAG, ns, "sym");
+        return txt;
+    }
+
     private void readTrkSeg(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
         parser.require(XmlPullParser.START_TAG, ns, "trkseg");
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -238,7 +252,7 @@ public class Gpx2Fit {
                     break;
             }
         }
-        trkPoints.add(new WayPoint(name, lat, lon, ele, time));
+        trkPoints.add(new WayPoint(name, lat, lon, ele, time, null, null));
     }
 
     private void readWpt(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
@@ -248,6 +262,8 @@ public class Gpx2Fit {
         double lat = Double.parseDouble(parser.getAttributeValue(null, "lat"));
         double lon = Double.parseDouble(parser.getAttributeValue(null, "lon"));
         double ele = Double.NaN;
+        String type = null;
+        String symbol = null;
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -264,12 +280,18 @@ public class Gpx2Fit {
                 case "name":
                     name = readName(parser);
                     break;
+                case "type":
+                    type = readType(parser);
+                    break;
+                case "sym":
+                    symbol = readSymbol(parser);
+                    break;
                 default:
                     skip(parser);
                     break;
             }
         }
-        wayPoints.add(new WayPoint(name, lat, lon, ele, time));
+        wayPoints.add(new WayPoint(name, lat, lon, ele, time, type, symbol));
     }
 
     private void readRtePt(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
@@ -300,7 +322,7 @@ public class Gpx2Fit {
                     break;
             }
         }
-        rtePoints.add(new WayPoint(name, lat, lon, ele, time));
+        rtePoints.add(new WayPoint(name, lat, lon, ele, time, null, null));
     }
 
     private double readEle(XmlPullParser parser) throws IOException, XmlPullParserException {
@@ -568,39 +590,11 @@ public class Gpx2Fit {
 
 
         if (!skipExtraCP && !wayPoints.isEmpty()) {
-            for (WayPoint wpt : wayPoints) {
-                CoursePointMesg cp = new CoursePointMesg();
-                cp.setLocalNum(0);
-
-                cp.setPositionLat(wpt.getLatSemi());
-                cp.setPositionLong(wpt.getLonSemi());
-                String name = wpt.getName();
-                if (name != null) {
-                    cp.setName(name);
-                } else {
-                    cp.setName("");
-                }
-                cp.setType(CoursePoint.GENERIC);
-                encode.write(cp);
-            }
+            writeWayPoints(encode, wayPoints);
         }
 
         if (!skipExtraCP && !rtePoints.isEmpty()) {
-            for (WayPoint wpt : rtePoints) {
-                CoursePointMesg cp = new CoursePointMesg();
-                cp.setLocalNum(0);
-
-                cp.setPositionLat(wpt.getLatSemi());
-                cp.setPositionLong(wpt.getLonSemi());
-                String name = wpt.getName();
-                if (name != null) {
-                    cp.setName(name);
-                } else {
-                    cp.setName("");
-                }
-                cp.setType(CoursePoint.GENERIC);
-                encode.write(cp);
-            }
+            writeWayPoints(encode, rtePoints);
         }
 
         {
@@ -745,5 +739,23 @@ public class Gpx2Fit {
         }
 
         encode.close();
+    }
+
+    private void writeWayPoints(FileEncoder encode, List<WayPoint> points) {
+        for (WayPoint wpt : points) {
+            CoursePointMesg cp = new CoursePointMesg();
+            cp.setLocalNum(0);
+
+            cp.setPositionLat(wpt.getLatSemi());
+            cp.setPositionLong(wpt.getLonSemi());
+            String name = wpt.getName();
+            if (name != null) {
+                cp.setName(name);
+            } else {
+                cp.setName("");
+            }
+            cp.setType(wpt.getPointType());
+            encode.write(cp);
+        }
     }
 }

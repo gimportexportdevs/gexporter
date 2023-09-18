@@ -44,6 +44,8 @@ dependencies {
 
     implementation 'com.google.code.gson:gson:2.8.6'
 
+    implementation 'org.apache.commons:commons-lang3:3.13.0'
+
     implementation files('libs/fit.jar')
     implementation files('libs/connectiq-mobile-sdk-android-1.5.aar')
 
