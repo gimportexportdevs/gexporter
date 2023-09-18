@@ -46,8 +46,8 @@ dependencies {
 
     implementation 'org.apache.commons:commons-lang3:3.13.0'
 
-    implementation files('libs/fit.jar')
-    implementation files('libs/connectiq-mobile-sdk-android-1.5.aar')
+    implementation 'com.garmin:fit:21.120.0'
+    implementation 'com.garmin.connectiq:ciq-companion-app-sdk:2.0.3@aar'
 
 //    androidTestImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 //    androidTestImplementation group: 'xpp3', name: 'xpp3_min', version: '1.1.3.4.O'
