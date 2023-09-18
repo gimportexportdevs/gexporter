@@ -366,8 +366,9 @@ public class Gpx2Fit {
      * Grade adjusted pace based on a study by Alberto E. Minetti on the energy cost of
      * walking and running at extreme slopes.
      * <p>
-     * see Minetti, A. E. et al. (2002). Energy cost of walking and running at extreme uphill and downhill slopes.
-     * Journal of Applied Physiology 93, 1039-1046, http://jap.physiology.org/content/93/3/1039.full
+     * see <a href="http://jap.physiology.org/content/93/3/1039.full">Minetti, A. E. et al. (2002).
+     * Energy cost of walking and running at extreme uphill and downhill slopes.
+     * Journal of Applied Physiology 93, 1039-1046</a>
      */
     public double getWalkingGradeFactor(double g) {
         return 1.0 + (g * (19.5 + g * (46.3 + g * (-43.3 + g * (-30.4 + g * 155.4))))) / 3.6;
@@ -559,14 +560,8 @@ public class Gpx2Fit {
                 lapMesg.setFieldValue(28, 0, (Integer) WayPoint.toSemiCircles(maxLong), '\uffff');
                 lapMesg.setFieldValue(29, 0, (Integer) WayPoint.toSemiCircles(minLat), '\uffff');
                 lapMesg.setFieldValue(30, 0, (Integer) WayPoint.toSemiCircles(minLong), '\uffff');
-            } catch (NoSuchMethodException e) {
-                ;
-            } catch (IllegalAccessException e) {
-                ;
-            } catch (InstantiationException e) {
-                ;
-            } catch (InvocationTargetException e) {
-                ;
+            } catch (NoSuchMethodException | IllegalAccessException | InstantiationException |
+                     InvocationTargetException ignored) {
             }
 
             encode.write(lapMesg);
