@@ -168,25 +168,23 @@ public class Gpx2Fit {
         return txt;
     }
 
-    private String readName(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, ns, "name");
+    private String readSimpleTextTag(XmlPullParser parser, String tagName) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, ns, tagName);
         String txt = readText(parser);
-        parser.require(XmlPullParser.END_TAG, ns, "name");
+        parser.require(XmlPullParser.END_TAG, ns, tagName);
         return txt;
+    }
+
+    private String readName(XmlPullParser parser) throws IOException, XmlPullParserException {
+        return readSimpleTextTag(parser, "name");
     }
 
     private String readType(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, ns, "type");
-        String txt = readText(parser);
-        parser.require(XmlPullParser.END_TAG, ns, "type");
-        return txt;
+        return readSimpleTextTag(parser, "type");
     }
 
     private String readSymbol(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, ns, "sym");
-        String txt = readText(parser);
-        parser.require(XmlPullParser.END_TAG, ns, "sym");
-        return txt;
+        return readSimpleTextTag(parser, "sym");
     }
 
     private void readTrkSeg(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
