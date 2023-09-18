@@ -22,15 +22,15 @@ public class WayPoint {
     // select a reference ellipsoid
     private static final Ellipsoid reference = Ellipsoid.WGS84;
 
-    private double lat = Double.NaN;
-    private double lon = Double.NaN;
-    private double ele = Double.NaN;
-    private Date time = null;
+    private double lat;
+    private double lon;
+    private double ele;
+    private Date time;
     private double totaldist = Double.NaN;
-    private String name = null;
+    private String name;
 
-    private String type = null;
-    private String symbol = null;
+    private String type;
+    private String symbol;
 
     public WayPoint(String name, double lat, double lon, double ele, Date time, String type, String symbol) {
         this.lat = lat;
