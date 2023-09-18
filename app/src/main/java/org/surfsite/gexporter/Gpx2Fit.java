@@ -1,5 +1,7 @@
 package org.surfsite.gexporter;
 
+import static org.apache.commons.lang3.StringUtils.defaultString;
+
 import android.annotation.SuppressLint;
 
 import com.garmin.fit.CourseMesg;
@@ -737,12 +739,7 @@ public class Gpx2Fit {
 
             cp.setPositionLat(wpt.getLatSemi());
             cp.setPositionLong(wpt.getLonSemi());
-            String name = wpt.getName();
-            if (name != null) {
-                cp.setName(name);
-            } else {
-                cp.setName("");
-            }
+            cp.setName(defaultString(wpt.getName()));
             cp.setType(wpt.getPointType());
             encode.write(cp);
         }
