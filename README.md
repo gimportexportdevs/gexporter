@@ -9,9 +9,6 @@ Android App to export GPX and FIT to garmin devices
 * see Wiki: https://github.com/gimportexportdevs/gexporter/wiki/Help
 
 ## HOWTO Develop
-* create directory app/libs
-* copy fit.jar from the [Garmin FitSDK](https://developer.garmin.com/fit/download/) to app/libs
-* Download the [Connect IQ Mobile SDK (Android BLE/ADB)](https://developer.garmin.com/connect-iq/sdk/) and copy the .aar file to app/libs
 * Android Studio -> Settings -> System Settings -> Android SDK -> "SDK Tools" Tab -> Check "Support Repository/Constraint Layout"
 * start TestServer.main() (this fires up the webserver on localhost)
 * develop with the ConnectIQ simulator (connects to the webserver on localhost)

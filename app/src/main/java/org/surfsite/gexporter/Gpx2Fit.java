@@ -1,5 +1,7 @@
 package org.surfsite.gexporter;
 
+import static org.apache.commons.lang3.StringUtils.defaultString;
+
 import android.annotation.SuppressLint;
 
 import com.garmin.fit.CourseMesg;
@@ -26,12 +28,9 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
@@ -39,7 +38,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Scanner;
 
 public class Gpx2Fit {
     private static final Logger Log = LoggerFactory.getLogger(Gpx2Fit.class);
@@ -168,11 +166,23 @@ public class Gpx2Fit {
         return txt;
     }
 
-    private String readName(XmlPullParser parser) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, ns, "name");
+    private String readSimpleTextTag(XmlPullParser parser, String tagName) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, ns, tagName);
         String txt = readText(parser);
-        parser.require(XmlPullParser.END_TAG, ns, "name");
+        parser.require(XmlPullParser.END_TAG, ns, tagName);
         return txt;
+    }
+
+    private String readName(XmlPullParser parser) throws IOException, XmlPullParserException {
+        return readSimpleTextTag(parser, "name");
+    }
+
+    private String readType(XmlPullParser parser) throws IOException, XmlPullParserException {
+        return readSimpleTextTag(parser, "type");
+    }
+
+    private String readSymbol(XmlPullParser parser) throws IOException, XmlPullParserException {
+        return readSimpleTextTag(parser, "sym");
     }
 
     private void readTrkSeg(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
@@ -238,7 +248,7 @@ public class Gpx2Fit {
                     break;
             }
         }
-        trkPoints.add(new WayPoint(name, lat, lon, ele, time));
+        trkPoints.add(new WayPoint(name, lat, lon, ele, time, null, null));
     }
 
     private void readWpt(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
@@ -248,6 +258,8 @@ public class Gpx2Fit {
         double lat = Double.parseDouble(parser.getAttributeValue(null, "lat"));
         double lon = Double.parseDouble(parser.getAttributeValue(null, "lon"));
         double ele = Double.NaN;
+        String type = null;
+        String symbol = null;
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -264,12 +276,18 @@ public class Gpx2Fit {
                 case "name":
                     name = readName(parser);
                     break;
+                case "type":
+                    type = readType(parser);
+                    break;
+                case "sym":
+                    symbol = readSymbol(parser);
+                    break;
                 default:
                     skip(parser);
                     break;
             }
         }
-        wayPoints.add(new WayPoint(name, lat, lon, ele, time));
+        wayPoints.add(new WayPoint(name, lat, lon, ele, time, type, symbol));
     }
 
     private void readRtePt(XmlPullParser parser) throws XmlPullParserException, IOException, ParseException {
@@ -300,7 +318,7 @@ public class Gpx2Fit {
                     break;
             }
         }
-        rtePoints.add(new WayPoint(name, lat, lon, ele, time));
+        rtePoints.add(new WayPoint(name, lat, lon, ele, time, null, null));
     }
 
     private double readEle(XmlPullParser parser) throws IOException, XmlPullParserException {
@@ -346,8 +364,9 @@ public class Gpx2Fit {
      * Grade adjusted pace based on a study by Alberto E. Minetti on the energy cost of
      * walking and running at extreme slopes.
      * <p>
-     * see Minetti, A. E. et al. (2002). Energy cost of walking and running at extreme uphill and downhill slopes.
-     * Journal of Applied Physiology 93, 1039-1046, http://jap.physiology.org/content/93/3/1039.full
+     * see <a href="http://jap.physiology.org/content/93/3/1039.full">Minetti, A. E. et al. (2002).
+     * Energy cost of walking and running at extreme uphill and downhill slopes.
+     * Journal of Applied Physiology 93, 1039-1046</a>
      */
     public double getWalkingGradeFactor(double g) {
         return 1.0 + (g * (19.5 + g * (46.3 + g * (-43.3 + g * (-30.4 + g * 155.4))))) / 3.6;
@@ -539,14 +558,8 @@ public class Gpx2Fit {
                 lapMesg.setFieldValue(28, 0, (Integer) WayPoint.toSemiCircles(maxLong), '\uffff');
                 lapMesg.setFieldValue(29, 0, (Integer) WayPoint.toSemiCircles(minLat), '\uffff');
                 lapMesg.setFieldValue(30, 0, (Integer) WayPoint.toSemiCircles(minLong), '\uffff');
-            } catch (NoSuchMethodException e) {
-                ;
-            } catch (IllegalAccessException e) {
-                ;
-            } catch (InstantiationException e) {
-                ;
-            } catch (InvocationTargetException e) {
-                ;
+            } catch (NoSuchMethodException | IllegalAccessException | InstantiationException |
+                     InvocationTargetException ignored) {
             }
 
             encode.write(lapMesg);
@@ -568,39 +581,11 @@ public class Gpx2Fit {
 
 
         if (!skipExtraCP && !wayPoints.isEmpty()) {
-            for (WayPoint wpt : wayPoints) {
-                CoursePointMesg cp = new CoursePointMesg();
-                cp.setLocalNum(0);
-
-                cp.setPositionLat(wpt.getLatSemi());
-                cp.setPositionLong(wpt.getLonSemi());
-                String name = wpt.getName();
-                if (name != null) {
-                    cp.setName(name);
-                } else {
-                    cp.setName("");
-                }
-                cp.setType(CoursePoint.GENERIC);
-                encode.write(cp);
-            }
+            writeWayPoints(encode, wayPoints);
         }
 
         if (!skipExtraCP && !rtePoints.isEmpty()) {
-            for (WayPoint wpt : rtePoints) {
-                CoursePointMesg cp = new CoursePointMesg();
-                cp.setLocalNum(0);
-
-                cp.setPositionLat(wpt.getLatSemi());
-                cp.setPositionLong(wpt.getLonSemi());
-                String name = wpt.getName();
-                if (name != null) {
-                    cp.setName(name);
-                } else {
-                    cp.setName("");
-                }
-                cp.setType(CoursePoint.GENERIC);
-                encode.write(cp);
-            }
+            writeWayPoints(encode, rtePoints);
         }
 
         {
@@ -745,5 +730,18 @@ public class Gpx2Fit {
         }
 
         encode.close();
+    }
+
+    private void writeWayPoints(FileEncoder encode, List<WayPoint> points) {
+        for (WayPoint wpt : points) {
+            CoursePointMesg cp = new CoursePointMesg();
+            cp.setLocalNum(0);
+
+            cp.setPositionLat(wpt.getLatSemi());
+            cp.setPositionLong(wpt.getLonSemi());
+            cp.setName(defaultString(wpt.getName()));
+            cp.setType(wpt.getPointType());
+            encode.write(cp);
+        }
     }
 }

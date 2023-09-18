@@ -10,15 +10,14 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-
-import fi.iki.elonen.NanoHTTPD;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import fi.iki.elonen.NanoHTTPD;
 
 public class WebServer extends NanoHTTPD {
     private static final Logger Log = LoggerFactory.getLogger(NanoHTTPD.class);
