@@ -1,5 +1,10 @@
 package org.surfsite.gexporter;
 
+import static org.apache.commons.lang3.StringUtils.isNumeric;
+import static org.apache.commons.lang3.math.NumberUtils.toShort;
+
+import com.garmin.fit.CoursePoint;
+
 import org.gavaghan.geodesy.Ellipsoid;
 import org.gavaghan.geodesy.GeodeticCalculator;
 import org.gavaghan.geodesy.GlobalCoordinates;
@@ -24,7 +29,10 @@ public class WayPoint {
     private double totaldist = Double.NaN;
     private String name = null;
 
-    public WayPoint(String name, double lat, double lon, double ele, Date time) {
+    private String type = null;
+    private String symbol = null;
+
+    public WayPoint(String name, double lat, double lon, double ele, Date time, String type, String symbol) {
         this.lat = lat;
         this.lon = lon;
         this.ele = ele;
@@ -33,6 +41,8 @@ public class WayPoint {
         if (this.time == null) {
             this.time = RefDate;
         }
+        this.type = type;
+        this.symbol = symbol;
     }
 
     public String getName() {
@@ -67,6 +77,15 @@ public class WayPoint {
     public Date getTime() {
         return time;
     }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
+
     public void setLat(double lat) {
         this.lat = lat;
     }
@@ -81,6 +100,14 @@ public class WayPoint {
 
     public void setTime(Date time) {
         this.time = time;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
     }
 
     public double distance(WayPoint other) {
@@ -110,4 +137,25 @@ public class WayPoint {
         this.totaldist = totaldist;
     }
 
+    public CoursePoint getPointType() {
+        if (parseStringToCoursePoint(type) != null) {
+            return parseStringToCoursePoint(type);
+        }
+        if (parseStringToCoursePoint(symbol) != null) {
+            return parseStringToCoursePoint(symbol);
+        }
+        return CoursePoint.GENERIC;
+    }
+
+    private CoursePoint parseStringToCoursePoint(String s) {
+        if (isNumeric(s)) {
+            return CoursePoint.getByValue(toShort(s));
+        } else {
+            try {
+                return CoursePoint.valueOf(s);
+            } catch (IllegalArgumentException exception) {
+                return null;
+            }
+        }
+    }
 }
