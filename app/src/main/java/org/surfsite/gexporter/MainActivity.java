@@ -69,6 +69,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final Logger Log = LoggerFactory.getLogger(MainActivity.class);
@@ -99,6 +100,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     // auto launch doesn't seem to work for widgets unfortunately
     private final static String CONNECT_IQ_GIMPORTER_WIDGET = "B5FD4C5F-E0F8-48E8-8A03-E37E86971CEB";
+    
+    private ConnectIQ mConnectIQ = null;
+    private IQDevice mConnectedDevice = null;
+    private IQApp mConnectedApp = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -237,11 +242,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initConnectIQ() {
-        ConnectIQ connectIQ = ConnectIQ.getInstance();
-        connectIQ.initialize(this, true, new ConnectIQ.ConnectIQListener() {
+        mConnectIQ = ConnectIQ.getInstance();
+        mConnectIQ.initialize(this, true, new ConnectIQ.ConnectIQListener() {
             @Override
             public void onSdkReady() {
-                launchIQApp(connectIQ);
+                launchIQApp(mConnectIQ);
             }
 
             @Override
@@ -271,6 +276,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     if (iqOpenApplicationStatus == ConnectIQ.IQOpenApplicationStatus.PROMPT_SHOWN_ON_DEVICE || iqOpenApplicationStatus == ConnectIQ.IQOpenApplicationStatus.APP_IS_ALREADY_RUNNING) {
                                         ((TextView) findViewById(R.id.connect_infotext)).setText(R.string.connect_connected);
                                         ((CardView) findViewById(R.id.connect_card)).setCardBackgroundColor(0xff77cc77);
+                                        // Store the connected device and app
+                                        mConnectedDevice = device;
+                                        mConnectedApp = iqApp;
+                                        // Register to receive messages from the Garmin app
+                                        registerMessageListener(connectIQ, device, iqApp);
                                     }
                                 });
                             } catch (InvalidStateException | ServiceUnavailableException e) {
@@ -573,7 +583,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private String formatUriForUserDisplay(Uri uri) {
         Log.error(uri.getPath());
-        String[] pathParts = uri.getPath().split(":");
+        String[] pathParts = Objects.requireNonNull(uri.getPath()).split(":");
         String displayString = pathParts[pathParts.length - 1];
         if (!displayString.startsWith("/")) displayString = "/" + displayString;
         return displayString;
@@ -700,12 +710,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         try {
+            // First try with the default port 22222
             server = new WebServer(directory, getCacheDir(), 22222, mGpx2FitOptions);
             server.start();
-            Log.info("Web server initialized.");
+            int actualPort = server.getListeningPort();
+            Log.info("Web server initialized on port: {}", actualPort);
         } catch (IOException | NoSuchAlgorithmException e) {
-            Log.error("The server could not start: {}", e.toString());
-            mTextView.setText(R.string.no_server);
+            Log.warn("Failed to start server on port 22222, trying dynamic port: {}", e.toString());
+            
+            // If default port fails, try with dynamic port allocation
+            try {
+                server = new WebServer(directory, getCacheDir(), 0, mGpx2FitOptions);
+                server.start();
+                int actualPort = server.getListeningPort();
+                Log.info("Web server initialized on dynamic port: {}", actualPort);
+            } catch (IOException | NoSuchAlgorithmException e2) {
+                Log.error("The server could not start on any port: {}", e2.toString());
+                mTextView.setText(R.string.no_server);
+            }
         }
 
         FilenameFilter filenameFilter = (dir, name) -> name.endsWith(".fit") || name.endsWith(".FIT") || name.endsWith(".gpx") || name.endsWith(".GPX");
@@ -718,6 +740,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             Arrays.sort(fileList);
             mTextView.setText(String.format(getResources().getString(R.string.serving_from), rootDirectoryUserDisplayable, TextUtils.join("\n", fileList)));
+        }
+    }
+    
+    private void registerMessageListener(ConnectIQ connectIQ, IQDevice device, IQApp app) {
+        try {
+            connectIQ.registerForAppEvents(device, app, new ConnectIQ.IQApplicationEventListener() {
+                @Override
+                public void onMessageReceived(IQDevice iqDevice, IQApp iqApp, List<Object> message, ConnectIQ.IQMessageStatus iqMessageStatus) {
+                    if (message != null && message.size() > 0) {
+                        Object request = message.get(0);
+                        if ("GET_PORT".equals(request)) {
+                            // Respond with the current port number
+                            sendPortResponse(iqDevice, iqApp);
+                        }
+                    }
+                }
+            });
+            Log.info("Registered message listener for Garmin app");
+        } catch (InvalidStateException e) {
+            Log.error("Error registering message listener", e);
+        }
+    }
+    
+    private void sendPortResponse(IQDevice device, IQApp app) {
+        if (mConnectIQ != null && server != null) {
+            try {
+                int port = server.getListeningPort();
+                mConnectIQ.sendMessage(device, app, port, new ConnectIQ.IQSendMessageListener() {
+                    @Override
+                    public void onMessageStatus(IQDevice iqDevice, IQApp iqApp, ConnectIQ.IQMessageStatus iqMessageStatus) {
+                        if (iqMessageStatus == ConnectIQ.IQMessageStatus.SUCCESS) {
+                            Log.info("Successfully sent port {} to Garmin app", port);
+                        } else {
+                            Log.error("Failed to send port to Garmin app: {}", iqMessageStatus);
+                        }
+                    }
+                });
+            } catch (InvalidStateException | ServiceUnavailableException e) {
+                Log.error("Error sending port response to Garmin app", e);
+            }
         }
     }
 
