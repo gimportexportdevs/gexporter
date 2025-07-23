@@ -279,10 +279,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         // Store the connected device and app
                                         mConnectedDevice = device;
                                         mConnectedApp = iqApp;
+
+                                        Log.info("Garmin app {} successfully connected to device {}", iqApp.getApplicationId(), device.getDeviceIdentifier());
                                         // Register to receive messages from the Garmin app
                                         registerMessageListener(connectIQ, device, iqApp);
                                     }
-                                });
+                                 });
                             } catch (InvalidStateException | ServiceUnavailableException e) {
                                 e.printStackTrace();
                             }
@@ -748,9 +750,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             connectIQ.registerForAppEvents(device, app, new ConnectIQ.IQApplicationEventListener() {
                 @Override
                 public void onMessageReceived(IQDevice iqDevice, IQApp iqApp, List<Object> message, ConnectIQ.IQMessageStatus iqMessageStatus) {
-                    if (message != null && message.size() > 0) {
-                        Object request = message.get(0);
-                        if ("GET_PORT".equals(request)) {
+                    if (message instanceof ArrayList && !message.isEmpty()) {
+                        Object firstElement = ((ArrayList<?>) message).get(0);
+                        if (!(firstElement instanceof ArrayList)) {
+                            return;
+                        }
+                        Object request = ((ArrayList<?>) firstElement).get(0);
+                        if (!(request instanceof String)) {
+                            return;
+                        }
+                        String msg = (String) request;
+                        if ("GET_PORT".equals(msg)) {
                             // Respond with the current port number
                             sendPortResponse(iqDevice, iqApp);
                         }
