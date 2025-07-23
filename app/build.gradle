@@ -7,9 +7,9 @@ android {
     defaultConfig {
         applicationId "org.surfsite.gexporter"
         minSdkVersion 21
-        targetSdkVersion 32
-        versionCode 16
-        versionName "16"
+        targetSdkVersion 33
+        versionCode 17
+        versionName "17"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
