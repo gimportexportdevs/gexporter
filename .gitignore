@@ -10,3 +10,5 @@
 /*.csv
 /app/libs/*.jar
 /.idea
+/.direnv
+/result
