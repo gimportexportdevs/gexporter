@@ -6,13 +6,13 @@
         android:icon="@drawable/ic_more"
         android:orderInCategory="101"
         android:title="@string/menu"
-        app:showAsAction="always">
+        app:showAsAction="ifRoom">
         <menu>
             <item
                 android:id="@+id/help"
                 android:icon="@drawable/ic_help"
                 android:title="@string/help"
-                app:showAsAction="always|withText" />
+                app:showAsAction="ifRoom|withText" />
         </menu>
     </item>
 </menu>

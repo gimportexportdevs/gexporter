@@ -70,7 +70,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="?selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_expand_more" />
+                        android:src="@drawable/ic_expand_more"
+                        android:contentDescription="@string/expand_settings" />
                 </LinearLayout>
 
 
@@ -90,7 +91,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:layout_marginLeft="16dp"
                         android:text="@string/force_speed"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/editSpeed" />
@@ -104,6 +104,8 @@
                         android:layout_marginRight="8dp"
                         android:ems="10"
                         android:inputType="numberDecimal"
+                        android:autofillHints="@string/speed"
+                        android:hint="@string/speed"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintLeft_toRightOf="@+id/textView2"
                         app:layout_constraintRight_toLeftOf="@+id/SPspeedUnits"
@@ -114,7 +116,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:layout_marginLeft="16dp"
                         android:text="@string/speed"
                         app:layout_constraintBaseline_toBaselineOf="@+id/editSpeed"
                         app:layout_constraintLeft_toLeftOf="parent" />
@@ -124,7 +125,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="16dp"
-                        android:layout_marginRight="16dp"
                         android:entries="@array/speedunits"
                         android:spinnerMode="dropdown"
                         app:layout_constraintBaseline_toBaselineOf="@+id/editSpeed"
@@ -135,7 +135,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:layout_marginLeft="16dp"
                         android:text="@string/use_3d_distance"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/CBforceSpeed" />
@@ -145,7 +144,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:layout_marginLeft="16dp"
                         android:text="@string/inject_course_points"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/CBuse3D" />
@@ -155,7 +153,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:layout_marginLeft="16dp"
                         android:text="@string/use_walking_grade_factor"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/CBinject" />
@@ -165,7 +162,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:layout_marginLeft="16dp"
                         android:text="@string/reduce_points_to"
                         app:layout_constraintBaseline_toBaselineOf="@+id/editPointNumber"
                         app:layout_constraintLeft_toLeftOf="parent" />
@@ -181,6 +177,8 @@
                         android:maxEms="5"
                         android:maxLength="5"
                         android:minEms="1"
+                        android:autofillHints="number"
+                        android:hint="@string/points"
                         app:layout_constraintLeft_toRightOf="@+id/CBreducePoints"
                         app:layout_constraintRight_toLeftOf="@+id/textView"
                         app:layout_constraintTop_toBottomOf="@+id/CBuseWalkingGrade" />
@@ -189,7 +187,7 @@
                         android:id="@+id/textView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="16dp"
+                        android:layout_marginEnd="16dp"
                         android:text="@string/points"
                         app:layout_constraintBaseline_toBaselineOf="@+id/editPointNumber"
                         app:layout_constraintRight_toRightOf="parent" />
