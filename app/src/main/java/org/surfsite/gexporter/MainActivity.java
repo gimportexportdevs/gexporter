@@ -31,6 +31,7 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -77,11 +78,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final Logger Log = LoggerFactory.getLogger(MainActivity.class);
     private static final int GEXPORTER_OPEN_DIR = 1;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 300;
-    
+
     private static final String CONNECT_IQ_GIMPORTER_APP = "9B0A09CF-C89E-4F7C-A5E4-AB21400EE424";
     private static final String CONNECT_IQ_GIMPORTER_APP_STOREENTRY = "DE11ADC4-FDBB-40B5-86AC-7F93B47EA5BB";
     private static final String CONNECT_IQ_GIMPORTER_WIDGET = "B5FD4C5F-E0F8-48E8-8A03-E37E86971CEB";
-    
+
     @Nullable
     private WebServer server = null;
     private TextView mTextView;
@@ -97,9 +98,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private File mDirectory = null;
     private final NumberFormat mNumberFormat = NumberFormat.getInstance(Locale.getDefault());
     private ArrayList<Uri> mUris;
-    private String mType;
     private ContentResolver mCR;
-    
+
     private ConnectIQ mConnectIQ = null;
     private IQDevice mConnectedDevice = null;
     private IQApp mConnectedApp = null;
@@ -110,15 +110,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         Log.debug("onCreate called");
         mCR = getContentResolver();
-        
+
         setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        
+
         initializeUIComponents();
         initConnectIQ();
         Log.debug("onCreate completed");
     }
-    
+
     private void initializeUIComponents() {
         // Initialize speed unit spinner
         mSpeedUnit = findViewById(R.id.SPspeedUnits);
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 setSpeedText(position);
             }
-            
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 if (mGpx2FitOptions != null) {
@@ -142,36 +142,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
-        
+
         // Initialize speed input
         mSpeed = findViewById(R.id.editSpeed);
         char separator = DecimalFormatSymbols.getInstance().getDecimalSeparator();
         mSpeed.setKeyListener(DigitsKeyListener.getInstance("0123456789:" + separator));
         mSpeed.addTextChangedListener(new SpeedTextWatcher());
-        
+
         // Initialize checkboxes
         mForceSpeed = findViewById(R.id.CBforceSpeed);
         mForceSpeed.setOnClickListener(this);
-        
+
         mUse3DDistance = findViewById(R.id.CBuse3D);
         mUse3DDistance.setOnClickListener(this);
-        
+
         mInjectCoursePoints = findViewById(R.id.CBinject);
         mInjectCoursePoints.setOnClickListener(this);
-        
+
         mUseWalkingGrade = findViewById(R.id.CBuseWalkingGrade);
         mUseWalkingGrade.setOnClickListener(this);
-        
+
         mReducePoints = findViewById(R.id.CBreducePoints);
         mReducePoints.setOnClickListener(this);
-        
+
         // Initialize max points input
         mMaxPoints = findViewById(R.id.editPointNumber);
         mMaxPoints.addTextChangedListener(new MaxPointsTextWatcher());
-        
+
         // Initialize text view
         mTextView = findViewById(R.id.textv);
-        
+
         // Initialize expandable settings
         View settingsView = findViewById(R.id.settings_content);
         ImageButton expandButton = findViewById(R.id.expand_settings);
@@ -186,11 +186,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 expandButton.setImageResource(R.drawable.ic_expand_less);
             }
         });
-        
+
         // Initialize file selection button
         findViewById(R.id.file_button).setOnClickListener(this);
     }
-    
+
     private void initConnectIQ() {
         mConnectIQ = ConnectIQ.getInstance();
         mConnectIQ.initialize(this, true, new ConnectIQ.ConnectIQListener() {
@@ -198,20 +198,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onSdkReady() {
                 launchIQApp(mConnectIQ);
             }
-            
+
             @Override
             public void onInitializeError(ConnectIQ.IQSdkErrorStatus errorStatus) {
                 TextView infoText = findViewById(R.id.connect_infotext);
                 infoText.setText(R.string.connect_init_failed);
             }
-            
+
             @Override
             public void onSdkShutDown() {
                 // No action needed
             }
         });
     }
-    
+
     private void launchIQApp(ConnectIQ connectIQ) {
         try {
             List<IQDevice> devices = connectIQ.getConnectedDevices();
@@ -222,17 +222,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         public void onApplicationInfoReceived(IQApp app) {
                             try {
                                 connectIQ.openApplication(device, app, (iqDevice, iqApp, status) -> {
-                                    if (status == ConnectIQ.IQOpenApplicationStatus.PROMPT_SHOWN_ON_DEVICE || 
-                                        status == ConnectIQ.IQOpenApplicationStatus.APP_IS_ALREADY_RUNNING) {
+                                    if (status == ConnectIQ.IQOpenApplicationStatus.PROMPT_SHOWN_ON_DEVICE ||
+                                            status == ConnectIQ.IQOpenApplicationStatus.APP_IS_ALREADY_RUNNING) {
                                         TextView infoText = findViewById(R.id.connect_infotext);
                                         infoText.setText(R.string.connect_connected);
                                         CardView connectCard = findViewById(R.id.connect_card);
                                         connectCard.setCardBackgroundColor(0xff77cc77);
-                                        
+
                                         mConnectedDevice = device;
                                         mConnectedApp = app;
-                                        
-                                        Log.info("Garmin app {} successfully connected to device {}", 
+
+                                        Log.info("Garmin app {} successfully connected to device {}",
                                                 app.getApplicationId(), device.getDeviceIdentifier());
                                         registerMessageListener(connectIQ, device, app);
                                     }
@@ -241,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 Log.error("Error opening application", e);
                             }
                         }
-                        
+
                         @Override
                         public void onApplicationNotInstalled(String applicationId) {
                             handleAppNotInstalled(connectIQ, device);
@@ -258,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.error("Error getting connected devices", e);
         }
     }
-    
+
     private void handleAppNotInstalled(ConnectIQ connectIQ, IQDevice device) {
         findViewById(R.id.connect_card).setOnClickListener(v -> {
             try {
@@ -267,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.error("Error opening store", e);
             }
         });
-        
+
         try {
             connectIQ.getApplicationInfo(CONNECT_IQ_GIMPORTER_WIDGET, device, new ConnectIQ.IQApplicationInfoListener() {
                 @Override
@@ -275,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     TextView infoText = findViewById(R.id.connect_infotext);
                     infoText.setText(R.string.connect_app_only_widget_installed);
                 }
-                
+
                 @Override
                 public void onApplicationNotInstalled(String applicationId) {
                     TextView infoText = findViewById(R.id.connect_infotext);
@@ -288,56 +288,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.error("Error checking widget", e);
         }
     }
-    
+
     private void registerMessageListener(ConnectIQ connectIQ, IQDevice device, IQApp app) {
         long deviceId = device.getDeviceIdentifier();
-        
+
         // Only register once per device
         if (mRegisteredDevices.contains(deviceId)) {
             Log.debug("Device {} already registered for app events", deviceId);
             return;
         }
-        
+
         try {
-            connectIQ.registerForAppEvents(device, app, new ConnectIQ.IQApplicationEventListener() {
-                @Override
-                public void onMessageReceived(IQDevice iqDevice, IQApp iqApp, List<Object> message, ConnectIQ.IQMessageStatus status) {
-                    if (message instanceof ArrayList && !message.isEmpty()) {
-                        Object firstElement = ((ArrayList<?>) message).get(0);
-                        if (!(firstElement instanceof ArrayList)) {
-                            return;
-                        }
-                        Object request = ((ArrayList<?>) firstElement).get(0);
-                        if (!(request instanceof String)) {
-                            return;
-                        }
-                        String msg = (String) request;
-                        if ("GET_PORT".equals(msg)) {
-                            sendPortResponse(iqDevice, iqApp);
-                        }
+            connectIQ.registerForAppEvents(device, app, (iqDevice, iqApp, message, status) -> {
+                if (message instanceof ArrayList && !message.isEmpty()) {
+                    Object firstElement = ((ArrayList<?>) message).get(0);
+                    if (!(firstElement instanceof ArrayList)) {
+                        return;
+                    }
+                    Object request = ((ArrayList<?>) firstElement).get(0);
+                    if (!(request instanceof String)) {
+                        return;
+                    }
+                    String msg = (String) request;
+                    if ("GET_PORT".equals(msg)) {
+                        sendPortResponse(iqDevice, iqApp);
                     }
                 }
             });
-            
+
             mRegisteredDevices.add(deviceId);
             Log.info("Registered message listener for Garmin app on device {}", deviceId);
         } catch (InvalidStateException e) {
             Log.error("Error registering message listener for device {}", deviceId, e);
         }
     }
-    
+
     private void sendPortResponse(IQDevice device, IQApp app) {
         if (mConnectIQ != null && server != null) {
             try {
                 int port = server.getListeningPort();
-                mConnectIQ.sendMessage(device, app, port, new ConnectIQ.IQSendMessageListener() {
-                    @Override
-                    public void onMessageStatus(IQDevice iqDevice, IQApp iqApp, ConnectIQ.IQMessageStatus status) {
-                        if (status == ConnectIQ.IQMessageStatus.SUCCESS) {
-                            Log.info("Successfully sent port {} to Garmin app", port);
-                        } else {
-                            Log.error("Failed to send port to Garmin app: {}", status);
-                        }
+                mConnectIQ.sendMessage(device, app, port, (iqDevice, iqApp, status) -> {
+                    if (status == ConnectIQ.IQMessageStatus.SUCCESS) {
+                        Log.info("Successfully sent port {} to Garmin app", port);
+                    } else {
+                        Log.error("Failed to send port to Garmin app: {}", status);
                     }
                 });
             } catch (InvalidStateException | ServiceUnavailableException e) {
@@ -345,31 +339,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
-    
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
         return true;
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.help) {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, 
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW,
                     Uri.parse("https://github.com/gimportexportdevs/gexporter/wiki/Help"));
             startActivity(browserIntent);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
-    
+
     @Override
     public void onClick(View v) {
         if (mGpx2FitOptions == null) {
             return;
         }
-        
+
         int id = v.getId();
         if (id == R.id.CBforceSpeed) {
             mGpx2FitOptions.setForceSpeed(mForceSpeed.isChecked());
@@ -393,16 +387,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivityForResult(intent, GEXPORTER_OPEN_DIR);
         }
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();
         Log.debug("onResume called");
-        
+
         mGpx2FitOptions = load();
         updateUIFromOptions();
         processIntent(getIntent());
-        
+
         if (server == null) {
             Log.debug("Server is null, checking permissions and serving");
             checkPermissionsAndServe();
@@ -410,7 +404,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.debug("Server already running");
         }
     }
-    
+
     private void updateUIFromOptions() {
         setSpeedText(mGpx2FitOptions.getSpeedUnit());
         mForceSpeed.setChecked(mGpx2FitOptions.isForceSpeed());
@@ -418,7 +412,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mInjectCoursePoints.setChecked(mGpx2FitOptions.isInjectCoursePoints());
         mUseWalkingGrade.setChecked(mGpx2FitOptions.isWalkingGrade());
         mReducePoints.setChecked(mGpx2FitOptions.getMaxPoints() > 0);
-        
+
         int maxPoints = mGpx2FitOptions.getMaxPoints();
         if (maxPoints == 0) {
             maxPoints = 1000;
@@ -426,12 +420,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mMaxPoints.setText(String.format(Locale.getDefault(), "%d", maxPoints));
         mSpeedUnit.setSelection(mGpx2FitOptions.getSpeedUnit());
     }
-    
+
     private void processIntent(Intent intent) {
         String action = intent.getAction();
-        mType = intent.getType();
         Log.debug("Processing intent: {}", intent);
-        
+
         if (Intent.ACTION_SEND.equals(action)) {
             processSingleFile(intent);
         } else if (Intent.ACTION_VIEW.equals(action)) {
@@ -439,13 +432,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (Intent.ACTION_SEND_MULTIPLE.equals(action)) {
             processMultipleFiles(intent);
         }
-        
+
         if (mUris != null && server != null) {
             server.stop();
             server = null;
         }
     }
-    
+
     private void processSingleFile(Intent intent) {
         Log.debug("ACTION_SEND");
         Uri uri = intent.getData();
@@ -458,14 +451,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 uri = Uri.parse(text);
             }
         }
-        
+
         if (uri != null) {
             Log.debug("URI {}: type {} scheme {}", uri, intent.getType(), uri.getScheme());
             mUris = new ArrayList<>();
             mUris.add(uri);
         }
     }
-    
+
     private void processViewFile(Intent intent) {
         Log.debug("ACTION_VIEW");
         Uri uri = intent.getData();
@@ -475,15 +468,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mUris.add(uri);
         }
     }
-    
+
     private void processMultipleFiles(Intent intent) {
         Log.debug("ACTION_SEND_MULTIPLE");
         mUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
     }
-    
+
     private void checkPermissionsAndServe() {
         Log.debug("checkPermissionsAndServe called");
-        
+
         // For Android 13+ (API 33+), READ_EXTERNAL_STORAGE is largely deprecated
         // We'll rely on the Downloads directory and intent-based file sharing
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
@@ -491,8 +484,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             serveFiles();
             return;
         }
-        
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) 
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             Log.info("Permission not granted, requesting permission");
             ActivityCompat.requestPermissions(this,
@@ -503,15 +496,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             serveFiles();
         }
     }
-    
+
     @Override
-    public void onRequestPermissionsResult(int requestCode, @Nullable String[] permissions, 
-                                          @Nullable int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         Log.debug("onRequestPermissionsResult called with requestCode: {}", requestCode);
         if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
-            if (grantResults != null && grantResults.length > 0 
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.info("Permission granted in callback, calling serveFiles");
                 serveFiles();
             } else {
@@ -520,13 +512,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
-    
+
     @Override
     protected void onPause() {
         super.onPause();
         save(mGpx2FitOptions);
     }
-    
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -536,15 +528,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             clearTempDir();
         }
     }
-    
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        
+
         if (resultCode != RESULT_OK) {
             return;
         }
-        
+
         if (requestCode == GEXPORTER_OPEN_DIR && data != null) {
             Uri uri = data.getData();
             if (uri != null) {
@@ -553,52 +545,53 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
-    
+
     protected void serveFiles() {
         Log.debug("serveFiles called");
         String rootDirectoryUserDisplayable;
         File directory;
-        
+
         if (mUris == null) {
             directory = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS);
             rootDirectoryUserDisplayable = directory.getAbsolutePath();
             Log.info("Using DIRECTORY_DOWNLOADS: {}", rootDirectoryUserDisplayable);
         } else {
             clearTempDir();
-            
+
             mDirectory = new File(getCacheDir(), Long.toString(System.nanoTime()));
-            mDirectory.mkdir();
-            
+
+            boolean _mkdir = mDirectory.mkdir();
+
             directory = mDirectory;
             rootDirectoryUserDisplayable = mUris.isEmpty() ? "unknown" : formatUriForUserDisplay(mUris.get(0));
             if (mUris.size() > 1) {
                 rootDirectoryUserDisplayable += " and others";
             }
             Log.info("OpenDir {}", mDirectory.getAbsolutePath());
-            
+
             processUris();
         }
-        
+
         startWebServer(directory);
         displayFileList(directory, rootDirectoryUserDisplayable);
     }
-    
+
     private void processUris() {
         for (Uri uri : mUris) {
             String scheme = uri.getScheme();
-            
+
             if (!("content".equals(scheme) || "file".equals(scheme))) {
                 Log.debug("Skip URI {} scheme {}", uri, scheme);
                 continue;
             }
-            
+
             DocumentFile treeFile = null;
             try {
                 treeFile = DocumentFile.fromTreeUri(getApplicationContext(), uri);
             } catch (Exception e) {
                 Log.error("Cannot create TreeUri", e);
             }
-            
+
             if (treeFile != null && treeFile.isDirectory()) {
                 processDirectory(treeFile);
             } else {
@@ -606,7 +599,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
-    
+
     private void processDirectory(DocumentFile treeFile) {
         for (DocumentFile doc : treeFile.listFiles()) {
             if (!doc.isFile()) {
@@ -623,7 +616,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
-    
+
     private void processFile(Uri uri) {
         Log.debug("Open URI {} scheme {}", uri, uri.getScheme());
         try {
@@ -634,12 +627,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.error("Exception opening URI", e);
         }
     }
-    
+
     private boolean isValidFileType(String filename) {
-        return filename.endsWith(".fit") || filename.endsWith(".FIT") || 
-               filename.endsWith(".gpx") || filename.endsWith(".GPX");
+        return filename.endsWith(".fit") || filename.endsWith(".FIT") ||
+                filename.endsWith(".gpx") || filename.endsWith(".GPX");
     }
-    
+
     private void startWebServer(File directory) {
         Log.debug("Starting web server for directory: {}", directory.getAbsolutePath());
         try {
@@ -649,7 +642,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.info("Web server initialized on port: {}", actualPort);
         } catch (IOException | NoSuchAlgorithmException e) {
             Log.warn("Failed to start server on port 22222, trying dynamic port: {}", e.toString());
-            
+
             try {
                 server = new WebServer(directory, getCacheDir(), 0, mGpx2FitOptions);
                 server.start();
@@ -661,51 +654,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
-    
+
     private void displayFileList(File directory, String rootDirectoryUserDisplayable) {
         FilenameFilter filenameFilter = (dir, name) -> isValidFileType(name);
         String[] fileList = directory.list(filenameFilter);
-        
+
         if (fileList == null || fileList.length == 0) {
-            mTextView.setText(mDirectory == null ? getString(R.string.serving_not_possible) : 
+            mTextView.setText(mDirectory == null ? getString(R.string.serving_not_possible) :
                     getString(R.string.no_files_to_serve, rootDirectoryUserDisplayable));
         } else {
             Arrays.sort(fileList);
-            mTextView.setText(String.format(getResources().getString(R.string.serving_from), 
+            mTextView.setText(String.format(getResources().getString(R.string.serving_from),
                     rootDirectoryUserDisplayable, TextUtils.join("\n", fileList)));
         }
     }
-    
+
     private void copyInputStreamToFile(InputStream in, File file) {
-        try (OutputStream out = new FileOutputStream(file)) {
-            byte[] buf = new byte[1024];
-            int len = in.read(buf);
-            
-            String name = file.getAbsolutePath();
-            if (!isValidFileType(name)) {
-                String sig = new String(Arrays.copyOf(buf, 8), StandardCharsets.UTF_8);
-                if (sig.length() > 5 && (sig.startsWith("<?xml") || sig.endsWith("<?xml"))) {
-                    file.renameTo(new File(name + ".gpx"));
-                } else {
-                    file.renameTo(new File(name + ".fit"));
+        try (in; OutputStream out = new FileOutputStream(file)) {
+            try {
+                byte[] buf = new byte[1024];
+                int len = in.read(buf);
+
+                String name = file.getAbsolutePath();
+                if (!isValidFileType(name)) {
+                    String sig = new String(Arrays.copyOf(buf, 8), StandardCharsets.UTF_8);
+                    if (sig.length() > 5 && (sig.startsWith("<?xml") || sig.endsWith("<?xml"))) {
+                        file.renameTo(new File(name + ".gpx"));
+                    } else {
+                        file.renameTo(new File(name + ".fit"));
+                    }
                 }
-            }
-            
-            while (len > 0) {
-                out.write(buf, 0, len);
-                len = in.read(buf);
+
+                while (len > 0) {
+                    out.write(buf, 0, len);
+                    len = in.read(buf);
+                }
+            } catch (Exception e) {
+                Log.error("copyInputStreamToFile {}", e.toString());
             }
         } catch (Exception e) {
-            Log.error("copyInputStreamToFile {}", e.toString());
-        } finally {
-            try {
-                in.close();
-            } catch (Exception e) {
-                Log.error("Closing InputStream {}", e.toString());
-            }
+            Log.error("Closing InputStream {}", e.toString());
         }
     }
-    
+
     public String getFileName(Uri uri) {
         String result = null;
         if ("content".equals(uri.getScheme())) {
@@ -720,6 +711,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (result == null) {
             result = uri.getPath();
+            if (result == null) {
+                return null;
+            }
             int cut = result.lastIndexOf('/');
             if (cut != -1) {
                 result = result.substring(cut + 1);
@@ -727,7 +721,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         return result;
     }
-    
+
     private String formatUriForUserDisplay(Uri uri) {
         String[] pathParts = Objects.requireNonNull(uri.getPath()).split(":");
         String displayString = pathParts[pathParts.length - 1];
@@ -736,13 +730,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         return displayString;
     }
-    
+
     private void setSpeedText(int pos) {
         double speed = mGpx2FitOptions.getSpeed();
         if (Double.isNaN(speed)) {
             speed = 10.0;
         }
-        
+
         String val = null;
         switch (pos) {
             case 0: // min/km
@@ -772,24 +766,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 val = String.format(Locale.getDefault(), "%.2f", speed);
                 break;
         }
-        
+
         if (mSpeed != null && val != null) {
             mSpeed.setText(val);
         }
     }
-    
+
     private void clearTempDir() {
         if (mDirectory != null) {
             try {
                 rmdir(mDirectory);
             } catch (IOException e) {
-                Log.error("Failed to delete {} {}", mDirectory.getAbsolutePath(), e);
+                Log.error("Failed to delete directory {}: {}", mDirectory.getAbsolutePath(), e.getMessage());
             } finally {
                 mDirectory = null;
             }
         }
     }
-    
+
     private void rmdir(File f) throws IOException {
         if (f.isDirectory()) {
             File[] files = f.listFiles();
@@ -803,7 +797,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             throw new FileNotFoundException("Failed to delete file: " + f);
         }
     }
-    
+
     public void save(Gpx2FitOptions options) {
         Application app = getApplication();
         SharedPreferences prefs = app.getSharedPreferences(app.getApplicationInfo().name, Context.MODE_PRIVATE);
@@ -812,7 +806,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         editor.putString(options.getClass().getName(), gson.toJson(options));
         editor.apply();
     }
-    
+
     public Gpx2FitOptions load() {
         Application app = getApplication();
         Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().create();
@@ -824,37 +818,54 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         return opts != null ? opts : new Gpx2FitOptions();
     }
-    
+
     private class SpeedTextWatcher implements TextWatcher {
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-        
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
         @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {}
-        
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
+
         @Override
         public void afterTextChanged(Editable editable) {
             if (getCurrentFocus() != mSpeed) {
                 return;
             }
-            
+
             if (editable.length() > 0 && mGpx2FitOptions != null) {
                 double speed;
                 try {
                     String s = editable.toString();
                     String[] as = s.split(":");
                     Collections.reverse(Arrays.asList(as));
-                    speed = mNumberFormat.parse(as[0]).doubleValue();
-                    if (as.length > 1) {
-                        speed = mNumberFormat.parse(as[1]).doubleValue() + speed / 60.0;
+
+                    Number parsedValue = mNumberFormat.parse(as[0]);
+                    if (parsedValue == null) {
+                        throw new ParseException("Cannot parse speed value", 0);
                     }
+                    speed = parsedValue.doubleValue();
+
+                    if (as.length > 1) {
+                        Number parsedValue1 = mNumberFormat.parse(as[1]);
+                        if (parsedValue1 == null) {
+                            throw new ParseException("Cannot parse speed value", 0);
+                        }
+                        speed = parsedValue1.doubleValue() + speed / 60.0;
+                    }
+
                     if (as.length > 2) {
-                        speed = mNumberFormat.parse(as[2]).doubleValue() * 60 + speed;
+                        Number parsedValue2 = mNumberFormat.parse(as[2]);
+                        if (parsedValue2 == null) {
+                            throw new ParseException("Cannot parse speed value", 0);
+                        }
+                        speed = parsedValue2.doubleValue() * 60.0 + speed;
                     }
                 } catch (ParseException e) {
                     speed = 0.0;
                 }
-                
+
                 if (speed > 0.0) {
                     switch (mGpx2FitOptions.getSpeedUnit()) {
                         case 0:
@@ -875,14 +886,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
-    
+
     private class MaxPointsTextWatcher implements TextWatcher {
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-        
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
         @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {}
-        
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
+
         @Override
         public void afterTextChanged(Editable editable) {
             if (editable.length() > 0 && mGpx2FitOptions != null && mReducePoints.isChecked()) {
