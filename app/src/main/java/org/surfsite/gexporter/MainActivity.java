@@ -31,6 +31,10 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -104,12 +108,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private IQDevice mConnectedDevice = null;
     private IQApp mConnectedApp = null;
     private final Set<Long> mRegisteredDevices = new HashSet<>();
+    
+    private ActivityResultLauncher<Intent> openDocumentTreeLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.debug("onCreate called");
         mCR = getContentResolver();
+
+        // Initialize the activity result launcher
+        openDocumentTreeLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    onActivityResult(GEXPORTER_OPEN_DIR, RESULT_OK, result.getData());
+                }
+            }
+        );
 
         setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -384,7 +400,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mGpx2FitOptions.setWalkingGrade(mUseWalkingGrade.isChecked());
         } else if (id == R.id.file_button) {
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-            startActivityForResult(intent, GEXPORTER_OPEN_DIR);
+            openDocumentTreeLauncher.launch(intent);
         }
     }
 
@@ -443,7 +459,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.debug("ACTION_SEND");
         Uri uri = intent.getData();
         if (uri == null) {
-            uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                uri = intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri.class);
+            } else {
+                @SuppressWarnings("deprecation")
+                Uri deprecatedUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                uri = deprecatedUri;
+            }
         }
         if (uri == null) {
             String text = intent.getStringExtra(Intent.EXTRA_TEXT);
@@ -471,7 +493,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void processMultipleFiles(Intent intent) {
         Log.debug("ACTION_SEND_MULTIPLE");
-        mUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            mUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM, Uri.class);
+        } else {
+            @SuppressWarnings("deprecation")
+            ArrayList<Uri> deprecatedUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+            mUris = deprecatedUris;
+        }
     }
 
     private void checkPermissionsAndServe() {
