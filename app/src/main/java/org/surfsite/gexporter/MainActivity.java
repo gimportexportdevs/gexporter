@@ -186,6 +186,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 expandButton.setImageResource(R.drawable.ic_expand_less);
             }
         });
+        
+        // Initialize file selection button
+        findViewById(R.id.file_button).setOnClickListener(this);
     }
     
     private void initConnectIQ() {

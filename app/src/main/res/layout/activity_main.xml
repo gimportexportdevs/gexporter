@@ -215,7 +215,6 @@
                 android:id="@+id/file_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="onClick"
                 android:text="@string/select_file" />
 
             <TextView
