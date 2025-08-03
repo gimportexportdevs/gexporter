@@ -139,9 +139,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         // Handle window insets for edge-to-edge display
-        View mainView = findViewById(android.R.id.content);
-        ViewCompat.setOnApplyWindowInsetsListener(mainView, (v, insets) -> {
+        View rootView = findViewById(android.R.id.content);
+        ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            // Apply proper padding including top padding for status bar spacing
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
@@ -958,8 +959,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void enableEdgeToEdge() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
             Window window = getWindow();
-            window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, 
-                            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+            // Use proper edge-to-edge implementation with correct flags
+            window.setStatusBarColor(android.graphics.Color.TRANSPARENT);
+            window.setNavigationBarColor(android.graphics.Color.TRANSPARENT);
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS,
+                WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+            );
         }
     }
 }
