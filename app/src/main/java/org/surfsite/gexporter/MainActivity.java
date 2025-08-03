@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -41,6 +42,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.transition.AutoTransition;
 import androidx.transition.TransitionManager;
@@ -114,6 +118,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Enable edge-to-edge for backward compatibility with Android 15+
+        enableEdgeToEdge();
+        
         Log.debug("onCreate called");
         mCR = getContentResolver();
 
@@ -129,6 +137,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        // Handle window insets for edge-to-edge display
+        View mainView = findViewById(android.R.id.content);
+        ViewCompat.setOnApplyWindowInsetsListener(mainView, (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
         initializeUIComponents();
         initConnectIQ();
@@ -933,6 +949,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Log.error("Invalid max points value");
                 }
             }
+        }
+    }
+
+    /**
+     * Manually enable edge-to-edge display for backward compatibility with Android 15+
+     */
+    private void enableEdgeToEdge() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            Window window = getWindow();
+            window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, 
+                            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
     }
 }
