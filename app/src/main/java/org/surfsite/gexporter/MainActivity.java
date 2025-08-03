@@ -44,6 +44,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.transition.AutoTransition;
@@ -119,8 +120,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        // Enable edge-to-edge for backward compatibility with Android 15+
-        enableEdgeToEdge();
+        // Enable modern edge-to-edge using WindowCompat (Android 15+ compatible)
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         
         Log.debug("onCreate called");
         mCR = getContentResolver();
@@ -138,13 +139,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        // Handle window insets for edge-to-edge display
+        // Handle window insets for edge-to-edge display using modern approach
         View rootView = findViewById(android.R.id.content);
-        ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            // Apply proper padding including top padding for status bar spacing
+        ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, windowInsets) -> {
+            Insets systemBars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            
+            // Apply padding to avoid system bar overlap
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+            
+            return WindowInsetsCompat.CONSUMED;
         });
 
         initializeUIComponents();
@@ -953,19 +956,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    /**
-     * Manually enable edge-to-edge display for backward compatibility with Android 15+
-     */
-    private void enableEdgeToEdge() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-            Window window = getWindow();
-            // Use proper edge-to-edge implementation with correct flags
-            window.setStatusBarColor(android.graphics.Color.TRANSPARENT);
-            window.setNavigationBarColor(android.graphics.Color.TRANSPARENT);
-            window.setFlags(
-                WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS,
-                WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
-            );
-        }
-    }
 }
