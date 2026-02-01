@@ -310,6 +310,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 public void onApplicationInfoReceived(IQApp app) {
                     TextView infoText = findViewById(R.id.connect_infotext);
                     infoText.setText(R.string.connect_app_only_widget_installed);
+                    CardView connectCard = findViewById(R.id.connect_card);
+                    connectCard.setCardBackgroundColor(0xff77cc77);
+
+                    mConnectedDevice = device;
+                    mConnectedApp = app;
+
+                    Log.info("Garmin widget {} connected to device {}",
+                            app.getApplicationId(), device.getDeviceIdentifier());
+                    registerMessageListener(connectIQ, device, app);
                 }
 
                 @Override
