@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- Include app preferences and database -->
+        <include domain="sharedpref" path="."/>
+        <include domain="database" path="."/>
+        <!-- Include file domain but exclude cache/temp -->
+        <include domain="file" path="."/>
+        <exclude domain="file" path="cache/"/>
+        <exclude domain="file" path="temp/"/>
+    </cloud-backup>
+    <device-transfer>
+        <!-- Include all app data for device transfers -->
+        <include domain="sharedpref" path="."/>
+        <include domain="database" path="."/>
+        <include domain="file" path="."/>
+        <!-- But still exclude cache -->
+        <exclude domain="file" path="cache/"/>
+    </device-transfer>
+</data-extraction-rules>

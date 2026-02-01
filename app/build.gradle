@@ -1,5 +1,11 @@
 apply plugin: 'com.android.application'
 
+// Version components from release-please
+// versionCode = MAJOR * 10000 + MINOR * 100 + PATCH (e.g., 20.0.0 -> 200000)
+def versionMajor = 20 // x-release-please-major
+def versionMinor = 0 // x-release-please-minor
+def versionPatch = 0 // x-release-please-patch
+
 android {
     namespace 'org.surfsite.gexporter'
     compileSdk 36
@@ -8,8 +14,8 @@ android {
         applicationId "org.surfsite.gexporter"
         minSdkVersion 21
         targetSdkVersion 36
-        versionCode 20
-        versionName "20"
+        versionCode versionMajor * 10000 + versionMinor * 100 + versionPatch
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {

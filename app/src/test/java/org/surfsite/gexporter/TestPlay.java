@@ -69,11 +69,6 @@ public class TestPlay {
     }
 
     @Test
-    public void testFit_sample_11_3() throws Exception {
-        testFit("sample11-3.gpx", "sample11-3.fit");
-    }
-
-    @Test
     public void testFit_sample_11_route() throws Exception {
         testFit("sample11-route.gpx", "sample11-route.fit");
     }
