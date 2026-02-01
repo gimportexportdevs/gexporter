@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 // Version components from release-please
 // versionCode = MAJOR * 10000 + MINOR * 100 + PATCH (e.g., 20.0.0 -> 200000)
 def versionMajor = 20 // x-release-please-major
-def versionMinor = 0 // x-release-please-minor
+def versionMinor = 1 // x-release-please-minor
 def versionPatch = 0 // x-release-please-patch
 
 android {
