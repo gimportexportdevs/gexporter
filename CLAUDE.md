@@ -8,18 +8,27 @@ This is **gexporter**, an Android companion app that serves GPX/FIT files to Gar
 
 ## Build Commands
 
+The Nix flake provides the full toolchain (Android SDK 36, JDK 17, Gradle) with
+`ANDROID_HOME`/`JAVA_HOME` set, so no local Android SDK install is needed. Prefix
+any Gradle command with `nix develop -c`, or enter the shell once with `nix develop`:
+
 ```bash
-./gradlew build              # Build the app
-./gradlew test               # Run unit tests
-./gradlew assembleDebug      # Build debug APK
-./gradlew assembleRelease    # Build release APK
+nix develop -c ./gradlew build              # Build the app
+nix develop -c ./gradlew test               # Run all unit tests
+nix develop -c ./gradlew assembleDebug      # Build debug APK
+nix develop -c ./gradlew assembleRelease    # Build release APK
 
-# Run a single test class
-./gradlew test --tests "org.surfsite.gexporter.TestPlay"
+# One-shot release build via the flake's build-app package
+nix run
 
-# Run a single test method
-./gradlew test --tests "org.surfsite.gexporter.TestPlay.test10"
+# Run a single test class or method. NOTE: use the testDebugUnitTest task,
+# not the aggregate `test` task, which rejects --tests.
+nix develop -c ./gradlew testDebugUnitTest --tests "org.surfsite.gexporter.TestPlay"
+nix develop -c ./gradlew testDebugUnitTest --tests "org.surfsite.gexporter.TestPlay.test10"
 ```
+
+Without Nix, a standard Android SDK 36 / JDK 17 install and `./gradlew ...`
+work the same; point `local.properties`'s `sdk.dir` at your SDK.
 
 ## Local Development Server
 
@@ -74,6 +83,11 @@ Communicates with Garmin devices via ConnectIQ SDK:
 
 ## Environment
 
-- Java 11 source/target compatibility
+- Java 11 source/target compatibility (built with JDK 17)
 - Android SDK 36 (min SDK 21)
-- Nix flake available for reproducible environment (`nix develop`)
+- Nix flake (`flake.nix`) provides a reproducible environment: `nix develop`
+  for a dev shell (Android SDK, JDK 17, Gradle, plus `adb`/`emulator`/`ktlint`),
+  or `nix run` to build a release APK in one shot. First run downloads the
+  Android SDK, so it is slow; subsequent runs are cached. Gradle itself needs
+  network access on the first build to fetch the Android Gradle plugin
+  (offline mode fails until the plugin is cached).
