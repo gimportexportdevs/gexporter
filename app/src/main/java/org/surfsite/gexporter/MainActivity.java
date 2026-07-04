@@ -256,6 +256,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     connectIQ.getApplicationInfo(CONNECT_IQ_GIMPORTER_APP, device, new ConnectIQ.IQApplicationInfoListener() {
                         @Override
                         public void onApplicationInfoReceived(IQApp app) {
+                            mConnectedDevice = device;
+                            mConnectedApp = app;
+
+                            // Register the GET_PORT listener as soon as we know the
+                            // app is installed - independent of whether the user
+                            // accepts the "open app" prompt below. Otherwise a
+                            // dismissed prompt or non-success status leaves GET_PORT
+                            // permanently unanswered for this process.
+                            registerMessageListener(connectIQ, device, app);
+
                             try {
                                 connectIQ.openApplication(device, app, (iqDevice, iqApp, status) -> {
                                     if (status == ConnectIQ.IQOpenApplicationStatus.PROMPT_SHOWN_ON_DEVICE ||
@@ -265,12 +275,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         CardView connectCard = findViewById(R.id.connect_card);
                                         connectCard.setCardBackgroundColor(0xff77cc77);
 
-                                        mConnectedDevice = device;
-                                        mConnectedApp = app;
-
                                         Log.info("Garmin app {} successfully connected to device {}",
                                                 app.getApplicationId(), device.getDeviceIdentifier());
-                                        registerMessageListener(connectIQ, device, app);
                                     }
                                 });
                             } catch (InvalidStateException | ServiceUnavailableException e) {
@@ -438,7 +444,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onResume();
         Log.debug("onResume called");
 
-        mGpx2FitOptions = load();
+        // Keep a single options object so a running WebServer never holds a
+        // stale reference; update it in place from persisted settings.
+        if (mGpx2FitOptions == null) {
+            mGpx2FitOptions = load();
+        } else {
+            mGpx2FitOptions.copyFrom(load());
+        }
         updateUIFromOptions();
         processIntent(getIntent());
 
@@ -466,19 +478,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mSpeedUnit.setSelection(mGpx2FitOptions.getSpeedUnit());
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        // singleTask: a new share is delivered here to the existing instance;
+        // stash it so the next onResume processes it (and consumes it).
+        setIntent(intent);
+    }
+
     private void processIntent(Intent intent) {
         String action = intent.getAction();
         Log.debug("Processing intent: {}", intent);
 
+        boolean handled = false;
         if (Intent.ACTION_SEND.equals(action)) {
             processSingleFile(intent);
+            handled = true;
         } else if (Intent.ACTION_VIEW.equals(action)) {
             processViewFile(intent);
+            handled = true;
         } else if (Intent.ACTION_SEND_MULTIPLE.equals(action)) {
             processMultipleFiles(intent);
+            handled = true;
         }
 
-        if (mUris != null && server != null) {
+        if (!handled) {
+            // Plain resume (no share) - do not tear down a running server.
+            return;
+        }
+
+        // Consume the intent so a later resume doesn't reprocess the sticky
+        // share and abort an in-flight download by rebuilding the server.
+        setIntent(new Intent());
+
+        if (server != null) {
             server.stop();
             server = null;
         }
@@ -584,6 +617,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             server = null;
             clearTempDir();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        // Symmetric teardown for initConnectIQ()/registerForAppEvents(): without
+        // it the ConnectIQ singleton keeps this (destroyed) activity reachable
+        // through its listener map, and GET_PORT can be delivered to a dead
+        // instance after a config-change recreation.
+        if (mConnectIQ != null) {
+            try {
+                mConnectIQ.unregisterAllForEvents();
+            } catch (Exception e) {
+                Log.error("Error unregistering ConnectIQ events", e);
+            }
+            try {
+                mConnectIQ.shutdown(this);
+            } catch (Exception e) {
+                Log.error("Error shutting down ConnectIQ", e);
+            }
+        }
+        mRegisteredDevices.clear();
+        super.onDestroy();
     }
 
     @Override
@@ -707,6 +762,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.info("Web server initialized on dynamic port: {}", actualPort);
             } catch (IOException | NoSuchAlgorithmException e2) {
                 Log.error("The server could not start on any port: {}", e2.toString());
+                // Don't leave a dead, never-started instance in `server`: it
+                // would block every retry and make GET_PORT reply -1.
+                server = null;
                 mTextView.setText(R.string.no_server);
             }
         }

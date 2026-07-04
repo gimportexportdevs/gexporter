@@ -20,6 +20,7 @@
         <activity
             android:name="org.surfsite.gexporter.MainActivity"
             android:configChanges="orientation|screenSize"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="stateHidden"
             android:exported="true">
 
