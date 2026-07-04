@@ -6,15 +6,33 @@ package org.surfsite.gexporter;
  */
 
 public class Gpx2FitOptions {
-    private double speed;
-    private boolean use3dDistance;
-    private boolean forceSpeed;
-    private boolean injectCoursePoints;
-    private boolean walkingGrade;
-    private double minRoutePointDistance;
-    private double minCoursePointDistance;
-    private int maxPoints;
-    private int speedUnit;
+    // volatile: written on the UI thread, read on NanoHTTPD request threads.
+    private volatile double speed;
+    private volatile boolean use3dDistance;
+    private volatile boolean forceSpeed;
+    private volatile boolean injectCoursePoints;
+    private volatile boolean walkingGrade;
+    private volatile double minRoutePointDistance;
+    private volatile double minCoursePointDistance;
+    private volatile int maxPoints;
+    private volatile int speedUnit;
+
+    /**
+     * Copy all settings from another instance into this one. Lets a single
+     * long-lived options object (the one a running WebServer holds) be updated
+     * in place, instead of the server keeping a stale reference.
+     */
+    public void copyFrom(Gpx2FitOptions o) {
+        this.speed = o.speed;
+        this.use3dDistance = o.use3dDistance;
+        this.forceSpeed = o.forceSpeed;
+        this.injectCoursePoints = o.injectCoursePoints;
+        this.walkingGrade = o.walkingGrade;
+        this.minRoutePointDistance = o.minRoutePointDistance;
+        this.minCoursePointDistance = o.minCoursePointDistance;
+        this.maxPoints = o.maxPoints;
+        this.speedUnit = o.speedUnit;
+    }
 
     public Gpx2FitOptions() {
         speed = 1000.0 / 14.0 / 60.0;

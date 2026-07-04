@@ -68,38 +68,47 @@ public class Gpx2Fit {
 
     Gpx2FitOptions mGpx2FitOptions;
 
+    // Namespaces to try in order: GPX 1.1, GPX 1.0, then null (namespace-agnostic,
+    // for files emitted without an xmlns). The caller owns and closes `in`.
+    private static final String[] GPX_NAMESPACES = {
+            HTTP_WWW_TOPOGRAFIX_COM_GPX_1_1,
+            HTTP_WWW_TOPOGRAFIX_COM_GPX_1_0,
+            null,
+    };
+
     public Gpx2Fit(String name, FileInputStream in, Gpx2FitOptions options) throws Exception {
         mGpx2FitOptions = options;
         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
         factory.setNamespaceAware(true);
         XmlPullParser parser = factory.newPullParser();
-        //parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
         courseName = name;
 
-        BufferedInputStream inputStream = new BufferedInputStream(in);
-
-        try {
-            parser.setInput(inputStream, null);
-            parser.nextTag();
-            readGPX(parser);
-            inputStream.close();
-            return;
-        } catch (Exception e) {
-            ns = HTTP_WWW_TOPOGRAFIX_COM_GPX_1_0;
-            if (Log.isDebugEnabled())
-                Log.debug("Ex {}", e);
+        Exception last = null;
+        for (int attempt = 0; attempt < GPX_NAMESPACES.length; attempt++) {
+            ns = GPX_NAMESPACES[attempt];
+            if (attempt > 0) {
+                // Rewind and drop any partial results from the failed attempt.
+                in.getChannel().position(0);
+                trkPoints.clear();
+                rtePoints.clear();
+                wayPoints.clear();
+            }
+            // Do not close this stream: it wraps the caller-owned `in`, which
+            // the caller closes; closing here would also close `in` and break
+            // the rewind for the next attempt.
+            BufferedInputStream inputStream = new BufferedInputStream(in);
+            try {
+                parser.setInput(inputStream, null);
+                parser.nextTag();
+                readGPX(parser);
+                return;
+            } catch (Exception e) {
+                last = e;
+                if (Log.isDebugEnabled())
+                    Log.debug("Parse attempt {} (ns={}) failed: {}", attempt, ns, e);
+            }
         }
-
-        in.getChannel().position(0);
-        inputStream = new BufferedInputStream(in);
-
-        try {
-            parser.setInput(inputStream, null);
-            parser.nextTag();
-            readGPX(parser);
-        } finally {
-            inputStream.close();
-        }
+        throw last;
     }
 
     public List<WayPoint> getWaypoints() {
