@@ -2,6 +2,8 @@ package org.surfsite.gexporter;
 
 import androidx.annotation.NonNull;
 
+import com.google.gson.Gson;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +15,9 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,10 +33,28 @@ public class WebServer extends NanoHTTPD {
     public WebServer(File rootDir, File cacheDir, int port, Gpx2FitOptions options)
             throws IOException, NoSuchAlgorithmException {
 
-        super(port);
+        // Bind loopback only: the watch reaches us through the on-phone BLE
+        // proxy at 127.0.0.1, so there is no reason to expose files to the LAN.
+        super("127.0.0.1", port);
         mRootDir = rootDir;
         mCacheDir = cacheDir;
         mGpx2FitOptions = options;
+    }
+
+    /**
+     * Resolve a request path against the served root, rejecting anything that
+     * escapes it (path traversal). Returns null if the path is outside root.
+     */
+    private File resolveInRoot(String path) throws IOException {
+        File root = mRootDir.getCanonicalFile();
+        File target = new File(root, path).getCanonicalFile();
+        String rootPath = root.getPath();
+        if (target.getPath().equals(rootPath)
+                || target.getPath().startsWith(rootPath + File.separator)) {
+            return target;
+        }
+        Log.warn("Rejected path outside root: {}", path);
+        return null;
     }
 
     private static final String MIME_JSON = "application/json";
@@ -70,28 +92,43 @@ public class WebServer extends NanoHTTPD {
                 return getDir(doGPXonly, doShort, doLongname);
             }
 
-            String path;
-
-            path = uri;
+            String path = uri;
             File src = null;
             try{
                 if(path.endsWith(".json")){
                     mime_type = MIME_JSON;
                 } else if(path.endsWith(".fit") || path.endsWith(".FIT")) {
                     mime_type = MIME_FIT;
-                    src = new File(mRootDir, path);
+                    src = resolveInRoot(path);
                 } else if(path.endsWith(".gpx") || path.endsWith(".GPX")) {
-                    src = new File(mRootDir, path);
+                    File gpx = resolveInRoot(path);
 
-                    if (doGPXonly) {
+                    if (gpx == null) {
+                        src = null;
+                    } else if (doGPXonly) {
+                        src = gpx;
                         mime_type = MIME_GPX;
                     } else {
-                        String courseName = (doLongname ? src.getName() : getCourseName(src.getName()));
+                        String courseName = (doLongname ? gpx.getName() : getCourseName(gpx.getName()));
 
-                        Gpx2Fit loader = new Gpx2Fit(courseName, new FileInputStream(src), mGpx2FitOptions);
-                        src = new File(mCacheDir, path + ".fit");
-                        Log.warn("Generating {}", src.getAbsolutePath());
-                        loader.writeFit(src);
+                        File out = new File(mCacheDir, path + ".fit");
+                        // Convert into a private temp file and atomically move it
+                        // into place, so a concurrent request for the same course
+                        // never streams a half-written cache file.
+                        File tmp = File.createTempFile("conv", ".fit", mCacheDir);
+                        try (FileInputStream fis = new FileInputStream(gpx)) {
+                            Gpx2Fit loader = new Gpx2Fit(courseName, fis, mGpx2FitOptions);
+                            Log.warn("Generating {}", out.getAbsolutePath());
+                            loader.writeFit(tmp);
+                        } catch (Exception e) {
+                            tmp.delete();
+                            throw e;
+                        }
+                        if (!tmp.renameTo(out)) {
+                            tmp.delete();
+                            throw new IOException("Could not move converted file into cache");
+                        }
+                        src = out;
                         mime_type = MIME_FIT;
                     }
                 }
@@ -149,38 +186,42 @@ public class WebServer extends NanoHTTPD {
 
         Arrays.sort(filelist);
 
-        String ret="{ \"tracks\" : [";
-        int num = 0;
+        // Build the response with a JSON serializer so filenames containing
+        // quotes, backslashes or control characters can't produce invalid JSON
+        // (the watch rejects the whole list if any entry is malformed).
+        List<Map<String, String>> tracks = new ArrayList<>();
         for (String aFilelist : filelist) {
             if (aFilelist.endsWith(".fit") || aFilelist.endsWith(".FIT") || aFilelist.endsWith(".gpx") || aFilelist.endsWith(".GPX")  ) {
-                String url = null;
+                String url;
                 try {
-                    if (doShort) {
-                        url = URLEncoder.encode(aFilelist, "UTF-8");
-                    }
-                    else {
-                        url = "http://127.0.0.1:" + this.getListeningPort() + "/" + URLEncoder.encode(aFilelist, "UTF-8");
-                    }
+                    String encoded = URLEncoder.encode(aFilelist, "UTF-8");
+                    url = doShort ? encoded : "http://127.0.0.1:" + this.getListeningPort() + "/" + encoded;
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    // UTF-8 is always available; skip the entry rather than emit a null url.
+                    Log.error("Could not encode {}", aFilelist, e);
+                    continue;
                 }
                 String courseName = (doLongname ? aFilelist : getCourseName(aFilelist));
 
-                ret += String.format("{ \"title\": \"%s\", \"url\": \"%s\"  },\n", courseName, url);
-                num += 1;
+                Map<String, String> track = new LinkedHashMap<>();
+                track.put("title", courseName);
+                track.put("url", url);
+                tracks.add(track);
             }
         }
-        if (num > 0)
-            ret = ret.substring(0, ret.length()-2);
-        ret += "]}";
-        Log.error("Return {}", ret);
+        Map<String, Object> root = new LinkedHashMap<>();
+        root.put("tracks", tracks);
+        String ret = new Gson().toJson(root);
+        Log.info("Return {}", ret);
         return NanoHTTPD.newFixedLengthResponse(Response.Status.OK, MIME_JSON, ret);
     }
 
     @NonNull
     private Response errorResponse(Exception e) {
+        Map<String, String> body = new LinkedHashMap<>();
+        body.put("error", String.valueOf(e.getMessage()));
         return NanoHTTPD.newFixedLengthResponse(Response.Status.NOT_FOUND, MIME_JSON,
-                "{ \"error\" : \"" + e.toString() + "\" } ");
+                new Gson().toJson(body));
     }
 
     @NonNull
