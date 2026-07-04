@@ -38,12 +38,27 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class Gpx2Fit {
     private static final Logger Log = LoggerFactory.getLogger(Gpx2Fit.class);
 
     private static final String HTTP_WWW_TOPOGRAFIX_COM_GPX_1_0 = "http://www.topografix.com/GPX/1/0";
     private static final String HTTP_WWW_TOPOGRAFIX_COM_GPX_1_1 = "http://www.topografix.com/GPX/1/1";
+
+    // Lower bound for a synthesized speed (m/s) so time never stalls or reverses.
+    private static final double MIN_FORCE_SPEED = 0.1;
+
+    // ISO-8601 <time> variants, tried in order. All parsed as UTC; a numeric
+    // offset like "+01:00" is normalized to "+0100" (RFC822) beforehand so the
+    // last two patterns match without needing the 'X' letter (API 24+ only).
+    private static final String[] TIME_PATTERNS = {
+            "yyyy-MM-dd'T'HH:mm:ss'Z'",
+            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+            "yyyy-MM-dd'T'HH:mm:ssZ",
+            "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+    };
 
     private final List<WayPoint> trkPoints = new ArrayList<>();
     private final List<WayPoint> rtePoints = new ArrayList<>();
@@ -224,8 +239,8 @@ public class Gpx2Fit {
         parser.require(XmlPullParser.START_TAG, ns, "trkpt");
         Date time = null;
         String name = null;
-        double lat = Double.parseDouble(parser.getAttributeValue(null, "lat"));
-        double lon = Double.parseDouble(parser.getAttributeValue(null, "lon"));
+        double lat = parseCoordinate(parser.getAttributeValue(null, "lat"), -90.0, 90.0, "lat");
+        double lon = parseCoordinate(parser.getAttributeValue(null, "lon"), -180.0, 180.0, "lon");
         double ele = Double.NaN;
 
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -255,8 +270,8 @@ public class Gpx2Fit {
         parser.require(XmlPullParser.START_TAG, ns, "wpt");
         String name = null;
         Date time = null;
-        double lat = Double.parseDouble(parser.getAttributeValue(null, "lat"));
-        double lon = Double.parseDouble(parser.getAttributeValue(null, "lon"));
+        double lat = parseCoordinate(parser.getAttributeValue(null, "lat"), -90.0, 90.0, "lat");
+        double lon = parseCoordinate(parser.getAttributeValue(null, "lon"), -180.0, 180.0, "lon");
         double ele = Double.NaN;
         String type = null;
         String symbol = null;
@@ -294,8 +309,8 @@ public class Gpx2Fit {
         parser.require(XmlPullParser.START_TAG, ns, "rtept");
         String name = null;
         Date time = null;
-        double lat = Double.parseDouble(parser.getAttributeValue(null, "lat"));
-        double lon = Double.parseDouble(parser.getAttributeValue(null, "lon"));
+        double lat = parseCoordinate(parser.getAttributeValue(null, "lat"), -90.0, 90.0, "lat");
+        double lon = parseCoordinate(parser.getAttributeValue(null, "lon"), -180.0, 180.0, "lon");
         double ele = Double.NaN;
 
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -324,27 +339,58 @@ public class Gpx2Fit {
     private double readEle(XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, ns, "ele");
         String txt = readText(parser);
-        double ele = Double.parseDouble(txt);
         parser.require(XmlPullParser.END_TAG, ns, "ele");
-        return ele;
+        // Elevation is optional; treat an empty or unparseable <ele> as absent
+        // (NaN) rather than failing the whole file.
+        try {
+            return Double.parseDouble(txt);
+        } catch (NumberFormatException e) {
+            return Double.NaN;
+        }
+    }
+
+    /**
+     * Parse a required lat/lon attribute, rejecting null, non-numeric,
+     * non-finite, or out-of-range values.
+     */
+    private static double parseCoordinate(String value, double min, double max, String what) {
+        if (value == null)
+            throw new IllegalArgumentException("Missing " + what);
+        double v = Double.parseDouble(value);
+        if (Double.isNaN(v) || Double.isInfinite(v) || v < min || v > max)
+            throw new IllegalArgumentException("Invalid " + what + ": " + value);
+        return v;
     }
 
     private Date readTime(XmlPullParser parser) throws IOException, XmlPullParserException {
         parser.require(XmlPullParser.START_TAG, ns, "time");
         String txt = readText(parser);
+        parser.require(XmlPullParser.END_TAG, ns, "time");
+        return parseIsoTime(txt);
+    }
 
-        @SuppressLint("SimpleDateFormat")
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-
-        Date time;
-        try {
-            time = dateFormat.parse(txt);
-        } catch (ParseException e) {
-            time = null;
-        } finally {
-            parser.require(XmlPullParser.END_TAG, ns, "time");
+    @SuppressLint("SimpleDateFormat")
+    static Date parseIsoTime(String txt) {
+        if (txt == null)
+            return null;
+        txt = txt.trim();
+        if (txt.isEmpty())
+            return null;
+        // Normalize a trailing numeric offset "+01:00" -> "+0100" so the RFC822
+        // 'Z' patterns match on all API levels (SimpleDateFormat 'X' is API 24+).
+        String normalized = txt.replaceFirst("([+-]\\d{2}):(\\d{2})$", "$1$2");
+        for (String pattern : TIME_PATTERNS) {
+            SimpleDateFormat fmt = new SimpleDateFormat(pattern, Locale.US);
+            fmt.setTimeZone(TimeZone.getTimeZone("UTC"));
+            fmt.setLenient(false);
+            try {
+                return fmt.parse(normalized);
+            } catch (ParseException ignored) {
+                // try the next pattern
+            }
         }
-        return time;
+        Log.warn("Unparseable <time>: {}", txt);
+        return null;
     }
 
     private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
@@ -394,7 +440,12 @@ public class Gpx2Fit {
             rtePoints.clear();
         }
 
+        if (trkPoints.isEmpty()) {
+            throw new IllegalArgumentException("GPX contains no track or route points");
+        }
+
         FileEncoder encode = new FileEncoder(outfile, Fit.ProtocolVersion.V2_0);
+        try {
 
         {
             //Generate FileIdMessage
@@ -478,13 +529,22 @@ public class Gpx2Fit {
                     }
 
                     if (mGpx2FitOptions.isWalkingGrade()) {
-                        grade = dele / d;
+                        // Clamp to the grade-factor study domain: outside it the
+                        // 5th-degree polynomial goes negative and would run time
+                        // backwards.
+                        grade = (d > 0.0) ? dele / d : 0.0;
+                        grade = Math.max(-0.45, Math.min(0.45, grade));
                         gspeed = getWalkingGradeFactor(grade) * speed;
                     }
                 }
 
                 if (forceSpeed) {
-                    endDate = new Date(endDate.getTime() + (long) (d / gspeed * 1000.0));
+                    // Guard against a zero/negative/NaN synthesized speed, which
+                    // would make the timestamp jump to Long.MAX_VALUE or backwards.
+                    double effSpeed = gspeed;
+                    if (Double.isNaN(effSpeed) || effSpeed < MIN_FORCE_SPEED)
+                        effSpeed = MIN_FORCE_SPEED;
+                    endDate = new Date(endDate.getTime() + (long) (d / effSpeed * 1000.0));
                     wpt.setTime(endDate);
                 }
             }
@@ -515,7 +575,8 @@ public class Gpx2Fit {
 
             lapMesg.setTotalTimerTime((float) (duration / 1000.0));
             lapMesg.setTotalDistance((float) totaldist);
-            lapMesg.setAvgSpeed((float) (totaldist * 1000.0 / (double) duration));
+            if (duration > 0)
+                lapMesg.setAvgSpeed((float) (totaldist * 1000.0 / (double) duration));
 
             lapMesg.setTotalElapsedTime((float) (duration / 1000.0));
 
@@ -694,7 +755,9 @@ public class Gpx2Fit {
 
                 long l = timestamp.getDate().getTime();
 
-                if (ltimestamp != l) {
+                // Only compute speed for a forward time delta; a non-monotonic
+                // or backwards timestamp would otherwise yield a negative speed.
+                if (l > ltimestamp) {
                     gspeed = (dist - ldist) / (l - ltimestamp) * 1000.0;
                     r.setSpeed((float) gspeed);
                 } else {
@@ -729,7 +792,10 @@ public class Gpx2Fit {
             encode.write(eventMesg);
         }
 
-        encode.close();
+        } finally {
+            // Always release the file handle, even on a mid-encode failure.
+            encode.close();
+        }
     }
 
     private void writeWayPoints(FileEncoder encode, List<WayPoint> points) {
