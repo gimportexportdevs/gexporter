@@ -8,7 +8,7 @@ This is **gexporter**, an Android companion app that serves GPX/FIT files to Gar
 
 ## Build Commands
 
-The Nix flake provides the full toolchain (Android SDK 36, JDK 17, Gradle) with
+The Nix flake provides the full toolchain (Android SDK 37, JDK 17, Gradle) with
 `ANDROID_HOME`/`JAVA_HOME` set, so no local Android SDK install is needed. Prefix
 any Gradle command with `nix develop -c`, or enter the shell once with `nix develop`:
 
@@ -27,7 +27,7 @@ nix develop -c ./gradlew testDebugUnitTest --tests "org.surfsite.gexporter.TestP
 nix develop -c ./gradlew testDebugUnitTest --tests "org.surfsite.gexporter.TestPlay.test10"
 ```
 
-Without Nix, a standard Android SDK 36 / JDK 17 install and `./gradlew ...`
+Without Nix, a standard Android SDK 37 / JDK 17 install and `./gradlew ...`
 work the same; point `local.properties`'s `sdk.dir` at your SDK.
 
 ## Local Development Server
@@ -77,14 +77,14 @@ Communicates with Garmin devices via ConnectIQ SDK:
 ## Key Dependencies
 
 - **NanoHTTPD 2.3.1**: HTTP server
-- **Garmin FIT SDK 21.176.0**: FIT file format
-- **Garmin ConnectIQ Companion SDK 2.2.0**: Device communication
+- **Garmin FIT SDK 21.205.0**: FIT file format
+- **Garmin ConnectIQ Companion SDK 2.4.0**: Device communication
 - **geodesy 1.1.3**: GPS distance calculations
 
 ## Environment
 
 - Java 11 source/target compatibility (built with JDK 17)
-- Android SDK 36 (min SDK 21)
+- Android SDK 37 (min SDK 23)
 - Nix flake (`flake.nix`) provides a reproducible environment: `nix develop`
   for a dev shell (Android SDK, JDK 17, Gradle, plus `adb`/`emulator`/`ktlint`),
   or `nix run` to build a release APK in one shot. First run downloads the

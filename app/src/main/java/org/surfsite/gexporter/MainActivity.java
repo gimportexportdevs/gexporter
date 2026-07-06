@@ -369,7 +369,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             mRegisteredDevices.add(deviceId);
             Log.info("Registered message listener for Garmin app on device {}", deviceId);
-        } catch (InvalidStateException e) {
+        } catch (InvalidStateException | ServiceUnavailableException e) {
             Log.error("Error registering message listener for device {}", deviceId, e);
         }
     }
