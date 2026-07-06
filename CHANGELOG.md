@@ -1,5 +1,13 @@
 # Changelog
 
+## [20.2.0](https://github.com/gimportexportdevs/gexporter/compare/v20.1.0...v20.2.0) (2026-07-06)
+
+
+### Features
+
+* add UI translations for 28 major languages ([18583fa](https://github.com/gimportexportdevs/gexporter/commit/18583fa8b05747c91a713f0c9d64052bb34ab7aa))
+* target Android SDK 37, upgrade AGP 9.2.1 / Gradle 9.6, update deps ([fea0412](https://github.com/gimportexportdevs/gexporter/commit/fea0412c1b24a4484f4999a203aee48a4a2e151a))
+
 ## [20.1.0](https://github.com/gimportexportdevs/gexporter/compare/v20.0.0...v20.1.0) (2026-07-06)
 
 
