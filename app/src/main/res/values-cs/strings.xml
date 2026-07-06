@@ -1,0 +1,28 @@
+<resources>
+    <string name="starting">Spouštění …</string>
+
+    <string name="connect_ongoing">Pokus o připojení k zařízení Garmin…</string>
+    <string name="connect_no_device">Není připojeno žádné zařízení Garmin!</string>
+    <string name="connect_app_not_installed">Aplikace gimporter CIQ zřejmě není nainstalována. Klepnutím ji stáhnete.</string>
+    <string name="connect_app_only_widget_installed">Widgetová verze gimporter nepodporuje automatické spuštění. Klepnutím stáhnete aplikaci pro zařízení a získáte ještě plynulejší zážitek.</string>
+    <string name="connect_connected">Připojeno</string>
+    <string name="connect_init_failed">Nepodařilo se komunikovat s Garmin Connect</string>
+
+    <string name="settings">Nastavení</string>
+    <string name="force_speed">Vynutit rychlost</string>
+    <string name="speed">Výchozí rychlost:</string>
+    <string name="inject_course_points">Vložit body trasy</string>
+    <string name="use_3d_distance">Použít 3D vzdálenost</string>
+    <string name="use_walking_grade_factor">Použít faktor sklonu při chůzi</string>
+    <string name="reduce_points_to">Omezit body na</string>
+    <string name="points">bodů</string>
+    <string name="no_permission">Bez oprávnění ke čtení souborů.</string>
+    <string name="no_server">Server se nepodařilo spustit</string>
+    <string name="serving_from">Poskytování z: %1$s\n\n%2$s</string>
+    <string name="no_files_to_serve">Žádné soubory k poskytnutí z %1$s</string>
+    <string name="serving_not_possible">Použijte prosím správce souborů a sdílejte soubory s touto aplikací!</string>
+    <string name="help">Nápověda</string>
+    <string name="menu">Nabídka</string>
+    <string name="select_file">Vyberte adresář k exportu</string>
+    <string name="expand_settings">Rozbalit nastavení</string>
+</resources>

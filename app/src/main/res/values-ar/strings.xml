@@ -1,0 +1,28 @@
+<resources>
+    <string name="starting">جارٍ البدء …</string>
+
+    <string name="connect_ongoing">محاولة الاتصال بجهاز Garmin…</string>
+    <string name="connect_no_device">لا يوجد جهاز Garmin متصل!</string>
+    <string name="connect_app_not_installed">يبدو أن تطبيق gimporter CIQ غير مثبَّت. اضغط للتنزيل.</string>
+    <string name="connect_app_only_widget_installed">لا يدعم إصدار الأداة (widget) من gimporter التشغيل التلقائي. اضغط لتنزيل تطبيق الجهاز للحصول على تجربة أكثر سلاسة.</string>
+    <string name="connect_connected">متصل</string>
+    <string name="connect_init_failed">تعذّر الاتصال بـ Garmin Connect</string>
+
+    <string name="settings">الإعدادات</string>
+    <string name="force_speed">فرض السرعة</string>
+    <string name="speed">السرعة الافتراضية:</string>
+    <string name="inject_course_points">إدراج نقاط المسار</string>
+    <string name="use_3d_distance">استخدام المسافة ثلاثية الأبعاد</string>
+    <string name="use_walking_grade_factor">استخدام عامل انحدار المشي</string>
+    <string name="reduce_points_to">تقليل النقاط إلى</string>
+    <string name="points">نقطة</string>
+    <string name="no_permission">لا يوجد إذن لقراءة الملفات.</string>
+    <string name="no_server">تعذّر بدء تشغيل الخادم</string>
+    <string name="serving_from">التقديم من: %1$s\n\n%2$s</string>
+    <string name="no_files_to_serve">لا توجد ملفات لتقديمها من %1$s</string>
+    <string name="serving_not_possible">يرجى استخدام مستكشف الملفات ومشاركة الملفات مع هذا التطبيق!</string>
+    <string name="help">مساعدة</string>
+    <string name="menu">القائمة</string>
+    <string name="select_file">اختر دليلاً للتصدير</string>
+    <string name="expand_settings">توسيع الإعدادات</string>
+</resources>

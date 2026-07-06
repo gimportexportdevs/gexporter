@@ -1,0 +1,28 @@
+<resources>
+    <string name="starting">กำลังเริ่ม …</string>
+
+    <string name="connect_ongoing">กำลังพยายามเชื่อมต่อกับอุปกรณ์ Garmin…</string>
+    <string name="connect_no_device">ไม่มีอุปกรณ์ Garmin เชื่อมต่ออยู่!</string>
+    <string name="connect_app_not_installed">ดูเหมือนว่าจะยังไม่ได้ติดตั้งแอป gimporter CIQ แตะเพื่อดาวน์โหลด</string>
+    <string name="connect_app_only_widget_installed">gimporter เวอร์ชันวิดเจ็ตไม่รองรับการเปิดอัตโนมัติ แตะเพื่อดาวน์โหลดแอปสำหรับอุปกรณ์เพื่อประสบการณ์ที่ราบรื่นยิ่งขึ้น</string>
+    <string name="connect_connected">เชื่อมต่อแล้ว</string>
+    <string name="connect_init_failed">ไม่สามารถสื่อสารกับ Garmin Connect ได้</string>
+
+    <string name="settings">การตั้งค่า</string>
+    <string name="force_speed">บังคับความเร็ว</string>
+    <string name="speed">ความเร็วเริ่มต้น:</string>
+    <string name="inject_course_points">แทรกจุดเส้นทาง</string>
+    <string name="use_3d_distance">ใช้ระยะทางแบบ 3 มิติ</string>
+    <string name="use_walking_grade_factor">ใช้ปัจจัยความชันในการเดิน</string>
+    <string name="reduce_points_to">ลดจุดเหลือ</string>
+    <string name="points">จุด</string>
+    <string name="no_permission">ไม่มีสิทธิ์อ่านไฟล์</string>
+    <string name="no_server">ไม่สามารถเริ่มเซิร์ฟเวอร์ได้</string>
+    <string name="serving_from">กำลังให้บริการจาก: %1$s\n\n%2$s</string>
+    <string name="no_files_to_serve">ไม่มีไฟล์ให้บริการจาก %1$s</string>
+    <string name="serving_not_possible">โปรดใช้ตัวจัดการไฟล์และแชร์ไฟล์กับแอปนี้!</string>
+    <string name="help">ช่วยเหลือ</string>
+    <string name="menu">เมนู</string>
+    <string name="select_file">เลือกไดเรกทอรีเพื่อส่งออก</string>
+    <string name="expand_settings">ขยายการตั้งค่า</string>
+</resources>

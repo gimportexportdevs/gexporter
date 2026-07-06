@@ -1,0 +1,28 @@
+<resources>
+    <string name="starting">Εκκίνηση …</string>
+
+    <string name="connect_ongoing">Προσπάθεια σύνδεσης με συσκευή Garmin…</string>
+    <string name="connect_no_device">Δεν έχει συνδεθεί συσκευή Garmin!</string>
+    <string name="connect_app_not_installed">Η εφαρμογή gimporter CIQ δεν φαίνεται να είναι εγκατεστημένη. Πατήστε για λήψη.</string>
+    <string name="connect_app_only_widget_installed">Η έκδοση widget του gimporter δεν υποστηρίζει αυτόματη εκκίνηση. Πατήστε για λήψη της εφαρμογής συσκευής για μια ακόμη πιο ομαλή εμπειρία.</string>
+    <string name="connect_connected">Συνδεδεμένο</string>
+    <string name="connect_init_failed">Δεν ήταν δυνατή η επικοινωνία με το Garmin Connect</string>
+
+    <string name="settings">Ρυθμίσεις</string>
+    <string name="force_speed">Επιβολή ταχύτητας</string>
+    <string name="speed">Προεπιλεγμένη ταχύτητα:</string>
+    <string name="inject_course_points">Εισαγωγή σημείων διαδρομής</string>
+    <string name="use_3d_distance">Χρήση απόστασης 3D</string>
+    <string name="use_walking_grade_factor">Χρήση συντελεστή κλίσης βάδισης</string>
+    <string name="reduce_points_to">Μείωση σημείων σε</string>
+    <string name="points">σημεία</string>
+    <string name="no_permission">Δεν υπάρχει άδεια ανάγνωσης αρχείων.</string>
+    <string name="no_server">Δεν ήταν δυνατή η εκκίνηση του διακομιστή</string>
+    <string name="serving_from">Εξυπηρέτηση από: %1$s\n\n%2$s</string>
+    <string name="no_files_to_serve">Δεν υπάρχουν αρχεία προς εξυπηρέτηση από %1$s</string>
+    <string name="serving_not_possible">Χρησιμοποιήστε την εξερεύνηση αρχείων και μοιραστείτε αρχεία με αυτήν την εφαρμογή!</string>
+    <string name="help">Βοήθεια</string>
+    <string name="menu">Μενού</string>
+    <string name="select_file">Επιλέξτε έναν κατάλογο για εξαγωγή</string>
+    <string name="expand_settings">Ανάπτυξη ρυθμίσεων</string>
+</resources>

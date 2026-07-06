@@ -1,0 +1,28 @@
+<resources>
+    <string name="starting">Uruchamianie …</string>
+
+    <string name="connect_ongoing">Próba połączenia z urządzeniem Garmin…</string>
+    <string name="connect_no_device">Brak podłączonego urządzenia Garmin!</string>
+    <string name="connect_app_not_installed">Aplikacja gimporter CIQ nie wygląda na zainstalowaną. Dotknij, aby pobrać.</string>
+    <string name="connect_app_only_widget_installed">Widżetowa wersja gimporter nie obsługuje automatycznego uruchamiania. Dotknij, aby pobrać aplikację na urządzenie i cieszyć się jeszcze płynniejszym działaniem.</string>
+    <string name="connect_connected">Połączono</string>
+    <string name="connect_init_failed">Nie można połączyć się z Garmin Connect</string>
+
+    <string name="settings">Ustawienia</string>
+    <string name="force_speed">Wymuś prędkość</string>
+    <string name="speed">Domyślna prędkość:</string>
+    <string name="inject_course_points">Wstaw punkty trasy</string>
+    <string name="use_3d_distance">Użyj odległości 3D</string>
+    <string name="use_walking_grade_factor">Użyj współczynnika nachylenia dla marszu</string>
+    <string name="reduce_points_to">Zmniejsz punkty do</string>
+    <string name="points">punktów</string>
+    <string name="no_permission">Brak uprawnień do odczytu plików.</string>
+    <string name="no_server">Nie można uruchomić serwera</string>
+    <string name="serving_from">Udostępnianie z: %1$s\n\n%2$s</string>
+    <string name="no_files_to_serve">Brak plików do udostępnienia z %1$s</string>
+    <string name="serving_not_possible">Użyj eksploratora plików i udostępnij pliki tej aplikacji!</string>
+    <string name="help">Pomoc</string>
+    <string name="menu">Menu</string>
+    <string name="select_file">Wybierz katalog do wyeksportowania</string>
+    <string name="expand_settings">Rozwiń ustawienia</string>
+</resources>

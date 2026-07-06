@@ -1,0 +1,28 @@
+<resources>
+    <string name="starting">Memulai …</string>
+
+    <string name="connect_ongoing">Mencoba menghubungkan ke perangkat Garmin…</string>
+    <string name="connect_no_device">Tidak ada perangkat Garmin yang terhubung!</string>
+    <string name="connect_app_not_installed">Aplikasi gimporter CIQ sepertinya belum terpasang. Ketuk untuk mengunduh.</string>
+    <string name="connect_app_only_widget_installed">Versi widget gimporter tidak mendukung peluncuran otomatis. Ketuk untuk mengunduh aplikasi perangkat demi pengalaman yang lebih mulus.</string>
+    <string name="connect_connected">Terhubung</string>
+    <string name="connect_init_failed">Tidak dapat berkomunikasi dengan Garmin Connect</string>
+
+    <string name="settings">Pengaturan</string>
+    <string name="force_speed">Paksa kecepatan</string>
+    <string name="speed">Kecepatan default:</string>
+    <string name="inject_course_points">Sisipkan titik rute</string>
+    <string name="use_3d_distance">Gunakan jarak 3D</string>
+    <string name="use_walking_grade_factor">Gunakan faktor kemiringan jalan kaki</string>
+    <string name="reduce_points_to">Kurangi titik menjadi</string>
+    <string name="points">titik</string>
+    <string name="no_permission">Tidak ada izin untuk membaca file.</string>
+    <string name="no_server">Server tidak dapat dimulai</string>
+    <string name="serving_from">Menyajikan dari: %1$s\n\n%2$s</string>
+    <string name="no_files_to_serve">Tidak ada file untuk disajikan dari %1$s</string>
+    <string name="serving_not_possible">Silakan gunakan penjelajah file dan bagikan file dengan aplikasi ini!</string>
+    <string name="help">Bantuan</string>
+    <string name="menu">Menu</string>
+    <string name="select_file">Pilih direktori untuk diekspor</string>
+    <string name="expand_settings">Perluas pengaturan</string>
+</resources>

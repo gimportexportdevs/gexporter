@@ -1,0 +1,28 @@
+<resources>
+    <string name="starting">Đang khởi động …</string>
+
+    <string name="connect_ongoing">Đang thử kết nối với thiết bị Garmin…</string>
+    <string name="connect_no_device">Không có thiết bị Garmin nào được kết nối!</string>
+    <string name="connect_app_not_installed">Có vẻ ứng dụng gimporter CIQ chưa được cài đặt. Nhấn để tải xuống.</string>
+    <string name="connect_app_only_widget_installed">Phiên bản widget của gimporter không hỗ trợ tự động khởi chạy. Nhấn để tải ứng dụng thiết bị nhằm có trải nghiệm liền mạch hơn.</string>
+    <string name="connect_connected">Đã kết nối</string>
+    <string name="connect_init_failed">Không thể giao tiếp với Garmin Connect</string>
+
+    <string name="settings">Cài đặt</string>
+    <string name="force_speed">Buộc tốc độ</string>
+    <string name="speed">Tốc độ mặc định:</string>
+    <string name="inject_course_points">Chèn điểm tuyến đường</string>
+    <string name="use_3d_distance">Sử dụng khoảng cách 3D</string>
+    <string name="use_walking_grade_factor">Sử dụng hệ số độ dốc khi đi bộ</string>
+    <string name="reduce_points_to">Giảm số điểm còn</string>
+    <string name="points">điểm</string>
+    <string name="no_permission">Không có quyền đọc tệp.</string>
+    <string name="no_server">Không thể khởi động máy chủ</string>
+    <string name="serving_from">Đang phục vụ từ: %1$s\n\n%2$s</string>
+    <string name="no_files_to_serve">Không có tệp nào để phục vụ từ %1$s</string>
+    <string name="serving_not_possible">Vui lòng dùng trình quản lý tệp và chia sẻ tệp với ứng dụng này!</string>
+    <string name="help">Trợ giúp</string>
+    <string name="menu">Menu</string>
+    <string name="select_file">Chọn một thư mục để xuất</string>
+    <string name="expand_settings">Mở rộng cài đặt</string>
+</resources>

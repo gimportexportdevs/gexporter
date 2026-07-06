@@ -1,0 +1,28 @@
+<resources>
+    <string name="starting">शुरू हो रहा है …</string>
+
+    <string name="connect_ongoing">Garmin डिवाइस से कनेक्ट करने का प्रयास किया जा रहा है…</string>
+    <string name="connect_no_device">कोई Garmin डिवाइस कनेक्ट नहीं है!</string>
+    <string name="connect_app_not_installed">ऐसा लगता है कि gimporter CIQ ऐप इंस्टॉल नहीं है। डाउनलोड करने के लिए टैप करें।</string>
+    <string name="connect_app_only_widget_installed">gimporter का विजेट संस्करण ऑटो लॉन्च का समर्थन नहीं करता। और भी सहज अनुभव के लिए डिवाइस ऐप डाउनलोड करने हेतु टैप करें।</string>
+    <string name="connect_connected">कनेक्ट हो गया</string>
+    <string name="connect_init_failed">Garmin Connect से संचार नहीं हो सका</string>
+
+    <string name="settings">सेटिंग्स</string>
+    <string name="force_speed">गति बाध्य करें</string>
+    <string name="speed">डिफ़ॉल्ट गति:</string>
+    <string name="inject_course_points">कोर्स पॉइंट जोड़ें</string>
+    <string name="use_3d_distance">3D दूरी का उपयोग करें</string>
+    <string name="use_walking_grade_factor">वॉकिंग ग्रेड फ़ैक्टर का उपयोग करें</string>
+    <string name="reduce_points_to">पॉइंट घटाकर करें</string>
+    <string name="points">पॉइंट</string>
+    <string name="no_permission">फ़ाइलें पढ़ने की अनुमति नहीं है।</string>
+    <string name="no_server">सर्वर शुरू नहीं किया जा सका</string>
+    <string name="serving_from">यहाँ से सर्व किया जा रहा है: %1$s\n\n%2$s</string>
+    <string name="no_files_to_serve">%1$s से सर्व करने के लिए कोई फ़ाइल नहीं है</string>
+    <string name="serving_not_possible">कृपया फ़ाइल एक्सप्लोरर का उपयोग करें और इस ऐप के साथ फ़ाइलें साझा करें!</string>
+    <string name="help">सहायता</string>
+    <string name="menu">मेन्यू</string>
+    <string name="select_file">निर्यात के लिए एक निर्देशिका चुनें</string>
+    <string name="expand_settings">सेटिंग्स विस्तृत करें</string>
+</resources>

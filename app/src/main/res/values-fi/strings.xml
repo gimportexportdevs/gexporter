@@ -1,0 +1,28 @@
+<resources>
+    <string name="starting">Käynnistetään …</string>
+
+    <string name="connect_ongoing">Yhdistetään Garmin-laitteeseen…</string>
+    <string name="connect_no_device">Garmin-laitetta ei ole yhdistetty!</string>
+    <string name="connect_app_not_installed">gimporter CIQ -sovellusta ei näytä olevan asennettuna. Lataa napauttamalla.</string>
+    <string name="connect_app_only_widget_installed">gimporterin widget-versio ei tue automaattista käynnistystä. Napauta ladataksesi laitesovelluksen entistä saumattomampaa käyttöä varten.</string>
+    <string name="connect_connected">Yhdistetty</string>
+    <string name="connect_init_failed">Yhteyttä Garmin Connectiin ei voitu muodostaa</string>
+
+    <string name="settings">Asetukset</string>
+    <string name="force_speed">Pakota nopeus</string>
+    <string name="speed">Oletusnopeus:</string>
+    <string name="inject_course_points">Lisää reittipisteitä</string>
+    <string name="use_3d_distance">Käytä 3D-etäisyyttä</string>
+    <string name="use_walking_grade_factor">Käytä kävelyn kaltevuuskerrointa</string>
+    <string name="reduce_points_to">Vähennä pisteet arvoon</string>
+    <string name="points">pistettä</string>
+    <string name="no_permission">Ei lupaa lukea tiedostoja.</string>
+    <string name="no_server">Palvelinta ei voitu käynnistää</string>
+    <string name="serving_from">Jaetaan sijainnista: %1$s\n\n%2$s</string>
+    <string name="no_files_to_serve">Ei jaettavia tiedostoja sijainnista %1$s</string>
+    <string name="serving_not_possible">Käytä tiedostonhallintaa ja jaa tiedostoja tähän sovellukseen!</string>
+    <string name="help">Ohje</string>
+    <string name="menu">Valikko</string>
+    <string name="select_file">Valitse vietävä kansio</string>
+    <string name="expand_settings">Laajenna asetukset</string>
+</resources>

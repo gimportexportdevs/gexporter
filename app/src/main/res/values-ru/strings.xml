@@ -1,0 +1,28 @@
+<resources>
+    <string name="starting">Запуск …</string>
+
+    <string name="connect_ongoing">Попытка подключения к устройству Garmin…</string>
+    <string name="connect_no_device">Устройство Garmin не подключено!</string>
+    <string name="connect_app_not_installed">Похоже, приложение gimporter CIQ не установлено. Нажмите, чтобы загрузить.</string>
+    <string name="connect_app_only_widget_installed">Виджет-версия gimporter не поддерживает автозапуск. Нажмите, чтобы загрузить приложение для устройства и получить ещё более удобную работу.</string>
+    <string name="connect_connected">Подключено</string>
+    <string name="connect_init_failed">Не удалось связаться с Garmin Connect</string>
+
+    <string name="settings">Настройки</string>
+    <string name="force_speed">Принудительная скорость</string>
+    <string name="speed">Скорость по умолчанию:</string>
+    <string name="inject_course_points">Добавить путевые точки</string>
+    <string name="use_3d_distance">Использовать 3D-расстояние</string>
+    <string name="use_walking_grade_factor">Учитывать уклон при ходьбе</string>
+    <string name="reduce_points_to">Сократить точки до</string>
+    <string name="points">точек</string>
+    <string name="no_permission">Нет разрешения на чтение файлов.</string>
+    <string name="no_server">Не удалось запустить сервер</string>
+    <string name="serving_from">Раздача из: %1$s\n\n%2$s</string>
+    <string name="no_files_to_serve">Нет файлов для раздачи из %1$s</string>
+    <string name="serving_not_possible">Используйте файловый менеджер и поделитесь файлами с этим приложением!</string>
+    <string name="help">Справка</string>
+    <string name="menu">Меню</string>
+    <string name="select_file">Выберите каталог для экспорта</string>
+    <string name="expand_settings">Развернуть настройки</string>
+</resources>

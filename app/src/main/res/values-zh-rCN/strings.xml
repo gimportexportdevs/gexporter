@@ -1,0 +1,28 @@
+<resources>
+    <string name="starting">正在启动 …</string>
+
+    <string name="connect_ongoing">正在尝试连接 Garmin 设备…</string>
+    <string name="connect_no_device">未连接 Garmin 设备！</string>
+    <string name="connect_app_not_installed">似乎未安装 gimporter CIQ 应用。点按以下载。</string>
+    <string name="connect_app_only_widget_installed">gimporter 的小部件版本不支持自动启动。点按以下载设备应用，获得更顺畅的体验。</string>
+    <string name="connect_connected">已连接</string>
+    <string name="connect_init_failed">无法与 Garmin Connect 通信</string>
+
+    <string name="settings">设置</string>
+    <string name="force_speed">强制速度</string>
+    <string name="speed">默认速度：</string>
+    <string name="inject_course_points">插入路线点</string>
+    <string name="use_3d_distance">使用 3D 距离</string>
+    <string name="use_walking_grade_factor">使用步行坡度系数</string>
+    <string name="reduce_points_to">将点数减少到</string>
+    <string name="points">个点</string>
+    <string name="no_permission">没有读取文件的权限。</string>
+    <string name="no_server">无法启动服务器</string>
+    <string name="serving_from">正在提供来自：%1$s\n\n%2$s</string>
+    <string name="no_files_to_serve">%1$s 中没有可提供的文件</string>
+    <string name="serving_not_possible">请使用文件管理器并与此应用共享文件！</string>
+    <string name="help">帮助</string>
+    <string name="menu">菜单</string>
+    <string name="select_file">选择要导出的目录</string>
+    <string name="expand_settings">展开设置</string>
+</resources>

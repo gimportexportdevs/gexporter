@@ -1,0 +1,28 @@
+<resources>
+    <string name="starting">A iniciar …</string>
+
+    <string name="connect_ongoing">A tentar ligar ao dispositivo Garmin…</string>
+    <string name="connect_no_device">Nenhum dispositivo Garmin ligado!</string>
+    <string name="connect_app_not_installed">A aplicação gimporter CIQ parece não estar instalada. Toque para transferir.</string>
+    <string name="connect_app_only_widget_installed">A versão widget do gimporter não suporta o arranque automático. Toque para transferir a aplicação do dispositivo e obter uma experiência ainda mais fluida.</string>
+    <string name="connect_connected">Ligado</string>
+    <string name="connect_init_failed">Não foi possível comunicar com o Garmin Connect</string>
+
+    <string name="settings">Definições</string>
+    <string name="force_speed">Forçar velocidade</string>
+    <string name="speed">Velocidade predefinida:</string>
+    <string name="inject_course_points">Inserir pontos de percurso</string>
+    <string name="use_3d_distance">Utilizar distância 3D</string>
+    <string name="use_walking_grade_factor">Utilizar fator de inclinação a pé</string>
+    <string name="reduce_points_to">Reduzir pontos para</string>
+    <string name="points">pontos</string>
+    <string name="no_permission">Sem permissão para ler os ficheiros.</string>
+    <string name="no_server">Não foi possível iniciar o servidor</string>
+    <string name="serving_from">A servir de: %1$s\n\n%2$s</string>
+    <string name="no_files_to_serve">Nenhum ficheiro para servir de %1$s</string>
+    <string name="serving_not_possible">Utilize o explorador de ficheiros e partilhe ficheiros com esta aplicação!</string>
+    <string name="help">Ajuda</string>
+    <string name="menu">Menu</string>
+    <string name="select_file">Selecione uma pasta para exportar</string>
+    <string name="expand_settings">Expandir definições</string>
+</resources>

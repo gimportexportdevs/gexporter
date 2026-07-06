@@ -1,0 +1,28 @@
+<resources>
+    <string name="starting">Başlatılıyor …</string>
+
+    <string name="connect_ongoing">Garmin cihazına bağlanmaya çalışılıyor…</string>
+    <string name="connect_no_device">Bağlı Garmin cihazı yok!</string>
+    <string name="connect_app_not_installed">gimporter CIQ uygulaması yüklü görünmüyor. İndirmek için dokunun.</string>
+    <string name="connect_app_only_widget_installed">gimporter\'ın widget sürümü otomatik başlatmayı desteklemez. Daha da sorunsuz bir deneyim için cihaz uygulamasını indirmek üzere dokunun.</string>
+    <string name="connect_connected">Bağlandı</string>
+    <string name="connect_init_failed">Garmin Connect ile iletişim kurulamadı</string>
+
+    <string name="settings">Ayarlar</string>
+    <string name="force_speed">Hızı zorla</string>
+    <string name="speed">Varsayılan hız:</string>
+    <string name="inject_course_points">Rota noktaları ekle</string>
+    <string name="use_3d_distance">3D mesafe kullan</string>
+    <string name="use_walking_grade_factor">Yürüyüş eğim faktörünü kullan</string>
+    <string name="reduce_points_to">Noktaları şuna indir</string>
+    <string name="points">nokta</string>
+    <string name="no_permission">Dosyaları okuma izni yok.</string>
+    <string name="no_server">Sunucu başlatılamadı</string>
+    <string name="serving_from">Şuradan sunuluyor: %1$s\n\n%2$s</string>
+    <string name="no_files_to_serve">%1$s konumundan sunulacak dosya yok</string>
+    <string name="serving_not_possible">Lütfen dosya gezginini kullanın ve dosyaları bu uygulamayla paylaşın!</string>
+    <string name="help">Yardım</string>
+    <string name="menu">Menü</string>
+    <string name="select_file">Dışa aktarılacak bir dizin seçin</string>
+    <string name="expand_settings">Ayarları genişlet</string>
+</resources>

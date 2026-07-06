@@ -1,0 +1,28 @@
+<resources>
+    <string name="starting">起動中 …</string>
+
+    <string name="connect_ongoing">Garmin デバイスに接続しています…</string>
+    <string name="connect_no_device">Garmin デバイスが接続されていません！</string>
+    <string name="connect_app_not_installed">gimporter CIQ アプリがインストールされていないようです。タップしてダウンロードしてください。</string>
+    <string name="connect_app_only_widget_installed">gimporter のウィジェット版は自動起動に対応していません。タップしてデバイスアプリをダウンロードすると、さらにシームレスに使えます。</string>
+    <string name="connect_connected">接続済み</string>
+    <string name="connect_init_failed">Garmin Connect と通信できませんでした</string>
+
+    <string name="settings">設定</string>
+    <string name="force_speed">速度を強制する</string>
+    <string name="speed">デフォルト速度：</string>
+    <string name="inject_course_points">コースポイントを挿入</string>
+    <string name="use_3d_distance">3D 距離を使用</string>
+    <string name="use_walking_grade_factor">歩行勾配係数を使用</string>
+    <string name="reduce_points_to">ポイントを次に削減</string>
+    <string name="points">ポイント</string>
+    <string name="no_permission">ファイルを読み取る権限がありません。</string>
+    <string name="no_server">サーバーを起動できませんでした</string>
+    <string name="serving_from">配信元：%1$s\n\n%2$s</string>
+    <string name="no_files_to_serve">%1$s に配信するファイルがありません</string>
+    <string name="serving_not_possible">ファイルエクスプローラーを使用して、このアプリにファイルを共有してください！</string>
+    <string name="help">ヘルプ</string>
+    <string name="menu">メニュー</string>
+    <string name="select_file">エクスポートするディレクトリを選択</string>
+    <string name="expand_settings">設定を展開</string>
+</resources>

@@ -1,0 +1,28 @@
+<resources>
+    <string name="starting">시작하는 중 …</string>
+
+    <string name="connect_ongoing">Garmin 기기에 연결하는 중…</string>
+    <string name="connect_no_device">연결된 Garmin 기기가 없습니다!</string>
+    <string name="connect_app_not_installed">gimporter CIQ 앱이 설치되지 않은 것 같습니다. 탭하여 다운로드하세요.</string>
+    <string name="connect_app_only_widget_installed">gimporter의 위젯 버전은 자동 실행을 지원하지 않습니다. 더욱 매끄러운 환경을 위해 탭하여 기기 앱을 다운로드하세요.</string>
+    <string name="connect_connected">연결됨</string>
+    <string name="connect_init_failed">Garmin Connect와 통신할 수 없습니다</string>
+
+    <string name="settings">설정</string>
+    <string name="force_speed">속도 강제 적용</string>
+    <string name="speed">기본 속도:</string>
+    <string name="inject_course_points">코스 지점 삽입</string>
+    <string name="use_3d_distance">3D 거리 사용</string>
+    <string name="use_walking_grade_factor">걷기 경사 계수 사용</string>
+    <string name="reduce_points_to">지점 수 줄이기</string>
+    <string name="points">개 지점</string>
+    <string name="no_permission">파일을 읽을 권한이 없습니다.</string>
+    <string name="no_server">서버를 시작할 수 없습니다</string>
+    <string name="serving_from">제공 위치: %1$s\n\n%2$s</string>
+    <string name="no_files_to_serve">%1$s에서 제공할 파일이 없습니다</string>
+    <string name="serving_not_possible">파일 탐색기를 사용하여 이 앱과 파일을 공유하세요!</string>
+    <string name="help">도움말</string>
+    <string name="menu">메뉴</string>
+    <string name="select_file">내보낼 디렉터리 선택</string>
+    <string name="expand_settings">설정 펼치기</string>
+</resources>

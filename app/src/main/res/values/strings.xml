@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GPX/FIT Exporter</string>
+    <string name="app_name" translatable="false">GPX/FIT Exporter</string>
     <string name="starting">Starting …</string>
 
     <string name="connect_ongoing">Try to connect with Garmin device…</string>
@@ -28,7 +28,7 @@
     <string name="select_file">Select a directory to export</string>
     <string name="expand_settings">Expand settings</string>
 
-    <string-array name="speedunits">
+    <string-array name="speedunits" translatable="false">
         <item name="minkm">min/km</item>
         <item name="kmh">km/h</item>
         <item name="minmil">min/mil</item>
