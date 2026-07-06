@@ -147,7 +147,7 @@ public class WebServer extends NanoHTTPD {
             try {
                 // Open file from SD Card
                 InputStream descriptor = new FileInputStream(src);
-                Log.warn("Serving bytes: {}", src.length());
+                Log.debug("Serving bytes: {}", src.length());
                 return NanoHTTPD.newFixedLengthResponse(Response.Status.OK, mime_type,
                         descriptor, src.length());
 
@@ -212,7 +212,7 @@ public class WebServer extends NanoHTTPD {
         Map<String, Object> root = new LinkedHashMap<>();
         root.put("tracks", tracks);
         String ret = new Gson().toJson(root);
-        Log.info("Return {}", ret);
+        Log.debug("Return {}", ret);
         return NanoHTTPD.newFixedLengthResponse(Response.Status.OK, MIME_JSON, ret);
     }
 
