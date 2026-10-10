@@ -132,6 +132,15 @@ public class TestSharedLocation {
     }
 
     @Test
+    public void subjectDoesNotOverrideTextName() {
+        // MainActivity appends EXTRA_SUBJECT after the text; Organic Maps'
+        // subject is a phrase, the place name is the first line of the text.
+        String text = "Stephansplatz 3, Wien\n48.208400, 16.373100\nhttps://omaps.app/04GXGEEwh0"
+                + "\nEin Ort in Organic Maps";
+        assertEquals("Stephansplatz 3, Wien", SharedLocation.parse(text).getName());
+    }
+
+    @Test
     public void organicMapsPageIsNoLocation() {
         assertNull(SharedLocation.parse("https://omaps.app/get"));
     }

@@ -539,16 +539,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         if (uri == null) {
-            String text = intent.getStringExtra(Intent.EXTRA_TEXT);
+            // Some apps send styled text, which getStringExtra() drops.
+            CharSequence extraText = intent.getCharSequenceExtra(Intent.EXTRA_TEXT);
+            String text = extraText != null ? extraText.toString() : null;
             if (text != null) {
                 Uri textUri = Uri.parse(text.trim());
                 if ("content".equals(textUri.getScheme()) || "file".equals(textUri.getScheme())) {
                     uri = textUri;
                 } else {
                     // A location shared from a map app (link, geo: URI or
-                    // coordinates); the subject often carries the place name.
-                    String subject = intent.getStringExtra(Intent.EXTRA_SUBJECT);
-                    mSharedText = subject != null ? subject + "\n" + text : text;
+                    // coordinates). The subject goes last: the name is taken
+                    // from the first plain line, and subjects are often
+                    // phrases like "Stephansdom in Organic Maps".
+                    CharSequence subject = intent.getCharSequenceExtra(Intent.EXTRA_SUBJECT);
+                    mSharedText = subject != null ? text + "\n" + subject : text;
                     mUris = new ArrayList<>();
                     Log.debug("Shared text: {}", mSharedText);
                     return;
@@ -790,12 +794,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 continue;
             }
             try {
-                String name = getFileName(doc.getUri());
+                String name = FileTypes.safeFileName(getFileName(doc.getUri()));
                 if (isValidFileType(name)) {
-                    InputStream is = mCR.openInputStream(doc.getUri());
-                    copyInputStreamToFile(is, new File(mDirectory, name));
+                    copyInputStreamToFile(mCR.openInputStream(doc.getUri()), name);
                 }
-            } catch (FileNotFoundException e) {
+            } catch (Exception e) {
+                // A provider may refuse access (SecurityException) as well.
                 Log.error("Exception processing file", e);
             }
         }
@@ -804,17 +808,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void processFile(Uri uri) {
         Log.debug("Open URI {} scheme {}", uri, uri.getScheme());
         try {
-            InputStream is = mCR.openInputStream(uri);
-            String name = getFileName(uri);
-            copyInputStreamToFile(is, new File(mDirectory, name));
-        } catch (FileNotFoundException e) {
+            String name = FileTypes.safeFileName(getFileName(uri));
+            copyInputStreamToFile(mCR.openInputStream(uri), name);
+        } catch (Exception e) {
+            // A provider may refuse access (SecurityException) as well.
             Log.error("Exception opening URI", e);
         }
     }
 
     private boolean isValidFileType(String filename) {
-        return filename.endsWith(".fit") || filename.endsWith(".FIT") ||
-                filename.endsWith(".gpx") || filename.endsWith(".GPX");
+        return FileTypes.isTrackFile(filename);
     }
 
     private void startWebServer(File directory) {
@@ -856,32 +859,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void copyInputStreamToFile(InputStream in, File file) {
-        try (in; OutputStream out = new FileOutputStream(file)) {
-            try {
-                byte[] buf = new byte[1024];
-                int len = in.read(buf);
+    /**
+     * Copy a shared file into the served directory. A name without a .gpx or
+     * .fit extension gets one from the file's first bytes; anything that is
+     * neither GPX nor FIT is skipped.
+     */
+    private void copyInputStreamToFile(InputStream in, String name) {
+        if (in == null) {
+            return;
+        }
+        try (in) {
+            byte[] buf = new byte[1024];
+            int len = readFully(in, buf);
 
-                String name = file.getAbsolutePath();
-                if (!isValidFileType(name)) {
-                    String sig = new String(Arrays.copyOf(buf, 8), StandardCharsets.UTF_8);
-                    if (sig.length() > 5 && (sig.startsWith("<?xml") || sig.endsWith("<?xml"))) {
-                        file.renameTo(new File(name + ".gpx"));
-                    } else {
-                        file.renameTo(new File(name + ".fit"));
-                    }
+            if (!isValidFileType(name)) {
+                String ext = FileTypes.sniffExtension(buf, len);
+                if (ext == null) {
+                    Log.warn("Skipping {}: neither GPX nor FIT", name);
+                    return;
                 }
+                name = name + ext;
+            }
 
+            try (OutputStream out = new FileOutputStream(new File(mDirectory, name))) {
                 while (len > 0) {
                     out.write(buf, 0, len);
                     len = in.read(buf);
                 }
-            } catch (Exception e) {
-                Log.error("copyInputStreamToFile {}", e.toString());
             }
-        } catch (Exception e) {
-            Log.error("Closing InputStream {}", e.toString());
+        } catch (IOException e) {
+            Log.error("copyInputStreamToFile {}: {}", name, e.toString());
         }
+    }
+
+    /** Read until buf is full or the stream ends; a single read() may return less. */
+    private static int readFully(InputStream in, byte[] buf) throws IOException {
+        int total = 0;
+        while (total < buf.length) {
+            int n = in.read(buf, total, buf.length - total);
+            if (n < 0) {
+                break;
+            }
+            total += n;
+        }
+        return total;
     }
 
     public String getFileName(Uri uri) {
