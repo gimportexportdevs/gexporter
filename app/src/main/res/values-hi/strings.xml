@@ -21,6 +21,8 @@
     <string name="serving_from">यहाँ से सर्व किया जा रहा है: %1$s\n\n%2$s</string>
     <string name="no_files_to_serve">%1$s से सर्व करने के लिए कोई फ़ाइल नहीं है</string>
     <string name="serving_not_possible">कृपया फ़ाइल एक्सप्लोरर का उपयोग करें और इस ऐप के साथ फ़ाइलें साझा करें!</string>
+    <string name="resolving_location">साझा स्थान खोजा जा रहा है…</string>
+    <string name="location_not_found">साझा स्थान में कोई निर्देशांक नहीं मिले।</string>
     <string name="help">सहायता</string>
     <string name="menu">मेन्यू</string>
     <string name="select_file">निर्यात के लिए एक निर्देशिका चुनें</string>

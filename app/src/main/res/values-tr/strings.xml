@@ -21,6 +21,8 @@
     <string name="serving_from">Şuradan sunuluyor: %1$s\n\n%2$s</string>
     <string name="no_files_to_serve">%1$s konumundan sunulacak dosya yok</string>
     <string name="serving_not_possible">Lütfen dosya gezginini kullanın ve dosyaları bu uygulamayla paylaşın!</string>
+    <string name="resolving_location">Paylaşılan konum çözümleniyor…</string>
+    <string name="location_not_found">Paylaşılan konumda koordinat bulunamadı.</string>
     <string name="help">Yardım</string>
     <string name="menu">Menü</string>
     <string name="select_file">Dışa aktarılacak bir dizin seçin</string>

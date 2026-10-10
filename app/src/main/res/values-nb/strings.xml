@@ -21,6 +21,8 @@
     <string name="serving_from">Deler fra: %1$s\n\n%2$s</string>
     <string name="no_files_to_serve">Ingen filer å dele fra %1$s</string>
     <string name="serving_not_possible">Bruk filutforskeren og del filer med denne appen!</string>
+    <string name="resolving_location">Finner den delte posisjonen…</string>
+    <string name="location_not_found">Fant ingen koordinater i den delte posisjonen.</string>
     <string name="help">Hjelp</string>
     <string name="menu">Meny</string>
     <string name="select_file">Velg en mappe å eksportere</string>

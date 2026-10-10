@@ -21,6 +21,8 @@
     <string name="serving_from">Diffusion depuis : %1$s\n\n%2$s</string>
     <string name="no_files_to_serve">Aucun fichier à diffuser depuis %1$s</string>
     <string name="serving_not_possible">Veuillez utiliser l\'explorateur de fichiers et partager des fichiers avec cette application !</string>
+    <string name="resolving_location">Résolution du lieu partagé…</string>
+    <string name="location_not_found">Aucune coordonnée trouvée dans le lieu partagé.</string>
     <string name="help">Aide</string>
     <string name="menu">Menu</string>
     <string name="select_file">Sélectionnez un répertoire à exporter</string>

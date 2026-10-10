@@ -44,6 +44,17 @@
                 <data android:mimeType="application/fit" />
                 <data android:mimeType="application/octet-stream" />
                 <data android:mimeType="text/xml" />
+                <!-- a location shared from a map app (link or coordinates) -->
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="geo" />
             </intent-filter>
 
             <intent-filter tools:ignore="AppLinkUrlError">

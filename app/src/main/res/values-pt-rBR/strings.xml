@@ -21,6 +21,8 @@
     <string name="serving_from">Servindo de: %1$s\n\n%2$s</string>
     <string name="no_files_to_serve">Nenhum arquivo para servir de %1$s</string>
     <string name="serving_not_possible">Use o explorador de arquivos e compartilhe arquivos com este app!</string>
+    <string name="resolving_location">Obtendo o local compartilhado…</string>
+    <string name="location_not_found">Nenhuma coordenada encontrada no local compartilhado.</string>
     <string name="help">Ajuda</string>
     <string name="menu">Menu</string>
     <string name="select_file">Selecione uma pasta para exportar</string>

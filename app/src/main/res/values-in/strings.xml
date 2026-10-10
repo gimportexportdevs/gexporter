@@ -21,6 +21,8 @@
     <string name="serving_from">Menyajikan dari: %1$s\n\n%2$s</string>
     <string name="no_files_to_serve">Tidak ada file untuk disajikan dari %1$s</string>
     <string name="serving_not_possible">Silakan gunakan penjelajah file dan bagikan file dengan aplikasi ini!</string>
+    <string name="resolving_location">Mencari lokasi yang dibagikan…</string>
+    <string name="location_not_found">Tidak ada koordinat di lokasi yang dibagikan.</string>
     <string name="help">Bantuan</string>
     <string name="menu">Menu</string>
     <string name="select_file">Pilih direktori untuk diekspor</string>

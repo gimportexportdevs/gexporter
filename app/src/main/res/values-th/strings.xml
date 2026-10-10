@@ -21,6 +21,8 @@
     <string name="serving_from">กำลังให้บริการจาก: %1$s\n\n%2$s</string>
     <string name="no_files_to_serve">ไม่มีไฟล์ให้บริการจาก %1$s</string>
     <string name="serving_not_possible">โปรดใช้ตัวจัดการไฟล์และแชร์ไฟล์กับแอปนี้!</string>
+    <string name="resolving_location">กำลังค้นหาตำแหน่งที่แชร์…</string>
+    <string name="location_not_found">ไม่พบพิกัดในตำแหน่งที่แชร์</string>
     <string name="help">ช่วยเหลือ</string>
     <string name="menu">เมนู</string>
     <string name="select_file">เลือกไดเรกทอรีเพื่อส่งออก</string>

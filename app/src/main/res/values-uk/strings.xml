@@ -21,6 +21,8 @@
     <string name="serving_from">Роздача з: %1$s\n\n%2$s</string>
     <string name="no_files_to_serve">Немає файлів для роздачі з %1$s</string>
     <string name="serving_not_possible">Скористайтеся файловим провідником і поділіться файлами з цим застосунком!</string>
+    <string name="resolving_location">Визначення спільного місця…</string>
+    <string name="location_not_found">У спільному місці не знайдено координат.</string>
     <string name="help">Довідка</string>
     <string name="menu">Меню</string>
     <string name="select_file">Виберіть каталог для експорту</string>

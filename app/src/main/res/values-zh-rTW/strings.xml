@@ -21,6 +21,8 @@
     <string name="serving_from">正在提供來自：%1$s\n\n%2$s</string>
     <string name="no_files_to_serve">%1$s 中沒有可提供的檔案</string>
     <string name="serving_not_possible">請使用檔案總管並與此應用程式共享檔案！</string>
+    <string name="resolving_location">正在解析分享的位置…</string>
+    <string name="location_not_found">分享的位置中找不到座標。</string>
     <string name="help">說明</string>
     <string name="menu">選單</string>
     <string name="select_file">選擇要匯出的目錄</string>

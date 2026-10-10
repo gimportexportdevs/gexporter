@@ -21,6 +21,8 @@
     <string name="serving_from">Εξυπηρέτηση από: %1$s\n\n%2$s</string>
     <string name="no_files_to_serve">Δεν υπάρχουν αρχεία προς εξυπηρέτηση από %1$s</string>
     <string name="serving_not_possible">Χρησιμοποιήστε την εξερεύνηση αρχείων και μοιραστείτε αρχεία με αυτήν την εφαρμογή!</string>
+    <string name="resolving_location">Εντοπισμός κοινόχρηστης τοποθεσίας…</string>
+    <string name="location_not_found">Δεν βρέθηκαν συντεταγμένες στην κοινόχρηστη τοποθεσία.</string>
     <string name="help">Βοήθεια</string>
     <string name="menu">Μενού</string>
     <string name="select_file">Επιλέξτε έναν κατάλογο για εξαγωγή</string>

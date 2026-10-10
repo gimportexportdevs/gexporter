@@ -21,6 +21,8 @@
     <string name="serving_from">Bereitgestellt aus: %1$s\n\n%2$s</string>
     <string name="no_files_to_serve">Keine Dateien zum Bereitstellen aus %1$s</string>
     <string name="serving_not_possible">Bitte nutze den Datei-Explorer und teile Dateien mit dieser App!</string>
+    <string name="resolving_location">Geteilter Ort wird ermittelt…</string>
+    <string name="location_not_found">Im geteilten Ort wurden keine Koordinaten gefunden.</string>
     <string name="help">Hilfe</string>
     <string name="menu">Menü</string>
     <string name="select_file">Verzeichnis zum Exportieren auswählen</string>

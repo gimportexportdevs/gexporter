@@ -21,6 +21,8 @@
     <string name="serving_from">제공 위치: %1$s\n\n%2$s</string>
     <string name="no_files_to_serve">%1$s에서 제공할 파일이 없습니다</string>
     <string name="serving_not_possible">파일 탐색기를 사용하여 이 앱과 파일을 공유하세요!</string>
+    <string name="resolving_location">공유된 위치를 확인하는 중…</string>
+    <string name="location_not_found">공유된 위치에서 좌표를 찾을 수 없습니다.</string>
     <string name="help">도움말</string>
     <string name="menu">메뉴</string>
     <string name="select_file">내보낼 디렉터리 선택</string>

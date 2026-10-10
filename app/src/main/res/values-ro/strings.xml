@@ -21,6 +21,8 @@
     <string name="serving_from">Se servește din: %1$s\n\n%2$s</string>
     <string name="no_files_to_serve">Niciun fișier de servit din %1$s</string>
     <string name="serving_not_possible">Folosiți exploratorul de fișiere și partajați fișiere cu această aplicație!</string>
+    <string name="resolving_location">Se determină locația partajată…</string>
+    <string name="location_not_found">Nu s-au găsit coordonate în locația partajată.</string>
     <string name="help">Ajutor</string>
     <string name="menu">Meniu</string>
     <string name="select_file">Selectați un director de exportat</string>

@@ -21,6 +21,8 @@
     <string name="serving_from">正在提供来自：%1$s\n\n%2$s</string>
     <string name="no_files_to_serve">%1$s 中没有可提供的文件</string>
     <string name="serving_not_possible">请使用文件管理器并与此应用共享文件！</string>
+    <string name="resolving_location">正在解析共享的位置…</string>
+    <string name="location_not_found">共享的位置中没有找到坐标。</string>
     <string name="help">帮助</string>
     <string name="menu">菜单</string>
     <string name="select_file">选择要导出的目录</string>

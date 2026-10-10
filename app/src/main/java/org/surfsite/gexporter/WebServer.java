@@ -14,11 +14,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import fi.iki.elonen.NanoHTTPD;
@@ -203,6 +205,25 @@ public class WebServer extends NanoHTTPD {
                 }
                 String courseName = (doLongname ? aFilelist : getCourseName(aFilelist));
 
+                List<WayPoint> locations = waypointOnlyGpx(new File(mRootDir, aFilelist));
+                if (locations != null) {
+                    // A destination, not a course: the watch saves each one as
+                    // a location from lat/lon, so no download is needed. The
+                    // coordinates are strings because the watch would parse
+                    // JSON numbers as 32-bit floats (~1 m error).
+                    for (WayPoint wpt : locations) {
+                        String wptName = wpt.getName();
+                        Map<String, String> loc = new LinkedHashMap<>();
+                        loc.put("title", (wptName == null || wptName.trim().isEmpty())
+                                ? getCourseName(aFilelist) : wptName.trim());
+                        loc.put("url", url);
+                        loc.put("lat", String.format(Locale.ROOT, "%.7f", wpt.getLat()));
+                        loc.put("lon", String.format(Locale.ROOT, "%.7f", wpt.getLon()));
+                        tracks.add(loc);
+                    }
+                    continue;
+                }
+
                 Map<String, String> track = new LinkedHashMap<>();
                 track.put("title", courseName);
                 track.put("url", url);
@@ -214,6 +235,50 @@ public class WebServer extends NanoHTTPD {
         String ret = new Gson().toJson(root);
         Log.debug("Return {}", ret);
         return NanoHTTPD.newFixedLengthResponse(Response.Status.OK, MIME_JSON, ret);
+    }
+
+    /**
+     * The waypoints of a GPX file that holds only {@code <wpt>} elements
+     * (a shared destination), or null for tracks, routes, FIT files and
+     * unparseable files.
+     */
+    private List<WayPoint> waypointOnlyGpx(File file) {
+        String name = file.getName();
+        if (!(name.endsWith(".gpx") || name.endsWith(".GPX")) || mentionsTrackOrRoute(file)) {
+            return null;
+        }
+        try (FileInputStream fis = new FileInputStream(file)) {
+            Gpx2Fit gpx = new Gpx2Fit(name, fis, mGpx2FitOptions);
+            if (gpx.hasTrackOrRoute() || gpx.getWptPoints().isEmpty()) {
+                return null;
+            }
+            return gpx.getWptPoints();
+        } catch (Exception e) {
+            Log.warn("Could not parse {}: {}", name, e.toString());
+            return null;
+        }
+    }
+
+    /**
+     * Cheap pre-check so listing a directory of large tracks does not fully
+     * parse each of them: track and route points show up early in the file.
+     */
+    private static boolean mentionsTrackOrRoute(File file) {
+        try (InputStream in = new FileInputStream(file)) {
+            byte[] buf = new byte[8192];
+            String tail = "";
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                String chunk = tail + new String(buf, 0, len, StandardCharsets.ISO_8859_1);
+                if (chunk.contains("trkpt") || chunk.contains("rtept")) {
+                    return true;
+                }
+                tail = chunk.substring(Math.max(0, chunk.length() - 8));
+            }
+        } catch (IOException e) {
+            return true;
+        }
+        return false;
     }
 
     @NonNull

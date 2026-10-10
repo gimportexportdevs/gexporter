@@ -115,6 +115,15 @@ public class Gpx2Fit {
         return trkPoints;
     }
 
+    /** The standalone {@code <wpt>} elements (not track or route points). */
+    public List<WayPoint> getWptPoints() {
+        return wayPoints;
+    }
+
+    public boolean hasTrackOrRoute() {
+        return !trkPoints.isEmpty() || !rtePoints.isEmpty();
+    }
+
     private void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
         if (parser.getEventType() != XmlPullParser.START_TAG) {
             throw new IllegalStateException();

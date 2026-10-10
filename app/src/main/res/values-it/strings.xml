@@ -21,6 +21,8 @@
     <string name="serving_from">In distribuzione da: %1$s\n\n%2$s</string>
     <string name="no_files_to_serve">Nessun file da distribuire da %1$s</string>
     <string name="serving_not_possible">Usa l\'esplora file e condividi i file con questa app!</string>
+    <string name="resolving_location">Risoluzione della posizione condivisa…</string>
+    <string name="location_not_found">Nessuna coordinata trovata nella posizione condivisa.</string>
     <string name="help">Aiuto</string>
     <string name="menu">Menu</string>
     <string name="select_file">Seleziona una cartella da esportare</string>

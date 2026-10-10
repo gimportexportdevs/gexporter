@@ -21,6 +21,8 @@
     <string name="serving_from">Đang phục vụ từ: %1$s\n\n%2$s</string>
     <string name="no_files_to_serve">Không có tệp nào để phục vụ từ %1$s</string>
     <string name="serving_not_possible">Vui lòng dùng trình quản lý tệp và chia sẻ tệp với ứng dụng này!</string>
+    <string name="resolving_location">Đang xác định vị trí được chia sẻ…</string>
+    <string name="location_not_found">Không tìm thấy tọa độ trong vị trí được chia sẻ.</string>
     <string name="help">Trợ giúp</string>
     <string name="menu">Menu</string>
     <string name="select_file">Chọn một thư mục để xuất</string>

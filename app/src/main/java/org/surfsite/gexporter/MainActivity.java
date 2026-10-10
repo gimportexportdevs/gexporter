@@ -107,6 +107,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private File mDirectory = null;
     private final NumberFormat mNumberFormat = NumberFormat.getInstance(Locale.getDefault());
     private ArrayList<Uri> mUris;
+    // Text or geo: URI shared from a map app; served as a one-waypoint GPX.
+    private String mSharedText;
+    private SharedLocation mSharedLocation;
     private ContentResolver mCR;
 
     private ConnectIQ mConnectIQ = null;
@@ -491,6 +494,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.debug("Processing intent: {}", intent);
 
         boolean handled = false;
+        if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_VIEW.equals(action)
+                || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
+            // A new share replaces the previous one.
+            mSharedText = null;
+            mSharedLocation = null;
+        }
         if (Intent.ACTION_SEND.equals(action)) {
             processSingleFile(intent);
             handled = true;
@@ -532,7 +541,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (uri == null) {
             String text = intent.getStringExtra(Intent.EXTRA_TEXT);
             if (text != null) {
-                uri = Uri.parse(text);
+                Uri textUri = Uri.parse(text.trim());
+                if ("content".equals(textUri.getScheme()) || "file".equals(textUri.getScheme())) {
+                    uri = textUri;
+                } else {
+                    // A location shared from a map app (link, geo: URI or
+                    // coordinates); the subject often carries the place name.
+                    String subject = intent.getStringExtra(Intent.EXTRA_SUBJECT);
+                    mSharedText = subject != null ? subject + "\n" + text : text;
+                    mUris = new ArrayList<>();
+                    Log.debug("Shared text: {}", mSharedText);
+                    return;
+                }
             }
         }
 
@@ -549,7 +569,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (uri != null) {
             Log.debug("URI {}: type '{}'", uri, intent.getType());
             mUris = new ArrayList<>();
-            mUris.add(uri);
+            if ("geo".equals(uri.getScheme())) {
+                mSharedText = uri.toString();
+            } else {
+                mUris.add(uri);
+            }
         }
     }
 
@@ -685,7 +709,55 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         startWebServer(directory);
-        displayFileList(directory, rootDirectoryUserDisplayable);
+        if (mSharedText != null && mDirectory != null) {
+            serveSharedLocation(mDirectory);
+        } else {
+            displayFileList(directory, rootDirectoryUserDisplayable);
+        }
+    }
+
+    /**
+     * Turn the shared text into a one-waypoint GPX in the served directory.
+     * Short links need the network, so resolving runs off the UI thread; the
+     * server is already up and lists the file as soon as it exists.
+     */
+    private void serveSharedLocation(File directory) {
+        if (mSharedLocation != null) {
+            writeSharedLocation(directory, mSharedLocation);
+            return;
+        }
+
+        mTextView.setText(R.string.resolving_location);
+        final String text = mSharedText;
+        new Thread(() -> {
+            SharedLocation loc = SharedLocation.resolve(text, new SharedLocation.HttpFetcher());
+            runOnUiThread(() -> {
+                if (isDestroyed() || !Objects.equals(text, mSharedText)) {
+                    return;  // superseded by a newer share
+                }
+                if (loc == null) {
+                    mTextView.setText(R.string.location_not_found);
+                    return;
+                }
+                mSharedLocation = loc;
+                // onStop() may have cleared the directory meanwhile; the next
+                // serveFiles() writes the cached location into the new one.
+                if (directory.equals(mDirectory)) {
+                    writeSharedLocation(directory, loc);
+                }
+            });
+        }, "resolve-location").start();
+    }
+
+    private void writeSharedLocation(File directory, SharedLocation loc) {
+        File file = new File(directory, loc.fileName());
+        try (OutputStream out = new FileOutputStream(file)) {
+            out.write(loc.toGpx().getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            Log.error("Could not write {}", file, e);
+        }
+        Log.info("Serving location {} at {}, {}", loc.getName(), loc.getLat(), loc.getLon());
+        displayFileList(directory, loc.getName());
     }
 
     private void processUris() {

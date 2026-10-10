@@ -21,6 +21,8 @@
     <string name="serving_from">التقديم من: %1$s\n\n%2$s</string>
     <string name="no_files_to_serve">لا توجد ملفات لتقديمها من %1$s</string>
     <string name="serving_not_possible">يرجى استخدام مستكشف الملفات ومشاركة الملفات مع هذا التطبيق!</string>
+    <string name="resolving_location">جارٍ تحديد الموقع المشترك…</string>
+    <string name="location_not_found">لم يتم العثور على إحداثيات في الموقع المشترك.</string>
     <string name="help">مساعدة</string>
     <string name="menu">القائمة</string>
     <string name="select_file">اختر دليلاً للتصدير</string>

@@ -21,6 +21,8 @@
     <string name="serving_from">Delar från: %1$s\n\n%2$s</string>
     <string name="no_files_to_serve">Inga filer att dela från %1$s</string>
     <string name="serving_not_possible">Använd filhanteraren och dela filer med den här appen!</string>
+    <string name="resolving_location">Hämtar den delade platsen…</string>
+    <string name="location_not_found">Inga koordinater hittades i den delade platsen.</string>
     <string name="help">Hjälp</string>
     <string name="menu">Meny</string>
     <string name="select_file">Välj en mapp att exportera</string>

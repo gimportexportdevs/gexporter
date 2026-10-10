@@ -21,6 +21,8 @@
     <string name="serving_from">Udostępnianie z: %1$s\n\n%2$s</string>
     <string name="no_files_to_serve">Brak plików do udostępnienia z %1$s</string>
     <string name="serving_not_possible">Użyj eksploratora plików i udostępnij pliki tej aplikacji!</string>
+    <string name="resolving_location">Ustalanie udostępnionej lokalizacji…</string>
+    <string name="location_not_found">Nie znaleziono współrzędnych w udostępnionej lokalizacji.</string>
     <string name="help">Pomoc</string>
     <string name="menu">Menu</string>
     <string name="select_file">Wybierz katalog do wyeksportowania</string>
