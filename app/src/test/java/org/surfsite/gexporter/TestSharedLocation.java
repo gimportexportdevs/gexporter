@@ -222,6 +222,18 @@ public class TestSharedLocation {
     }
 
     @Test
+    public void watchMessage() {
+        Map<String, Object> msg = new SharedLocation("Stephansdom", 48.2084, 16.3731)
+                .toWatchMessage(1790000000123L);
+        assertEquals("location", msg.get("type"));
+        assertEquals("Stephansdom", msg.get("title"));
+        assertEquals("48.2084000", msg.get("lat"));
+        assertEquals("16.3731000", msg.get("lon"));
+        // Integer, which ConnectIQ delivers as a Monkey C Number
+        assertEquals(1790000000, msg.get("time"));
+    }
+
+    @Test
     public void fileNameIsSafe() {
         assertEquals("a_b_c.gpx", new SharedLocation("a/b:c", 0, 0).fileName());
     }

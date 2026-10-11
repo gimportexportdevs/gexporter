@@ -11,7 +11,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -368,6 +370,21 @@ public class SharedLocation {
             return null;
         }
         return new SharedLocation(name, lat, lon);
+    }
+
+    /**
+     * The ConnectIQ message gimporter acts on. Coordinates are strings so the
+     * watch does not round them to 32-bit floats; "time" (epoch seconds) lets
+     * it ignore a location still queued from an earlier share.
+     */
+    public Map<String, Object> toWatchMessage(long nowMillis) {
+        Map<String, Object> msg = new HashMap<>();
+        msg.put("type", "location");
+        msg.put("title", name);
+        msg.put("lat", String.format(Locale.ROOT, "%.7f", lat));
+        msg.put("lon", String.format(Locale.ROOT, "%.7f", lon));
+        msg.put("time", (int) (nowMillis / 1000));
+        return msg;
     }
 
     /** A GPX 1.1 document holding just this location as a single waypoint. */

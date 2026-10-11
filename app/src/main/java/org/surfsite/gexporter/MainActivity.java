@@ -110,6 +110,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     // Text or geo: URI shared from a map app; served as a one-waypoint GPX.
     private String mSharedText;
     private SharedLocation mSharedLocation;
+    // Resolved before the ConnectIQ SDK found the watch app; sent once it has.
+    private SharedLocation mPendingPush;
     private ContentResolver mCR;
 
     private ConnectIQ mConnectIQ = null;
@@ -268,6 +270,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             // dismissed prompt or non-success status leaves GET_PORT
                             // permanently unanswered for this process.
                             registerMessageListener(connectIQ, device, app);
+                            // Before the "open app" prompt below, so the
+                            // location is waiting when the app starts.
+                            sendPendingLocation(device, app);
 
                             try {
                                 connectIQ.openApplication(device, app, (iqDevice, iqApp, status) -> {
@@ -328,6 +333,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Log.info("Garmin widget {} connected to device {}",
                             app.getApplicationId(), device.getDeviceIdentifier());
                     registerMessageListener(connectIQ, device, app);
+                    // A widget cannot be opened from the phone; the location
+                    // waits until the user opens it.
+                    sendPendingLocation(device, app);
                 }
 
                 @Override
@@ -374,6 +382,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.info("Registered message listener for Garmin app on device {}", deviceId);
         } catch (InvalidStateException | ServiceUnavailableException e) {
             Log.error("Error registering message listener for device {}", deviceId, e);
+        }
+    }
+
+    /**
+     * Send a shared location straight to the watch app and ask to open it;
+     * the app saves the location and starts navigating as soon as it runs.
+     * The dir.json listing stays as a fallback without a connection.
+     */
+    private void pushLocationToWatch(SharedLocation loc) {
+        if (mConnectIQ == null || mConnectedDevice == null || mConnectedApp == null) {
+            // launchIQApp() sends it once the watch app is known
+            mPendingPush = loc;
+            return;
+        }
+        mPendingPush = loc;
+        sendPendingLocation(mConnectedDevice, mConnectedApp);
+        try {
+            mConnectIQ.openApplication(mConnectedDevice, mConnectedApp, (iqDevice, iqApp, status) ->
+                    Log.info("Open app for location: {}", status));
+        } catch (InvalidStateException | ServiceUnavailableException e) {
+            Log.error("Error opening application", e);
+        }
+    }
+
+    private void sendPendingLocation(IQDevice device, IQApp app) {
+        SharedLocation loc = mPendingPush;
+        if (loc == null || mConnectIQ == null) {
+            return;
+        }
+        mPendingPush = null;
+        try {
+            mConnectIQ.sendMessage(device, app, loc.toWatchMessage(System.currentTimeMillis()),
+                    (iqDevice, iqApp, status) -> {
+                        if (status == ConnectIQ.IQMessageStatus.SUCCESS) {
+                            Log.info("Sent location {} to the watch", loc.getName());
+                        } else {
+                            Log.error("Failed to send location to the watch: {}", status);
+                        }
+                    });
+        } catch (InvalidStateException | ServiceUnavailableException e) {
+            Log.error("Error sending location to the watch", e);
         }
     }
 
@@ -499,6 +548,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // A new share replaces the previous one.
             mSharedText = null;
             mSharedLocation = null;
+            mPendingPush = null;
         }
         if (Intent.ACTION_SEND.equals(action)) {
             processSingleFile(intent);
@@ -744,6 +794,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     return;
                 }
                 mSharedLocation = loc;
+                pushLocationToWatch(loc);
                 // onStop() may have cleared the directory meanwhile; the next
                 // serveFiles() writes the cached location into the new one.
                 if (directory.equals(mDirectory)) {
