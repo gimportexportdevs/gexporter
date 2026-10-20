@@ -9,6 +9,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Canvas;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -30,12 +33,14 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.documentfile.provider.DocumentFile;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -168,6 +173,7 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
         RecyclerView list = findViewById(R.id.served_list);
         list.setLayoutManager(new LinearLayoutManager(this));
         list.setAdapter(mServedAdapter);
+        new ItemTouchHelper(new SwipeToDeleteFromWatch()).attachToRecyclerView(list);
 
         findViewById(R.id.choose_folder).setOnClickListener(v ->
                 openDocumentTreeLauncher.launch(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)));
@@ -1049,6 +1055,74 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
                     }
                 })
                 .show();
+    }
+
+    /**
+     * Swiping an entry that is on the watch deletes it from the watch, like
+     * the menu entry. The row stays: only the watch's copy goes.
+     */
+    private class SwipeToDeleteFromWatch extends ItemTouchHelper.SimpleCallback {
+        private final ColorDrawable mBackground = new ColorDrawable();
+        private Drawable mIcon;
+
+        SwipeToDeleteFromWatch() {
+            super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
+        }
+
+        @Override
+        public int getSwipeDirs(@NonNull RecyclerView rv, @NonNull RecyclerView.ViewHolder vh) {
+            int pos = vh.getBindingAdapterPosition();
+            boolean onWatch = pos != RecyclerView.NO_POSITION
+                    && WatchContent.isOnWatch(mServed.get(pos).fingerprint, WatchLink.latestContent());
+            return onWatch ? super.getSwipeDirs(rv, vh) : 0;
+        }
+
+        @Override
+        public boolean onMove(@NonNull RecyclerView rv, @NonNull RecyclerView.ViewHolder vh,
+                              @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder vh, int direction) {
+            int pos = vh.getBindingAdapterPosition();
+            if (pos == RecyclerView.NO_POSITION) {
+                return;
+            }
+            // bring the row back; the mark goes once the watch confirms
+            mServedAdapter.notifyItemChanged(pos);
+            deleteFromWatch(mServed.get(pos));
+        }
+
+        /** The delete action behind the row while it is swiped. */
+        @Override
+        public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView rv, @NonNull RecyclerView.ViewHolder vh,
+                                float dX, float dY, int actionState, boolean active) {
+            View row = vh.itemView;
+            if (dX != 0) {
+                if (mIcon == null) {
+                    mIcon = AppCompatResources.getDrawable(MainActivity.this, R.drawable.ic_delete);
+                    mBackground.setColor(MaterialColors.getColor(row, com.google.android.material.R.attr.colorErrorContainer));
+                }
+                int left = dX > 0 ? row.getLeft() : row.getRight() + (int) dX;
+                int right = dX > 0 ? row.getLeft() + (int) dX : row.getRight();
+                mBackground.setBounds(left, row.getTop(), right, row.getBottom());
+                mBackground.draw(c);
+                if (mIcon != null) {
+                    mIcon.setTint(MaterialColors.getColor(row, com.google.android.material.R.attr.colorOnErrorContainer));
+                    int size = mIcon.getIntrinsicHeight();
+                    int margin = size;
+                    int top = row.getTop() + (row.getHeight() - size) / 2;
+                    int iconLeft = dX > 0 ? row.getLeft() + margin : row.getRight() - margin - size;
+                    mIcon.setBounds(iconLeft, top, iconLeft + size, top + size);
+                    c.save();
+                    c.clipRect(left, row.getTop(), right, row.getBottom());
+                    mIcon.draw(c);
+                    c.restore();
+                }
+            }
+            super.onChildDraw(c, rv, vh, dX, dY, actionState, active);
+        }
     }
 
     /** The ⋮ menu of an entry (also on long press): send it, or delete it from the watch. */
