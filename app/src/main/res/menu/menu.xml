@@ -9,6 +9,10 @@
         app:showAsAction="ifRoom">
         <menu>
             <item
+                android:id="@+id/manage_watch"
+                android:title="@string/manage_watch"
+                app:showAsAction="never" />
+            <item
                 android:id="@+id/help"
                 android:icon="@drawable/ic_help"
                 android:title="@string/help"

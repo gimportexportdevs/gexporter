@@ -263,6 +263,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         public void onApplicationInfoReceived(IQApp app) {
                             mConnectedDevice = device;
                             mConnectedApp = app;
+                            onWatchAppFound(connectIQ, device, app);
 
                             // Register the GET_PORT listener as soon as we know the
                             // app is installed - independent of whether the user
@@ -309,6 +310,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /** gimporter (app or widget) is on the watch: tapping the watch card manages it. */
+    private void onWatchAppFound(ConnectIQ connectIQ, IQDevice device, IQApp app) {
+        WatchLink.setConnection(connectIQ, device, app);
+        findViewById(R.id.connect_card).setOnClickListener(v ->
+                startActivity(new Intent(MainActivity.this, ManageWatchActivity.class)));
+    }
+
     private void handleAppNotInstalled(ConnectIQ connectIQ, IQDevice device) {
         findViewById(R.id.connect_card).setOnClickListener(v -> {
             try {
@@ -329,6 +337,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     mConnectedDevice = device;
                     mConnectedApp = app;
+                    onWatchAppFound(connectIQ, device, app);
 
                     Log.info("Garmin widget {} connected to device {}",
                             app.getApplicationId(), device.getDeviceIdentifier());
@@ -364,6 +373,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             connectIQ.registerForAppEvents(device, app, (iqDevice, iqApp, message, status) -> {
                 if (message instanceof ArrayList && !message.isEmpty()) {
                     Object firstElement = ((ArrayList<?>) message).get(0);
+                    List<WatchContent.Item> content = WatchContent.parseContent(firstElement);
+                    if (content != null) {
+                        // for ManageWatchActivity
+                        runOnUiThread(() -> WatchLink.dispatchContent(content));
+                        return;
+                    }
                     if (!(firstElement instanceof ArrayList)) {
                         return;
                     }
@@ -452,6 +467,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.manage_watch) {
+            // same as tapping the watch card; the screen explains if no watch is connected
+            startActivity(new Intent(this, ManageWatchActivity.class));
+            return true;
+        }
         if (item.getItemId() == R.id.help) {
             Intent browserIntent = new Intent(Intent.ACTION_VIEW,
                     Uri.parse("https://github.com/gimportexportdevs/gexporter/wiki/Help"));
@@ -716,6 +736,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         mRegisteredDevices.clear();
+        WatchLink.clear();
         super.onDestroy();
     }
 

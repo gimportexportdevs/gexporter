@@ -84,5 +84,11 @@
                 <data android:mimeType="text/xml" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="org.surfsite.gexporter.ManageWatchActivity"
+            android:exported="false"
+            android:label="@string/manage_watch"
+            android:parentActivityName="org.surfsite.gexporter.MainActivity" />
     </application>
 </manifest>
