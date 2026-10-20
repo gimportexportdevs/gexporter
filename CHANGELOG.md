@@ -1,5 +1,39 @@
 # Changelog
 
+## [20.2.0](https://github.com/gimportexportdevs/gexporter/compare/v20.1.0...v20.2.0) (2026-10-20)
+
+
+### Features
+
+* add UI translations for 28 major languages ([18583fa](https://github.com/gimportexportdevs/gexporter/commit/18583fa8b05747c91a713f0c9d64052bb34ab7aa))
+* geocode Google place links without coordinates via Nominatim ([c58ea56](https://github.com/gimportexportdevs/gexporter/commit/c58ea56431134e4e3c26ca6e127a024b363d3c22))
+* list and delete gimporter content on the watch from the phone ([cf671df](https://github.com/gimportexportdevs/gexporter/commit/cf671dfa75c93bc7bef507a0b9696c227a77a927))
+* long-press menu to send, delete from the watch or remove an entry ([e426574](https://github.com/gimportexportdevs/gexporter/commit/e4265744bbec25c85ec4c8c71f7dbd5fa0c90234))
+* mark entries on the watch with a watch icon ([b5c10c4](https://github.com/gimportexportdevs/gexporter/commit/b5c10c42d03e39e22d7c8c0fcf148cdda0ce734d))
+* open an entry's menu from a ⋮ button ([c223cac](https://github.com/gimportexportdevs/gexporter/commit/c223cacf3825cdec2afd620d04e31d24065c7215))
+* push shared locations straight to the watch ([bda6992](https://github.com/gimportexportdevs/gexporter/commit/bda6992d8c4b29f343f1de8a8fda413257d36b55))
+* redesign the main screen and move settings to their own screen ([1de67cd](https://github.com/gimportexportdevs/gexporter/commit/1de67cd66ec54cfad7462d8c23f419cc45dc8442))
+* send a track to the watch with one tap and mark what is on it ([8166f2b](https://github.com/gimportexportdevs/gexporter/commit/8166f2bb0d6da589060bbf48586b9439ad5980f7))
+* share locations from map apps to the watch ([f08d823](https://github.com/gimportexportdevs/gexporter/commit/f08d8239be1daf6f895c12702985189fe1695b22))
+* show what gimporter is doing and do not send while it is busy ([ad5a058](https://github.com/gimportexportdevs/gexporter/commit/ad5a0581ce03cf43b2a681f7062fa42f89eb1bdd))
+* show when a sent track is waiting on the watch to be started ([d0c594e](https://github.com/gimportexportdevs/gexporter/commit/d0c594e96aaca996d92c485916cc525ad4fe5bed))
+* swipe an entry to delete it from the watch ([d1d40e5](https://github.com/gimportexportdevs/gexporter/commit/d1d40e5ce791f50eee2b9d5faf41f1be02c89260))
+* target Android SDK 37, upgrade AGP 9.2.1 / Gradle 9.6, update deps ([fea0412](https://github.com/gimportexportdevs/gexporter/commit/fea0412c1b24a4484f4999a203aee48a4a2e151a))
+
+
+### Bug Fixes
+
+* ask an unknown running gimporter only once and show the whole hint ([255149e](https://github.com/gimportexportdevs/gexporter/commit/255149eafef7a31da15b1426bcfc2d43ddac5e18))
+* do not send requests to a gimporter that does not know them ([3565d56](https://github.com/gimportexportdevs/gexporter/commit/3565d56a41560d9be81cf874c1afa795770ba048))
+* do not warn when a converted file is already deleted ([2f23655](https://github.com/gimportexportdevs/gexporter/commit/2f23655329a52bbef8fd24528ce0f0429367d2ea))
+* harden the share intake for track files and locations ([c296eec](https://github.com/gimportexportdevs/gexporter/commit/c296eec95d9c8271d5cdcb72067e7e068f83d168))
+* list shared locations only for gimporter versions that handle them ([82c2670](https://github.com/gimportexportdevs/gexporter/commit/82c2670f2a51c5e16f29256d5e646dfdfa39f4ac))
+* manage the gimporter widget's tracks too ([21b88eb](https://github.com/gimportexportdevs/gexporter/commit/21b88eb0f8190a459e4430f498b4b3f293173ff5))
+* narrow the VIEW intent filter to supported file types ([dd17ec7](https://github.com/gimportexportdevs/gexporter/commit/dd17ec7cab5022179db2ab56c4e18761c2c87669))
+* never guess a Google place position from the page ([9322a76](https://github.com/gimportexportdevs/gexporter/commit/9322a76f520a672560d3b0e5402151fc098c7fc8))
+* serve from one shared directory and stop leaking cache files ([e287bd7](https://github.com/gimportexportdevs/gexporter/commit/e287bd7f24a6504d05b93adfc1eb8eee8622ed34))
+* write the byte-order mark check as an escape ([79ac2c2](https://github.com/gimportexportdevs/gexporter/commit/79ac2c22a2eba5179fad0c62c160040297f13d11))
+
 ## [20.1.0](https://github.com/gimportexportdevs/gexporter/compare/v20.0.0...v20.1.0) (2026-07-06)
 
 
