@@ -1,16 +1,12 @@
 <resources>
-    <string name="starting">Se pornește …</string>
 
     <string name="connect_ongoing">Se încearcă conectarea la dispozitivul Garmin…</string>
     <string name="connect_no_device">Niciun dispozitiv Garmin conectat!</string>
-    <string name="connect_app_not_installed">Aplicația gimporter CIQ pare să nu fie instalată. Atingeți pentru a o descărca.</string>
-    <string name="connect_app_only_widget_installed">Versiunea widget a gimporter nu acceptă lansarea automată. Atingeți pentru a descărca aplicația pentru dispozitiv, pentru o experiență și mai fluidă.</string>
     <string name="connect_connected">Conectat</string>
     <string name="connect_init_failed">Nu s-a putut comunica cu Garmin Connect</string>
 
     <string name="settings">Setări</string>
     <string name="force_speed">Forțează viteza</string>
-    <string name="speed">Viteză implicită:</string>
     <string name="inject_course_points">Inserează puncte de traseu</string>
     <string name="use_3d_distance">Folosește distanța 3D</string>
     <string name="use_walking_grade_factor">Folosește factorul de pantă la mers</string>
@@ -18,9 +14,6 @@
     <string name="points">puncte</string>
     <string name="no_permission">Nicio permisiune de a citi fișierele.</string>
     <string name="no_server">Serverul nu a putut fi pornit</string>
-    <string name="serving_from">Se servește din: %1$s\n\n%2$s</string>
-    <string name="no_files_to_serve">Niciun fișier de servit din %1$s</string>
-    <string name="serving_not_possible">Folosiți exploratorul de fișiere și partajați fișiere cu această aplicație!</string>
     <string name="resolving_location">Se determină locația partajată…</string>
     <string name="location_not_found">Nu s-au găsit coordonate în locația partajată.</string>
     <string name="manage_watch">Gestionează ceasul</string>
@@ -37,8 +30,21 @@
     <string name="deleted_many">Șterse: %1$d</string>
     <string name="undo">Anulează</string>
     <string name="delete">Șterge</string>
+    <string name="watch_generic">Ceas Garmin</string>
+    <string name="watch_status_not_installed">gimporter nu este instalat</string>
+    <string name="watch_status_widget_only">Este instalat doar widgetul gimporter</string>
+    <string name="install">Instalează</string>
+    <string name="manage">Gestionează</string>
+    <string name="ready_for_watch">Gata pentru ceas</string>
+    <string name="served_from">Din: %1$s</string>
+    <string name="empty_hint">Partajează cu această aplicație un fișier GPX sau FIT ori un loc din Google Maps sau Organic Maps. Sau alege un dosar.</string>
+    <string name="choose_folder">Alege dosarul</string>
+    <string name="removed_one">„%1$s” a fost eliminat</string>
+    <string name="settings_speed">Viteză</string>
+    <string name="settings_conversion">Conversie</string>
+    <string name="default_speed">Viteză implicită</string>
+    <string name="speed_unit">Unitate</string>
+    <string name="max_points">Număr maxim de puncte</string>
     <string name="help">Ajutor</string>
-    <string name="menu">Meniu</string>
     <string name="select_file">Selectați un director de exportat</string>
-    <string name="expand_settings">Extinde setările</string>
 </resources>

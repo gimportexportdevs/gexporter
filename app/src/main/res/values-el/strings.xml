@@ -1,16 +1,12 @@
 <resources>
-    <string name="starting">Εκκίνηση …</string>
 
     <string name="connect_ongoing">Προσπάθεια σύνδεσης με συσκευή Garmin…</string>
     <string name="connect_no_device">Δεν έχει συνδεθεί συσκευή Garmin!</string>
-    <string name="connect_app_not_installed">Η εφαρμογή gimporter CIQ δεν φαίνεται να είναι εγκατεστημένη. Πατήστε για λήψη.</string>
-    <string name="connect_app_only_widget_installed">Η έκδοση widget του gimporter δεν υποστηρίζει αυτόματη εκκίνηση. Πατήστε για λήψη της εφαρμογής συσκευής για μια ακόμη πιο ομαλή εμπειρία.</string>
     <string name="connect_connected">Συνδεδεμένο</string>
     <string name="connect_init_failed">Δεν ήταν δυνατή η επικοινωνία με το Garmin Connect</string>
 
     <string name="settings">Ρυθμίσεις</string>
     <string name="force_speed">Επιβολή ταχύτητας</string>
-    <string name="speed">Προεπιλεγμένη ταχύτητα:</string>
     <string name="inject_course_points">Εισαγωγή σημείων διαδρομής</string>
     <string name="use_3d_distance">Χρήση απόστασης 3D</string>
     <string name="use_walking_grade_factor">Χρήση συντελεστή κλίσης βάδισης</string>
@@ -18,9 +14,6 @@
     <string name="points">σημεία</string>
     <string name="no_permission">Δεν υπάρχει άδεια ανάγνωσης αρχείων.</string>
     <string name="no_server">Δεν ήταν δυνατή η εκκίνηση του διακομιστή</string>
-    <string name="serving_from">Εξυπηρέτηση από: %1$s\n\n%2$s</string>
-    <string name="no_files_to_serve">Δεν υπάρχουν αρχεία προς εξυπηρέτηση από %1$s</string>
-    <string name="serving_not_possible">Χρησιμοποιήστε την εξερεύνηση αρχείων και μοιραστείτε αρχεία με αυτήν την εφαρμογή!</string>
     <string name="resolving_location">Εντοπισμός κοινόχρηστης τοποθεσίας…</string>
     <string name="location_not_found">Δεν βρέθηκαν συντεταγμένες στην κοινόχρηστη τοποθεσία.</string>
     <string name="manage_watch">Διαχείριση ρολογιού</string>
@@ -37,8 +30,21 @@
     <string name="deleted_many">Διαγράφηκαν: %1$d</string>
     <string name="undo">Αναίρεση</string>
     <string name="delete">Διαγραφή</string>
+    <string name="watch_generic">Ρολόι Garmin</string>
+    <string name="watch_status_not_installed">Το gimporter δεν είναι εγκατεστημένο</string>
+    <string name="watch_status_widget_only">Είναι εγκατεστημένο μόνο το widget του gimporter</string>
+    <string name="install">Εγκατάσταση</string>
+    <string name="manage">Διαχείριση</string>
+    <string name="ready_for_watch">Έτοιμο για το ρολόι</string>
+    <string name="served_from">Από: %1$s</string>
+    <string name="empty_hint">Μοιραστείτε με αυτή την εφαρμογή ένα αρχείο GPX ή FIT ή ένα μέρος από το Google Maps ή το Organic Maps. Ή επιλέξτε φάκελο.</string>
+    <string name="choose_folder">Επιλογή φακέλου</string>
+    <string name="removed_one">Αφαιρέθηκε: «%1$s»</string>
+    <string name="settings_speed">Ταχύτητα</string>
+    <string name="settings_conversion">Μετατροπή</string>
+    <string name="default_speed">Προεπιλεγμένη ταχύτητα</string>
+    <string name="speed_unit">Μονάδα</string>
+    <string name="max_points">Μέγιστος αριθμός σημείων</string>
     <string name="help">Βοήθεια</string>
-    <string name="menu">Μενού</string>
     <string name="select_file">Επιλέξτε έναν κατάλογο για εξαγωγή</string>
-    <string name="expand_settings">Ανάπτυξη ρυθμίσεων</string>
 </resources>

@@ -3,61 +3,50 @@ package org.surfsite.gexporter;
 import static android.os.Environment.DIRECTORY_DOWNLOADS;
 
 import android.Manifest;
-import android.app.Application;
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.OpenableColumns;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.text.method.DigitsKeyListener;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
+import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.Spinner;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.documentfile.provider.DocumentFile;
-import androidx.transition.AutoTransition;
-import androidx.transition.TransitionManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.garmin.android.connectiq.ConnectIQ;
 import com.garmin.android.connectiq.IQApp;
 import com.garmin.android.connectiq.IQDevice;
 import com.garmin.android.connectiq.exception.InvalidStateException;
 import com.garmin.android.connectiq.exception.ServiceUnavailableException;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.color.MaterialColors;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,25 +54,21 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
     private static final Logger Log = LoggerFactory.getLogger(MainActivity.class);
     private static final int GEXPORTER_OPEN_DIR = 1;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 300;
@@ -94,18 +79,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Nullable
     private WebServer server = null;
-    private TextView mTextView;
-    private Spinner mSpeedUnit;
-    private EditText mSpeed;
-    private CheckBox mForceSpeed;
-    private CheckBox mUse3DDistance;
-    private CheckBox mInjectCoursePoints;
-    private CheckBox mUseWalkingGrade;
-    private CheckBox mReducePoints;
-    private EditText mMaxPoints;
+    private TextView mStatusText;
+    private TextView mServedFrom;
+    private View mEmptyView;
+    // what the watch can fetch, listed on the main screen
+    private final List<ServedFiles.Entry> mServed = new ArrayList<>();
+    private final ServedAdapter mServedAdapter = new ServedAdapter();
+    private final ExecutorService mScanner = Executors.newSingleThreadExecutor();
+    private File mServedDir;
     private Gpx2FitOptions mGpx2FitOptions = null;
     private File mDirectory = null;
-    private final NumberFormat mNumberFormat = NumberFormat.getInstance(Locale.getDefault());
     private ArrayList<Uri> mUris;
     // Text or geo: URI shared from a map app; served as a one-waypoint GPX.
     private String mSharedText;
@@ -125,8 +108,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        // Enable modern edge-to-edge using WindowCompat (Android 15+ compatible)
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        // Draw behind the system bars, with icon colors matching the theme
+        EdgeToEdge.enable(this);
         
         Log.debug("onCreate called");
         mCR = getContentResolver();
@@ -161,75 +144,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initializeUIComponents() {
-        // Initialize speed unit spinner
-        mSpeedUnit = findViewById(R.id.SPspeedUnits);
-        ArrayAdapter<CharSequence> speedUnitAdapter = ArrayAdapter.createFromResource(this,
-                R.array.speedunits, android.R.layout.simple_spinner_item);
-        speedUnitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mSpeedUnit.setAdapter(speedUnitAdapter);
-        mSpeedUnit.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (mGpx2FitOptions != null) {
-                    mGpx2FitOptions.setSpeedUnit(position);
-                }
-                setSpeedText(position);
-            }
+        mStatusText = findViewById(R.id.status_text);
+        mServedFrom = findViewById(R.id.served_from);
+        mEmptyView = findViewById(R.id.served_empty);
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                if (mGpx2FitOptions != null) {
-                    mGpx2FitOptions.setSpeedUnit(0);
-                }
-            }
-        });
+        RecyclerView list = findViewById(R.id.served_list);
+        list.setLayoutManager(new LinearLayoutManager(this));
+        list.setAdapter(mServedAdapter);
+        new ItemTouchHelper(new SwipeToRemove()).attachToRecyclerView(list);
 
-        // Initialize speed input
-        mSpeed = findViewById(R.id.editSpeed);
-        char separator = DecimalFormatSymbols.getInstance().getDecimalSeparator();
-        mSpeed.setKeyListener(DigitsKeyListener.getInstance("0123456789:" + separator));
-        mSpeed.addTextChangedListener(new SpeedTextWatcher());
-
-        // Initialize checkboxes
-        mForceSpeed = findViewById(R.id.CBforceSpeed);
-        mForceSpeed.setOnClickListener(this);
-
-        mUse3DDistance = findViewById(R.id.CBuse3D);
-        mUse3DDistance.setOnClickListener(this);
-
-        mInjectCoursePoints = findViewById(R.id.CBinject);
-        mInjectCoursePoints.setOnClickListener(this);
-
-        mUseWalkingGrade = findViewById(R.id.CBuseWalkingGrade);
-        mUseWalkingGrade.setOnClickListener(this);
-
-        mReducePoints = findViewById(R.id.CBreducePoints);
-        mReducePoints.setOnClickListener(this);
-
-        // Initialize max points input
-        mMaxPoints = findViewById(R.id.editPointNumber);
-        mMaxPoints.addTextChangedListener(new MaxPointsTextWatcher());
-
-        // Initialize text view
-        mTextView = findViewById(R.id.textv);
-
-        // Initialize expandable settings
-        View settingsView = findViewById(R.id.settings_content);
-        ImageButton expandButton = findViewById(R.id.expand_settings);
-        findViewById(R.id.expand_touch_area).setOnClickListener(v -> expandButton.performClick());
-        expandButton.setOnClickListener(v -> {
-            TransitionManager.beginDelayedTransition(findViewById(android.R.id.content), new AutoTransition());
-            if (settingsView.getVisibility() == View.VISIBLE) {
-                settingsView.setVisibility(View.GONE);
-                expandButton.setImageResource(R.drawable.ic_expand_more);
-            } else {
-                settingsView.setVisibility(View.VISIBLE);
-                expandButton.setImageResource(R.drawable.ic_expand_less);
-            }
-        });
-
-        // Initialize file selection button
-        findViewById(R.id.file_button).setOnClickListener(this);
+        findViewById(R.id.choose_folder).setOnClickListener(v ->
+                openDocumentTreeLauncher.launch(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)));
+        setWatchState(WatchState.CONNECTING, null);
     }
 
     private void initConnectIQ() {
@@ -242,8 +168,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onInitializeError(ConnectIQ.IQSdkErrorStatus errorStatus) {
-                TextView infoText = findViewById(R.id.connect_infotext);
-                infoText.setText(R.string.connect_init_failed);
+                setWatchState(WatchState.INIT_FAILED, null);
             }
 
             @Override
@@ -276,18 +201,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             sendPendingLocation(device, app);
 
                             try {
-                                connectIQ.openApplication(device, app, (iqDevice, iqApp, status) -> {
-                                    if (status == ConnectIQ.IQOpenApplicationStatus.PROMPT_SHOWN_ON_DEVICE ||
-                                            status == ConnectIQ.IQOpenApplicationStatus.APP_IS_ALREADY_RUNNING) {
-                                        TextView infoText = findViewById(R.id.connect_infotext);
-                                        infoText.setText(R.string.connect_connected);
-                                        CardView connectCard = findViewById(R.id.connect_card);
-                                        connectCard.setCardBackgroundColor(0xff77cc77);
-
-                                        Log.info("Garmin app {} successfully connected to device {}",
-                                                app.getApplicationId(), device.getDeviceIdentifier());
-                                    }
-                                });
+                                connectIQ.openApplication(device, app, (iqDevice, iqApp, status) ->
+                                        Log.info("Garmin app {} on device {}: {}", app.getApplicationId(),
+                                                device.getDeviceIdentifier(), status));
                             } catch (InvalidStateException | ServiceUnavailableException e) {
                                 Log.error("Error opening application", e);
                             }
@@ -300,41 +216,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     });
                 }
             } else {
-                TextView infoText = findViewById(R.id.connect_infotext);
-                infoText.setText(R.string.connect_no_device);
-                CardView connectCard = findViewById(R.id.connect_card);
-                connectCard.setCardBackgroundColor(0xffee7777);
+                setWatchState(WatchState.NO_DEVICE, null);
             }
         } catch (InvalidStateException | ServiceUnavailableException e) {
             Log.error("Error getting connected devices", e);
         }
     }
 
-    /** gimporter (app or widget) is on the watch: tapping the watch card manages it. */
+    /** gimporter (app or widget) is on the watch. */
     private void onWatchAppFound(ConnectIQ connectIQ, IQDevice device, IQApp app) {
         WatchLink.setConnection(connectIQ, device, app);
-        findViewById(R.id.connect_card).setOnClickListener(v ->
-                startActivity(new Intent(MainActivity.this, ManageWatchActivity.class)));
+        setWatchState(CONNECT_IQ_GIMPORTER_WIDGET.equalsIgnoreCase(app.getApplicationId())
+                ? WatchState.WIDGET_ONLY : WatchState.CONNECTED, device);
     }
 
     private void handleAppNotInstalled(ConnectIQ connectIQ, IQDevice device) {
-        findViewById(R.id.connect_card).setOnClickListener(v -> {
-            try {
-                connectIQ.openStore(CONNECT_IQ_GIMPORTER_APP_STOREENTRY);
-            } catch (InvalidStateException | ServiceUnavailableException e) {
-                Log.error("Error opening store", e);
-            }
-        });
-
         try {
             connectIQ.getApplicationInfo(CONNECT_IQ_GIMPORTER_WIDGET, device, new ConnectIQ.IQApplicationInfoListener() {
                 @Override
                 public void onApplicationInfoReceived(IQApp app) {
-                    TextView infoText = findViewById(R.id.connect_infotext);
-                    infoText.setText(R.string.connect_app_only_widget_installed);
-                    CardView connectCard = findViewById(R.id.connect_card);
-                    connectCard.setCardBackgroundColor(0xff77cc77);
-
                     mConnectedDevice = device;
                     mConnectedApp = app;
                     onWatchAppFound(connectIQ, device, app);
@@ -349,14 +249,73 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 @Override
                 public void onApplicationNotInstalled(String applicationId) {
-                    TextView infoText = findViewById(R.id.connect_infotext);
-                    infoText.setText(R.string.connect_app_not_installed);
-                    CardView connectCard = findViewById(R.id.connect_card);
-                    connectCard.setCardBackgroundColor(0xffee7777);
+                    setWatchState(WatchState.NOT_INSTALLED, device);
                 }
             });
         } catch (InvalidStateException | ServiceUnavailableException e) {
             Log.error("Error checking widget", e);
+        }
+    }
+
+    private enum WatchState { CONNECTING, NO_DEVICE, INIT_FAILED, NOT_INSTALLED, WIDGET_ONLY, CONNECTED }
+
+    /** Show the watch, its connection state and the action that fits it. */
+    private void setWatchState(WatchState state, @Nullable IQDevice device) {
+        MaterialCardView card = findViewById(R.id.watch_card);
+        TextView name = findViewById(R.id.watch_name);
+        TextView status = findViewById(R.id.watch_status);
+        ImageView icon = findViewById(R.id.watch_icon);
+        MaterialButton action = findViewById(R.id.watch_action);
+
+        if (device != null && device.getFriendlyName() != null && !device.getFriendlyName().isEmpty()) {
+            name.setText(device.getFriendlyName());
+        }
+        int container = com.google.android.material.R.attr.colorSurfaceContainerHighest;
+        int onContainer = com.google.android.material.R.attr.colorOnSurface;
+        action.setVisibility(View.GONE);
+        switch (state) {
+            case CONNECTING:
+                status.setText(R.string.connect_ongoing);
+                break;
+            case NO_DEVICE:
+            case INIT_FAILED:
+                status.setText(state == WatchState.NO_DEVICE ? R.string.connect_no_device : R.string.connect_init_failed);
+                container = com.google.android.material.R.attr.colorErrorContainer;
+                onContainer = com.google.android.material.R.attr.colorOnErrorContainer;
+                break;
+            case NOT_INSTALLED:
+                status.setText(R.string.watch_status_not_installed);
+                container = com.google.android.material.R.attr.colorErrorContainer;
+                onContainer = com.google.android.material.R.attr.colorOnErrorContainer;
+                action.setText(R.string.install);
+                action.setOnClickListener(v -> openStore());
+                action.setVisibility(View.VISIBLE);
+                break;
+            case WIDGET_ONLY:
+            case CONNECTED:
+                status.setText(state == WatchState.CONNECTED ? R.string.connect_connected : R.string.watch_status_widget_only);
+                container = com.google.android.material.R.attr.colorPrimaryContainer;
+                onContainer = com.google.android.material.R.attr.colorOnPrimaryContainer;
+                action.setText(R.string.manage);
+                action.setOnClickListener(v -> startActivity(new Intent(this, ManageWatchActivity.class)));
+                action.setVisibility(View.VISIBLE);
+                break;
+        }
+        int fg = MaterialColors.getColor(card, onContainer);
+        card.setCardBackgroundColor(MaterialColors.getColor(card, container));
+        name.setTextColor(fg);
+        status.setTextColor(fg);
+        icon.setColorFilter(fg);
+    }
+
+    private void openStore() {
+        if (mConnectIQ == null) {
+            return;
+        }
+        try {
+            mConnectIQ.openStore(CONNECT_IQ_GIMPORTER_APP_STOREENTRY);
+        } catch (InvalidStateException | ServiceUnavailableException e) {
+            Log.error("Error opening store", e);
         }
     }
 
@@ -467,6 +426,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
         if (item.getItemId() == R.id.manage_watch) {
             // same as tapping the watch card; the screen explains if no watch is connected
             startActivity(new Intent(this, ManageWatchActivity.class));
@@ -482,36 +445,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onClick(View v) {
-        if (mGpx2FitOptions == null) {
-            return;
-        }
-
-        int id = v.getId();
-        if (id == R.id.CBforceSpeed) {
-            mGpx2FitOptions.setForceSpeed(mForceSpeed.isChecked());
-        } else if (id == R.id.CBinject) {
-            mGpx2FitOptions.setInjectCoursePoints(mInjectCoursePoints.isChecked());
-        } else if (id == R.id.CBreducePoints) {
-            if (mReducePoints.isChecked()) {
-                String text = mMaxPoints.getText().toString();
-                if (!text.isEmpty()) {
-                    mGpx2FitOptions.setMaxPoints(Integer.parseInt(text));
-                }
-            } else {
-                mGpx2FitOptions.setMaxPoints(0);
-            }
-        } else if (id == R.id.CBuse3D) {
-            mGpx2FitOptions.setUse3dDistance(mUse3DDistance.isChecked());
-        } else if (id == R.id.CBuseWalkingGrade) {
-            mGpx2FitOptions.setWalkingGrade(mUseWalkingGrade.isChecked());
-        } else if (id == R.id.file_button) {
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-            openDocumentTreeLauncher.launch(intent);
-        }
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         Log.debug("onResume called");
@@ -519,11 +452,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Keep a single options object so a running WebServer never holds a
         // stale reference; update it in place from persisted settings.
         if (mGpx2FitOptions == null) {
-            mGpx2FitOptions = load();
+            mGpx2FitOptions = OptionsStore.load(this);
         } else {
-            mGpx2FitOptions.copyFrom(load());
+            mGpx2FitOptions.copyFrom(OptionsStore.load(this));
         }
-        updateUIFromOptions();
         processIntent(getIntent());
 
         if (server == null) {
@@ -532,22 +464,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             Log.debug("Server already running");
         }
-    }
-
-    private void updateUIFromOptions() {
-        setSpeedText(mGpx2FitOptions.getSpeedUnit());
-        mForceSpeed.setChecked(mGpx2FitOptions.isForceSpeed());
-        mUse3DDistance.setChecked(mGpx2FitOptions.isUse3dDistance());
-        mInjectCoursePoints.setChecked(mGpx2FitOptions.isInjectCoursePoints());
-        mUseWalkingGrade.setChecked(mGpx2FitOptions.isWalkingGrade());
-        mReducePoints.setChecked(mGpx2FitOptions.getMaxPoints() > 0);
-
-        int maxPoints = mGpx2FitOptions.getMaxPoints();
-        if (maxPoints == 0) {
-            maxPoints = 1000;
-        }
-        mMaxPoints.setText(String.format(Locale.getDefault(), "%d", maxPoints));
-        mSpeedUnit.setSelection(mGpx2FitOptions.getSpeedUnit());
     }
 
     @Override
@@ -696,15 +612,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 serveFiles();
             } else {
                 Log.warn("Permission denied in callback");
-                mTextView.setText(R.string.no_permission);
+                setStatus(R.string.no_permission);
             }
         }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        save(mGpx2FitOptions);
     }
 
     @Override
@@ -737,6 +647,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         mRegisteredDevices.clear();
         WatchLink.clear();
+        mScanner.shutdownNow();
         super.onDestroy();
     }
 
@@ -759,6 +670,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     protected void serveFiles() {
         Log.debug("serveFiles called");
+        setStatus(0);
         String rootDirectoryUserDisplayable;
         File directory;
 
@@ -802,7 +714,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return;
         }
 
-        mTextView.setText(R.string.resolving_location);
+        setStatus(R.string.resolving_location);
         final String text = mSharedText;
         new Thread(() -> {
             SharedLocation loc = SharedLocation.resolve(text, new SharedLocation.HttpFetcher());
@@ -811,7 +723,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     return;  // superseded by a newer share
                 }
                 if (loc == null) {
-                    mTextView.setText(R.string.location_not_found);
+                    setStatus(R.string.location_not_found);
                     return;
                 }
                 mSharedLocation = loc;
@@ -833,6 +745,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.error("Could not write {}", file, e);
         }
         Log.info("Serving location {} at {}, {}", loc.getName(), loc.getLat(), loc.getLon());
+        setStatus(0);
         displayFileList(directory, loc.getName());
     }
 
@@ -912,22 +825,136 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // Don't leave a dead, never-started instance in `server`: it
                 // would block every retry and make GET_PORT reply -1.
                 server = null;
-                mTextView.setText(R.string.no_server);
+                setStatus(R.string.no_server);
             }
         }
     }
 
+    /** List what the watch can fetch; GPX files are parsed in the background. */
     private void displayFileList(File directory, String rootDirectoryUserDisplayable) {
-        FilenameFilter filenameFilter = (dir, name) -> isValidFileType(name);
-        String[] fileList = directory.list(filenameFilter);
+        mServedDir = directory;
+        mServedFrom.setText(getString(R.string.served_from, rootDirectoryUserDisplayable));
+        mScanner.execute(() -> {
+            List<ServedFiles.Entry> entries = ServedFiles.scan(directory);
+            runOnUiThread(() -> {
+                if (isDestroyed() || !directory.equals(mServedDir)) {
+                    return;  // a newer share or folder replaced it
+                }
+                showServed(entries);
+            });
+        });
+    }
 
-        if (fileList == null || fileList.length == 0) {
-            mTextView.setText(mDirectory == null ? getString(R.string.serving_not_possible) :
-                    getString(R.string.no_files_to_serve, rootDirectoryUserDisplayable));
+    @SuppressLint("NotifyDataSetChanged")  // every scan replaces the whole list
+    private void showServed(List<ServedFiles.Entry> entries) {
+        mServed.clear();
+        mServed.addAll(entries);
+        mServedAdapter.notifyDataSetChanged();
+        mEmptyView.setVisibility(entries.isEmpty() ? View.VISIBLE : View.GONE);
+    }
+
+    /** A line under the list title for progress and problems; 0 hides it. */
+    private void setStatus(int text) {
+        if (text == 0) {
+            mStatusText.setVisibility(View.GONE);
         } else {
-            Arrays.sort(fileList);
-            mTextView.setText(String.format(getResources().getString(R.string.serving_from),
-                    rootDirectoryUserDisplayable, TextUtils.join("\n", fileList)));
+            mStatusText.setText(text);
+            mStatusText.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
+     * Swiping removes an entry from what is offered to the watch. Only for
+     * gexporter's own copies of shared files; files in the Downloads folder
+     * belong to the user and are never deleted.
+     */
+    private class SwipeToRemove extends ItemTouchHelper.SimpleCallback {
+        SwipeToRemove() {
+            super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
+        }
+
+        @Override
+        public int getSwipeDirs(@NonNull RecyclerView rv, @NonNull RecyclerView.ViewHolder vh) {
+            return mServedDir != null && mServedDir.equals(mDirectory) ? super.getSwipeDirs(rv, vh) : 0;
+        }
+
+        @Override
+        public boolean onMove(@NonNull RecyclerView rv, @NonNull RecyclerView.ViewHolder vh,
+                              @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder vh, int direction) {
+            int pos = vh.getBindingAdapterPosition();
+            if (pos == RecyclerView.NO_POSITION) {
+                return;
+            }
+            ServedFiles.Entry entry = mServed.get(pos);
+            File dir = mServedDir;
+            // a GPX file with several locations goes as a whole
+            List<ServedFiles.Entry> removed = new ArrayList<>();
+            for (ServedFiles.Entry e : mServed) {
+                if (e.file.equals(entry.file)) {
+                    removed.add(e);
+                }
+            }
+            List<ServedFiles.Entry> remaining = new ArrayList<>(mServed);
+            remaining.removeAll(removed);
+            showServed(remaining);
+            Snackbar.make(findViewById(R.id.main_root), getString(R.string.removed_one, entry.name), Snackbar.LENGTH_LONG)
+                    .setAnchorView(R.id.choose_folder)
+                    .setAction(R.string.undo, v -> displayFileList(dir, String.valueOf(mServedFrom.getText())))
+                    .addCallback(new Snackbar.Callback() {
+                        @Override
+                        public void onDismissed(Snackbar bar, int event) {
+                            if (event != DISMISS_EVENT_ACTION && !entry.file.delete()) {
+                                Log.warn("Could not remove {}", entry.file);
+                            }
+                        }
+                    })
+                    .show();
+        }
+    }
+
+    private class ServedAdapter extends RecyclerView.Adapter<ServedAdapter.Holder> {
+        class Holder extends RecyclerView.ViewHolder {
+            final ImageView icon;
+            final TextView name;
+            final TextView detail;
+
+            Holder(View v) {
+                super(v);
+                icon = v.findViewById(R.id.item_icon);
+                name = v.findViewById(R.id.item_name);
+                detail = v.findViewById(R.id.item_kind);
+            }
+        }
+
+        @NonNull
+        @Override
+        public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            return new Holder(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_watch_content, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull Holder h, int position) {
+            ServedFiles.Entry entry = mServed.get(position);
+            h.icon.setImageResource(entry.location ? R.drawable.ic_location : R.drawable.ic_track);
+            h.name.setText(entry.name);
+            if (entry.location) {
+                h.detail.setText(R.string.kind_location);
+            } else if (entry.length != ServedFiles.NO_LENGTH) {
+                h.detail.setText(String.format(Locale.getDefault(), "%.1f km", entry.length / 1000.0));
+            } else {
+                h.detail.setText(entry.file.getName().toLowerCase(Locale.ROOT).endsWith(".fit") ? "FIT" : "GPX");
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return mServed.size();
         }
     }
 
@@ -1011,47 +1038,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return displayString;
     }
 
-    private void setSpeedText(int pos) {
-        double speed = mGpx2FitOptions.getSpeed();
-        if (Double.isNaN(speed)) {
-            speed = 10.0;
-        }
-
-        String val = null;
-        switch (pos) {
-            case 0: // min/km
-                speed = 1000.0 / speed / 60.0;
-                if (speed < 60) {
-                    val = String.format(Locale.getDefault(), "%d:%02d", (int) speed, ((int) (speed * 60.0 + 0.5) % 60));
-                } else {
-                    val = String.format(Locale.getDefault(), "%d:%02d:%02d", ((int) speed) / 60,
-                            ((int) speed % 60), ((int) (speed * 60.0 + 0.5) % 60));
-                }
-                break;
-            case 1: // km/h
-                speed = speed / 1000.0 * 3600.0;
-                val = String.format(Locale.getDefault(), "%.2f", speed);
-                break;
-            case 2: // min/mi
-                speed = 1609.344 / speed / 60.0;
-                if (speed < 60) {
-                    val = String.format(Locale.getDefault(), "%d:%02d", (int) speed, ((int) (speed * 60.0 + 0.5) % 60));
-                } else {
-                    val = String.format(Locale.getDefault(), "%d:%02d:%02d", ((int) speed) / 60,
-                            ((int) speed % 60), ((int) (speed * 60.0 + 0.5) % 60));
-                }
-                break;
-            case 3: // mph
-                speed = speed / 1609.344 * 3600.0;
-                val = String.format(Locale.getDefault(), "%.2f", speed);
-                break;
-        }
-
-        if (mSpeed != null && val != null) {
-            mSpeed.setText(val);
-        }
-    }
-
     private void clearTempDir() {
         if (mDirectory != null) {
             try {
@@ -1077,115 +1063,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             throw new FileNotFoundException("Failed to delete file: " + f);
         }
     }
-
-    public void save(Gpx2FitOptions options) {
-        Application app = getApplication();
-        SharedPreferences prefs = app.getSharedPreferences(app.getApplicationInfo().name, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        Gson gson = new Gson();
-        editor.putString(options.getClass().getName(), gson.toJson(options));
-        editor.apply();
-    }
-
-    public Gpx2FitOptions load() {
-        Application app = getApplication();
-        Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().create();
-        SharedPreferences prefs = app.getSharedPreferences(app.getApplicationInfo().name, Context.MODE_PRIVATE);
-        String json = prefs.getString(Gpx2FitOptions.class.getName(), null);
-        Gpx2FitOptions opts = null;
-        if (json != null && !json.isEmpty()) {
-            opts = gson.fromJson(JsonParser.parseString(json).getAsJsonObject(), Gpx2FitOptions.class);
-        }
-        return opts != null ? opts : new Gpx2FitOptions();
-    }
-
-    private class SpeedTextWatcher implements TextWatcher {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-            if (getCurrentFocus() != mSpeed) {
-                return;
-            }
-
-            if (editable.length() > 0 && mGpx2FitOptions != null) {
-                double speed;
-                try {
-                    String s = editable.toString();
-                    String[] as = s.split(":");
-                    Collections.reverse(Arrays.asList(as));
-
-                    Number parsedValue = mNumberFormat.parse(as[0]);
-                    if (parsedValue == null) {
-                        throw new ParseException("Cannot parse speed value", 0);
-                    }
-                    speed = parsedValue.doubleValue();
-
-                    if (as.length > 1) {
-                        Number parsedValue1 = mNumberFormat.parse(as[1]);
-                        if (parsedValue1 == null) {
-                            throw new ParseException("Cannot parse speed value", 0);
-                        }
-                        speed = parsedValue1.doubleValue() + speed / 60.0;
-                    }
-
-                    if (as.length > 2) {
-                        Number parsedValue2 = mNumberFormat.parse(as[2]);
-                        if (parsedValue2 == null) {
-                            throw new ParseException("Cannot parse speed value", 0);
-                        }
-                        speed = parsedValue2.doubleValue() * 60.0 + speed;
-                    }
-                } catch (ParseException e) {
-                    speed = 0.0;
-                }
-
-                if (speed > 0.0) {
-                    switch (mGpx2FitOptions.getSpeedUnit()) {
-                        case 0:
-                            speed = 1000.0 / 60.0 / speed;
-                            break;
-                        case 1:
-                            speed = speed * 1000.0 / 3600.0;
-                            break;
-                        case 2:
-                            speed = 1609.344 / 60.0 / speed;
-                            break;
-                        case 3:
-                            speed = speed * 1609.344 / 3600.0;
-                            break;
-                    }
-                }
-                mGpx2FitOptions.setSpeed(speed);
-            }
-        }
-    }
-
-    private class MaxPointsTextWatcher implements TextWatcher {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-            if (editable.length() > 0 && mGpx2FitOptions != null && mReducePoints.isChecked()) {
-                try {
-                    mGpx2FitOptions.setMaxPoints(Integer.parseInt(editable.toString()));
-                } catch (NumberFormatException e) {
-                    Log.error("Invalid max points value");
-                }
-            }
-        }
-    }
-
 }

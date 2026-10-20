@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name="org.surfsite.gexporter.GexporterApplication"
         android:allowBackup="true"
         android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher"
@@ -84,6 +85,12 @@
                 <data android:mimeType="text/xml" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="org.surfsite.gexporter.SettingsActivity"
+            android:exported="false"
+            android:label="@string/settings"
+            android:parentActivityName="org.surfsite.gexporter.MainActivity" />
 
         <activity
             android:name="org.surfsite.gexporter.ManageWatchActivity"

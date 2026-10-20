@@ -1,16 +1,12 @@
 <resources>
-    <string name="starting">Запуск …</string>
 
     <string name="connect_ongoing">Попытка подключения к устройству Garmin…</string>
     <string name="connect_no_device">Устройство Garmin не подключено!</string>
-    <string name="connect_app_not_installed">Похоже, приложение gimporter CIQ не установлено. Нажмите, чтобы загрузить.</string>
-    <string name="connect_app_only_widget_installed">Виджет-версия gimporter не поддерживает автозапуск. Нажмите, чтобы загрузить приложение для устройства и получить ещё более удобную работу.</string>
     <string name="connect_connected">Подключено</string>
     <string name="connect_init_failed">Не удалось связаться с Garmin Connect</string>
 
     <string name="settings">Настройки</string>
     <string name="force_speed">Принудительная скорость</string>
-    <string name="speed">Скорость по умолчанию:</string>
     <string name="inject_course_points">Добавить путевые точки</string>
     <string name="use_3d_distance">Использовать 3D-расстояние</string>
     <string name="use_walking_grade_factor">Учитывать уклон при ходьбе</string>
@@ -18,9 +14,6 @@
     <string name="points">точек</string>
     <string name="no_permission">Нет разрешения на чтение файлов.</string>
     <string name="no_server">Не удалось запустить сервер</string>
-    <string name="serving_from">Раздача из: %1$s\n\n%2$s</string>
-    <string name="no_files_to_serve">Нет файлов для раздачи из %1$s</string>
-    <string name="serving_not_possible">Используйте файловый менеджер и поделитесь файлами с этим приложением!</string>
     <string name="resolving_location">Определение общего местоположения…</string>
     <string name="location_not_found">В переданном местоположении не найдены координаты.</string>
     <string name="manage_watch">Управление часами</string>
@@ -37,8 +30,21 @@
     <string name="deleted_many">Удалено: %1$d</string>
     <string name="undo">Отменить</string>
     <string name="delete">Удалить</string>
+    <string name="watch_generic">Часы Garmin</string>
+    <string name="watch_status_not_installed">gimporter не установлен</string>
+    <string name="watch_status_widget_only">Установлен только виджет gimporter</string>
+    <string name="install">Установить</string>
+    <string name="manage">Управлять</string>
+    <string name="ready_for_watch">Готово для часов</string>
+    <string name="served_from">Источник: %1$s</string>
+    <string name="empty_hint">Поделитесь с этим приложением файлом GPX или FIT либо местом из Google Карт или Organic Maps. Или выберите папку.</string>
+    <string name="choose_folder">Выбрать папку</string>
+    <string name="removed_one">«%1$s» удалено</string>
+    <string name="settings_speed">Скорость</string>
+    <string name="settings_conversion">Преобразование</string>
+    <string name="default_speed">Скорость по умолчанию</string>
+    <string name="speed_unit">Единица</string>
+    <string name="max_points">Макс. число точек</string>
     <string name="help">Справка</string>
-    <string name="menu">Меню</string>
     <string name="select_file">Выберите каталог для экспорта</string>
-    <string name="expand_settings">Развернуть настройки</string>
 </resources>

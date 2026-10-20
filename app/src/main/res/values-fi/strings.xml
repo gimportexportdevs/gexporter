@@ -1,16 +1,12 @@
 <resources>
-    <string name="starting">Käynnistetään …</string>
 
     <string name="connect_ongoing">Yhdistetään Garmin-laitteeseen…</string>
     <string name="connect_no_device">Garmin-laitetta ei ole yhdistetty!</string>
-    <string name="connect_app_not_installed">gimporter CIQ -sovellusta ei näytä olevan asennettuna. Lataa napauttamalla.</string>
-    <string name="connect_app_only_widget_installed">gimporterin widget-versio ei tue automaattista käynnistystä. Napauta ladataksesi laitesovelluksen entistä saumattomampaa käyttöä varten.</string>
     <string name="connect_connected">Yhdistetty</string>
     <string name="connect_init_failed">Yhteyttä Garmin Connectiin ei voitu muodostaa</string>
 
     <string name="settings">Asetukset</string>
     <string name="force_speed">Pakota nopeus</string>
-    <string name="speed">Oletusnopeus:</string>
     <string name="inject_course_points">Lisää reittipisteitä</string>
     <string name="use_3d_distance">Käytä 3D-etäisyyttä</string>
     <string name="use_walking_grade_factor">Käytä kävelyn kaltevuuskerrointa</string>
@@ -18,9 +14,6 @@
     <string name="points">pistettä</string>
     <string name="no_permission">Ei lupaa lukea tiedostoja.</string>
     <string name="no_server">Palvelinta ei voitu käynnistää</string>
-    <string name="serving_from">Jaetaan sijainnista: %1$s\n\n%2$s</string>
-    <string name="no_files_to_serve">Ei jaettavia tiedostoja sijainnista %1$s</string>
-    <string name="serving_not_possible">Käytä tiedostonhallintaa ja jaa tiedostoja tähän sovellukseen!</string>
     <string name="resolving_location">Selvitetään jaettua sijaintia…</string>
     <string name="location_not_found">Jaetusta sijainnista ei löytynyt koordinaatteja.</string>
     <string name="manage_watch">Hallitse kelloa</string>
@@ -37,8 +30,21 @@
     <string name="deleted_many">Poistettu: %1$d</string>
     <string name="undo">Kumoa</string>
     <string name="delete">Poista</string>
+    <string name="watch_generic">Garmin-kello</string>
+    <string name="watch_status_not_installed">gimporter ei ole asennettu</string>
+    <string name="watch_status_widget_only">Vain gimporter-widget on asennettu</string>
+    <string name="install">Asenna</string>
+    <string name="manage">Hallitse</string>
+    <string name="ready_for_watch">Valmis kelloon</string>
+    <string name="served_from">Lähde: %1$s</string>
+    <string name="empty_hint">Jaa tähän sovellukseen GPX- tai FIT-tiedosto tai paikka Google Mapsista tai Organic Mapsista. Tai valitse kansio.</string>
+    <string name="choose_folder">Valitse kansio</string>
+    <string name="removed_one">”%1$s” poistettu</string>
+    <string name="settings_speed">Nopeus</string>
+    <string name="settings_conversion">Muunnos</string>
+    <string name="default_speed">Oletusnopeus</string>
+    <string name="speed_unit">Yksikkö</string>
+    <string name="max_points">Pisteitä enintään</string>
     <string name="help">Ohje</string>
-    <string name="menu">Valikko</string>
     <string name="select_file">Valitse vietävä kansio</string>
-    <string name="expand_settings">Laajenna asetukset</string>
 </resources>

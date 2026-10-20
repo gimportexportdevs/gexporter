@@ -1,16 +1,12 @@
 <resources>
-    <string name="starting">Başlatılıyor …</string>
 
     <string name="connect_ongoing">Garmin cihazına bağlanmaya çalışılıyor…</string>
     <string name="connect_no_device">Bağlı Garmin cihazı yok!</string>
-    <string name="connect_app_not_installed">gimporter CIQ uygulaması yüklü görünmüyor. İndirmek için dokunun.</string>
-    <string name="connect_app_only_widget_installed">gimporter\'ın widget sürümü otomatik başlatmayı desteklemez. Daha da sorunsuz bir deneyim için cihaz uygulamasını indirmek üzere dokunun.</string>
     <string name="connect_connected">Bağlandı</string>
     <string name="connect_init_failed">Garmin Connect ile iletişim kurulamadı</string>
 
     <string name="settings">Ayarlar</string>
     <string name="force_speed">Hızı zorla</string>
-    <string name="speed">Varsayılan hız:</string>
     <string name="inject_course_points">Rota noktaları ekle</string>
     <string name="use_3d_distance">3D mesafe kullan</string>
     <string name="use_walking_grade_factor">Yürüyüş eğim faktörünü kullan</string>
@@ -18,9 +14,6 @@
     <string name="points">nokta</string>
     <string name="no_permission">Dosyaları okuma izni yok.</string>
     <string name="no_server">Sunucu başlatılamadı</string>
-    <string name="serving_from">Şuradan sunuluyor: %1$s\n\n%2$s</string>
-    <string name="no_files_to_serve">%1$s konumundan sunulacak dosya yok</string>
-    <string name="serving_not_possible">Lütfen dosya gezginini kullanın ve dosyaları bu uygulamayla paylaşın!</string>
     <string name="resolving_location">Paylaşılan konum çözümleniyor…</string>
     <string name="location_not_found">Paylaşılan konumda koordinat bulunamadı.</string>
     <string name="manage_watch">Saati yönet</string>
@@ -37,8 +30,21 @@
     <string name="deleted_many">Silinen: %1$d</string>
     <string name="undo">Geri al</string>
     <string name="delete">Sil</string>
+    <string name="watch_generic">Garmin saat</string>
+    <string name="watch_status_not_installed">gimporter yüklü değil</string>
+    <string name="watch_status_widget_only">Yalnızca gimporter widget\'ı yüklü</string>
+    <string name="install">Yükle</string>
+    <string name="manage">Yönet</string>
+    <string name="ready_for_watch">Saat için hazır</string>
+    <string name="served_from">Kaynak: %1$s</string>
+    <string name="empty_hint">Bu uygulamayla bir GPX veya FIT dosyası ya da Google Haritalar veya Organic Maps\'ten bir yer paylaşın. Ya da bir klasör seçin.</string>
+    <string name="choose_folder">Klasör seç</string>
+    <string name="removed_one">“%1$s” kaldırıldı</string>
+    <string name="settings_speed">Hız</string>
+    <string name="settings_conversion">Dönüştürme</string>
+    <string name="default_speed">Varsayılan hız</string>
+    <string name="speed_unit">Birim</string>
+    <string name="max_points">Azami nokta sayısı</string>
     <string name="help">Yardım</string>
-    <string name="menu">Menü</string>
     <string name="select_file">Dışa aktarılacak bir dizin seçin</string>
-    <string name="expand_settings">Ayarları genişlet</string>
 </resources>

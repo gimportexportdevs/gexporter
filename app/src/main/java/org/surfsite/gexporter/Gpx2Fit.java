@@ -124,6 +124,16 @@ public class Gpx2Fit {
         return !trkPoints.isEmpty() || !rtePoints.isEmpty();
     }
 
+    /** Length in meters of the track (or the route if there is no track), for display. */
+    public double getLength() {
+        List<WayPoint> points = trkPoints.size() >= rtePoints.size() ? trkPoints : rtePoints;
+        double length = 0;
+        for (int i = 1; i < points.size(); i++) {
+            length += points.get(i).distance(points.get(i - 1));
+        }
+        return length;
+    }
+
     private void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
         if (parser.getEventType() != XmlPullParser.START_TAG) {
             throw new IllegalStateException();

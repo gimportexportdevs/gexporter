@@ -1,16 +1,12 @@
 <resources>
-    <string name="starting">Démarrage …</string>
 
     <string name="connect_ongoing">Tentative de connexion à l\'appareil Garmin…</string>
     <string name="connect_no_device">Aucun appareil Garmin connecté !</string>
-    <string name="connect_app_not_installed">L\'application gimporter CIQ ne semble pas installée. Appuyez pour la télécharger.</string>
-    <string name="connect_app_only_widget_installed">La version widget de gimporter ne prend pas en charge le lancement automatique. Appuyez pour télécharger l\'application de l\'appareil et profiter d\'une expérience encore plus fluide.</string>
     <string name="connect_connected">Connecté</string>
     <string name="connect_init_failed">Impossible de communiquer avec Garmin Connect</string>
 
     <string name="settings">Paramètres</string>
     <string name="force_speed">Forcer la vitesse</string>
-    <string name="speed">Vitesse par défaut :</string>
     <string name="inject_course_points">Insérer des points de parcours</string>
     <string name="use_3d_distance">Utiliser la distance 3D</string>
     <string name="use_walking_grade_factor">Utiliser le facteur de pente à la marche</string>
@@ -18,9 +14,6 @@
     <string name="points">points</string>
     <string name="no_permission">Aucune autorisation de lire les fichiers.</string>
     <string name="no_server">Impossible de démarrer le serveur</string>
-    <string name="serving_from">Diffusion depuis : %1$s\n\n%2$s</string>
-    <string name="no_files_to_serve">Aucun fichier à diffuser depuis %1$s</string>
-    <string name="serving_not_possible">Veuillez utiliser l\'explorateur de fichiers et partager des fichiers avec cette application !</string>
     <string name="resolving_location">Résolution du lieu partagé…</string>
     <string name="location_not_found">Aucune coordonnée trouvée dans le lieu partagé.</string>
     <string name="manage_watch">Gérer la montre</string>
@@ -37,8 +30,21 @@
     <string name="deleted_many">Supprimés : %1$d</string>
     <string name="undo">Annuler</string>
     <string name="delete">Supprimer</string>
+    <string name="watch_generic">Montre Garmin</string>
+    <string name="watch_status_not_installed">gimporter n\'est pas installé</string>
+    <string name="watch_status_widget_only">Seul le widget gimporter est installé</string>
+    <string name="install">Installer</string>
+    <string name="manage">Gérer</string>
+    <string name="ready_for_watch">Prêt pour la montre</string>
+    <string name="served_from">Source : %1$s</string>
+    <string name="empty_hint">Partagez avec cette app un fichier GPX ou FIT, ou un lieu de Google Maps ou Organic Maps. Ou choisissez un dossier.</string>
+    <string name="choose_folder">Choisir un dossier</string>
+    <string name="removed_one">« %1$s » retiré</string>
+    <string name="settings_speed">Vitesse</string>
+    <string name="settings_conversion">Conversion</string>
+    <string name="default_speed">Vitesse par défaut</string>
+    <string name="speed_unit">Unité</string>
+    <string name="max_points">Nombre max. de points</string>
     <string name="help">Aide</string>
-    <string name="menu">Menu</string>
     <string name="select_file">Sélectionnez un répertoire à exporter</string>
-    <string name="expand_settings">Développer les paramètres</string>
 </resources>

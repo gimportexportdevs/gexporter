@@ -1,16 +1,12 @@
 <resources>
-    <string name="starting">Starter …</string>
 
     <string name="connect_ongoing">Prøver å koble til Garmin-enhet…</string>
     <string name="connect_no_device">Ingen Garmin-enhet tilkoblet!</string>
-    <string name="connect_app_not_installed">gimporter CIQ-appen ser ikke ut til å være installert. Trykk for å laste ned.</string>
-    <string name="connect_app_only_widget_installed">Widget-versjonen av gimporter støtter ikke automatisk start. Trykk for å laste ned enhetsappen for en enda mer sømløs opplevelse.</string>
     <string name="connect_connected">Tilkoblet</string>
     <string name="connect_init_failed">Kunne ikke kommunisere med Garmin Connect</string>
 
     <string name="settings">Innstillinger</string>
     <string name="force_speed">Tving hastighet</string>
-    <string name="speed">Standardhastighet:</string>
     <string name="inject_course_points">Sett inn rutepunkter</string>
     <string name="use_3d_distance">Bruk 3D-avstand</string>
     <string name="use_walking_grade_factor">Bruk stigningsfaktor for gange</string>
@@ -18,9 +14,6 @@
     <string name="points">punkter</string>
     <string name="no_permission">Ingen tillatelse til å lese filer.</string>
     <string name="no_server">Serveren kunne ikke startes</string>
-    <string name="serving_from">Deler fra: %1$s\n\n%2$s</string>
-    <string name="no_files_to_serve">Ingen filer å dele fra %1$s</string>
-    <string name="serving_not_possible">Bruk filutforskeren og del filer med denne appen!</string>
     <string name="resolving_location">Finner den delte posisjonen…</string>
     <string name="location_not_found">Fant ingen koordinater i den delte posisjonen.</string>
     <string name="manage_watch">Administrer klokken</string>
@@ -37,8 +30,21 @@
     <string name="deleted_many">Slettet: %1$d</string>
     <string name="undo">Angre</string>
     <string name="delete">Slett</string>
+    <string name="watch_generic">Garmin-klokke</string>
+    <string name="watch_status_not_installed">gimporter er ikke installert</string>
+    <string name="watch_status_widget_only">Bare gimporter-widgeten er installert</string>
+    <string name="install">Installer</string>
+    <string name="manage">Administrer</string>
+    <string name="ready_for_watch">Klar for klokken</string>
+    <string name="served_from">Fra: %1$s</string>
+    <string name="empty_hint">Del en GPX- eller FIT-fil eller et sted fra Google Maps eller Organic Maps med denne appen. Eller velg en mappe.</string>
+    <string name="choose_folder">Velg mappe</string>
+    <string name="removed_one">«%1$s» fjernet</string>
+    <string name="settings_speed">Hastighet</string>
+    <string name="settings_conversion">Konvertering</string>
+    <string name="default_speed">Standardhastighet</string>
+    <string name="speed_unit">Enhet</string>
+    <string name="max_points">Maks. antall punkter</string>
     <string name="help">Hjelp</string>
-    <string name="menu">Meny</string>
     <string name="select_file">Velg en mappe å eksportere</string>
-    <string name="expand_settings">Utvid innstillinger</string>
 </resources>

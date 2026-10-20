@@ -1,230 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/SCROLLER_ID"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:layout_margin="0dp"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
-    android:fillViewport="true"
-    android:padding="0dp"
-    android:scrollbars="vertical"
-    android:fitsSystemWindows="true">
+    android:id="@+id/main_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:fitsSystemWindows="true">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-
+        <!-- The watch: name, connection state and the action that fits it -->
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/connect_card"
+            android:id="@+id/watch_card"
+            style="@style/Widget.Material3.CardView.Filled"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            app:cardBackgroundColor="@android:color/darker_gray"
-            app:cardCornerRadius="16dp">
-
-            <TextView
-                android:id="@+id/connect_infotext"
-                style="@style/TextAppearance.AppCompat.Medium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:gravity="center"
-                android:text="@string/connect_ongoing"
-                app:drawableStartCompat="@drawable/ic_watch" />
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/settings_card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            app:cardBackgroundColor="@android:color/darker_gray"
-            app:cardCornerRadius="16dp">
+            android:layout_margin="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <ImageView
+                    android:id="@+id/watch_icon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_watch" />
 
                 <LinearLayout
-                    android:id="@+id/expand_touch_area"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="16dp">
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
                     <TextView
-                        style="@style/TextAppearance.AppCompat.Title"
-                        android:layout_width="0dp"
+                        android:id="@+id/watch_name"
+                        style="@style/TextAppearance.Material3.TitleMedium"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/settings" />
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="@string/watch_generic" />
 
-                    <ImageButton
-                        android:id="@+id/expand_settings"
-                        android:layout_width="wrap_content"
+                    <TextView
+                        android:id="@+id/watch_status"
+                        style="@style/TextAppearance.Material3.BodyMedium"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="?selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_expand_more"
-                        android:contentDescription="@string/expand_settings" />
+                        android:text="@string/connect_ongoing" />
                 </LinearLayout>
 
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/settings_content"
-                    android:layout_width="match_parent"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/watch_action"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:focusableInTouchMode="true"
-                    android:visibility="gone"
-                    tools:context="org.surfsite.gexporter.MainActivity"
-                    tools:layout_editor_absoluteX="0dp"
-                    tools:layout_editor_absoluteY="81dp"
-                    tools:visibility="visible">
-
-                    <CheckBox
-                        android:id="@+id/CBforceSpeed"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/force_speed"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/editSpeed" />
-
-                    <EditText
-                        android:id="@+id/editSpeed"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:ems="10"
-                        android:inputType="numberDecimal"
-                        android:autofillHints="@string/speed"
-                        android:hint="@string/speed"
-                        app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintLeft_toRightOf="@+id/textView2"
-                        app:layout_constraintRight_toLeftOf="@+id/SPspeedUnits"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/textView2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/speed"
-                        app:layout_constraintBaseline_toBaselineOf="@+id/editSpeed"
-                        app:layout_constraintLeft_toLeftOf="parent" />
-
-                    <Spinner
-                        android:id="@+id/SPspeedUnits"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
-                        android:entries="@array/speedunits"
-                        android:spinnerMode="dropdown"
-                        app:layout_constraintBaseline_toBaselineOf="@+id/editSpeed"
-                        app:layout_constraintRight_toRightOf="parent" />
-
-                    <CheckBox
-                        android:id="@+id/CBuse3D"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/use_3d_distance"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/CBforceSpeed" />
-
-                    <CheckBox
-                        android:id="@+id/CBinject"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/inject_course_points"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/CBuse3D" />
-
-                    <CheckBox
-                        android:id="@+id/CBuseWalkingGrade"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/use_walking_grade_factor"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/CBinject" />
-
-                    <CheckBox
-                        android:id="@+id/CBreducePoints"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/reduce_points_to"
-                        app:layout_constraintBaseline_toBaselineOf="@+id/editPointNumber"
-                        app:layout_constraintLeft_toLeftOf="parent" />
-
-                    <EditText
-                        android:id="@+id/editPointNumber"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:ems="4"
-                        android:inputType="number"
-                        android:maxEms="5"
-                        android:maxLength="5"
-                        android:minEms="1"
-                        android:autofillHints="number"
-                        android:hint="@string/points"
-                        app:layout_constraintLeft_toRightOf="@+id/CBreducePoints"
-                        app:layout_constraintRight_toLeftOf="@+id/textView"
-                        app:layout_constraintTop_toBottomOf="@+id/CBuseWalkingGrade" />
-
-                    <TextView
-                        android:id="@+id/textView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
-                        android:text="@string/points"
-                        app:layout_constraintBaseline_toBaselineOf="@+id/editPointNumber"
-                        app:layout_constraintRight_toRightOf="parent" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:visibility="gone" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/files_card"
+        <TextView
+            style="@style/TextAppearance.Material3.TitleMedium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            app:cardBackgroundColor="@android:color/darker_gray"
-            app:cardCornerRadius="16dp">
+            android:layout_marginHorizontal="16dp"
+            android:text="@string/ready_for_watch" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:orientation="vertical">
+        <TextView
+            android:id="@+id/served_from"
+            style="@style/TextAppearance.Material3.BodySmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:ellipsize="middle"
+            android:maxLines="1"
+            android:textColor="?android:attr/textColorSecondary" />
 
-            <Button
-                android:id="@+id/file_button"
+        <!-- Progress and problems: resolving a shared location, server errors -->
+        <TextView
+            android:id="@+id/status_text"
+            style="@style/TextAppearance.Material3.BodyMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="8dp"
+            android:visibility="gone" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/served_list"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/select_file" />
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingTop="8dp"
+                android:paddingBottom="88dp" />
 
             <TextView
-                android:id="@+id/textv"
-                style="@style/TextAppearance.AppCompat.Body1"
+                android:id="@+id/served_empty"
+                style="@style/TextAppearance.Material3.BodyLarge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/starting" />
-
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                android:layout_gravity="center"
+                android:drawablePadding="16dp"
+                android:gravity="center"
+                android:padding="32dp"
+                android:text="@string/empty_hint"
+                android:textColor="?android:attr/textColorSecondary"
+                android:visibility="gone"
+                app:drawableTint="?android:attr/textColorSecondary"
+                app:drawableTopCompat="@drawable/ic_track" />
+        </FrameLayout>
     </LinearLayout>
-</ScrollView>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/choose_folder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/select_file"
+        android:text="@string/choose_folder"
+        app:icon="@drawable/ic_folder" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
