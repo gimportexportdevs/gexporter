@@ -40,13 +40,11 @@
     <string name="served_from">स्रोत: %1$s</string>
     <string name="empty_hint">इस ऐप के साथ कोई GPX या FIT फ़ाइल, या Google Maps या Organic Maps से कोई स्थान साझा करें। या कोई फ़ोल्डर चुनें।</string>
     <string name="choose_folder">फ़ोल्डर चुनें</string>
-    <string name="removed_one">“%1$s” हटाया गया</string>
     <string name="on_watch">घड़ी पर</string>
     <string name="sent_to_watch">“%1$s” घड़ी पर भेजा गया</string>
     <string name="send_to_watch">घड़ी पर भेजें</string>
     <string name="delete_from_watch">घड़ी से हटाएँ</string>
     <string name="deleted_from_watch">“%1$s” घड़ी से हटाया गया</string>
-    <string name="remove_from_list">सूची से हटाएँ</string>
     <string name="more_options">अधिक विकल्प</string>
     <string name="settings_speed">गति</string>
     <string name="settings_conversion">रूपांतरण</string>

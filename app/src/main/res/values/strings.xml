@@ -43,13 +43,11 @@
     <string name="served_from">From: %1$s</string>
     <string name="empty_hint">Share a GPX or FIT file, or a place from Google Maps or Organic Maps, with this app. Or choose a folder.</string>
     <string name="choose_folder">Choose folder</string>
-    <string name="removed_one">“%1$s” removed</string>
     <string name="on_watch">on the watch</string>
     <string name="sent_to_watch">“%1$s” sent to the watch</string>
     <string name="send_to_watch">Send to the watch</string>
     <string name="delete_from_watch">Delete from the watch</string>
     <string name="deleted_from_watch">“%1$s” deleted from the watch</string>
-    <string name="remove_from_list">Remove from the list</string>
     <string name="more_options">More options</string>
     <string name="settings_speed">Speed</string>
     <string name="settings_conversion">Conversion</string>

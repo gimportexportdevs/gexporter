@@ -40,13 +40,11 @@
     <string name="served_from">จาก: %1$s</string>
     <string name="empty_hint">แชร์ไฟล์ GPX หรือ FIT หรือสถานที่จาก Google Maps หรือ Organic Maps มายังแอปนี้ หรือเลือกโฟลเดอร์</string>
     <string name="choose_folder">เลือกโฟลเดอร์</string>
-    <string name="removed_one">นำ “%1$s” ออกแล้ว</string>
     <string name="on_watch">อยู่บนนาฬิกา</string>
     <string name="sent_to_watch">ส่ง “%1$s” ไปยังนาฬิกาแล้ว</string>
     <string name="send_to_watch">ส่งไปยังนาฬิกา</string>
     <string name="delete_from_watch">ลบออกจากนาฬิกา</string>
     <string name="deleted_from_watch">ลบ “%1$s” ออกจากนาฬิกาแล้ว</string>
-    <string name="remove_from_list">นำออกจากรายการ</string>
     <string name="more_options">ตัวเลือกเพิ่มเติม</string>
     <string name="settings_speed">ความเร็ว</string>
     <string name="settings_conversion">การแปลง</string>

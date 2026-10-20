@@ -40,13 +40,11 @@
     <string name="served_from">Din: %1$s</string>
     <string name="empty_hint">Partajează cu această aplicație un fișier GPX sau FIT ori un loc din Google Maps sau Organic Maps. Sau alege un dosar.</string>
     <string name="choose_folder">Alege dosarul</string>
-    <string name="removed_one">„%1$s” a fost eliminat</string>
     <string name="on_watch">pe ceas</string>
     <string name="sent_to_watch">„%1$s” a fost trimis la ceas</string>
     <string name="send_to_watch">Trimite la ceas</string>
     <string name="delete_from_watch">Șterge de pe ceas</string>
     <string name="deleted_from_watch">„%1$s” a fost șters de pe ceas</string>
-    <string name="remove_from_list">Elimină din listă</string>
     <string name="more_options">Mai multe opțiuni</string>
     <string name="settings_speed">Viteză</string>
     <string name="settings_conversion">Conversie</string>

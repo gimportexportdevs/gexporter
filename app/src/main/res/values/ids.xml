@@ -3,5 +3,4 @@
     <!-- long-press menu of an entry on the main screen -->
     <item name="menu_send_to_watch" type="id" />
     <item name="menu_delete_from_watch" type="id" />
-    <item name="menu_remove_from_list" type="id" />
 </resources>

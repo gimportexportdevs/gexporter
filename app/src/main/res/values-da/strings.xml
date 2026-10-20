@@ -40,13 +40,11 @@
     <string name="served_from">Fra: %1$s</string>
     <string name="empty_hint">Del en GPX- eller FIT-fil eller et sted fra Google Maps eller Organic Maps med denne app. Eller vælg en mappe.</string>
     <string name="choose_folder">Vælg mappe</string>
-    <string name="removed_one">“%1$s” fjernet</string>
     <string name="on_watch">på uret</string>
     <string name="sent_to_watch">“%1$s” sendt til uret</string>
     <string name="send_to_watch">Send til uret</string>
     <string name="delete_from_watch">Slet fra uret</string>
     <string name="deleted_from_watch">“%1$s” slettet fra uret</string>
-    <string name="remove_from_list">Fjern fra listen</string>
     <string name="more_options">Flere muligheder</string>
     <string name="settings_speed">Hastighed</string>
     <string name="settings_conversion">Konvertering</string>

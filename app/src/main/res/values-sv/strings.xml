@@ -40,13 +40,11 @@
     <string name="served_from">Från: %1$s</string>
     <string name="empty_hint">Dela en GPX- eller FIT-fil eller en plats från Google Maps eller Organic Maps med den här appen. Eller välj en mapp.</string>
     <string name="choose_folder">Välj mapp</string>
-    <string name="removed_one">”%1$s” borttagen</string>
     <string name="on_watch">på klockan</string>
     <string name="sent_to_watch">”%1$s” skickad till klockan</string>
     <string name="send_to_watch">Skicka till klockan</string>
     <string name="delete_from_watch">Radera från klockan</string>
     <string name="deleted_from_watch">”%1$s” raderad från klockan</string>
-    <string name="remove_from_list">Ta bort från listan</string>
     <string name="more_options">Fler alternativ</string>
     <string name="settings_speed">Hastighet</string>
     <string name="settings_conversion">Konvertering</string>

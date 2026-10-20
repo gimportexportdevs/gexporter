@@ -40,13 +40,11 @@
     <string name="served_from">取得元: %1$s</string>
     <string name="empty_hint">GPX・FIT ファイル、または Google マップや Organic Maps の場所をこのアプリに共有してください。フォルダを選ぶこともできます。</string>
     <string name="choose_folder">フォルダを選択</string>
-    <string name="removed_one">「%1$s」を削除しました</string>
     <string name="on_watch">ウォッチにあり</string>
     <string name="sent_to_watch">「%1$s」をウォッチに送信しました</string>
     <string name="send_to_watch">ウォッチに送信</string>
     <string name="delete_from_watch">ウォッチから削除</string>
     <string name="deleted_from_watch">「%1$s」をウォッチから削除しました</string>
-    <string name="remove_from_list">リストから削除</string>
     <string name="more_options">その他のオプション</string>
     <string name="settings_speed">速度</string>
     <string name="settings_conversion">変換</string>

@@ -40,13 +40,11 @@
     <string name="served_from">Источник: %1$s</string>
     <string name="empty_hint">Поделитесь с этим приложением файлом GPX или FIT либо местом из Google Карт или Organic Maps. Или выберите папку.</string>
     <string name="choose_folder">Выбрать папку</string>
-    <string name="removed_one">«%1$s» удалено</string>
     <string name="on_watch">на часах</string>
     <string name="sent_to_watch">«%1$s» отправлено на часы</string>
     <string name="send_to_watch">Отправить на часы</string>
     <string name="delete_from_watch">Удалить с часов</string>
     <string name="deleted_from_watch">«%1$s» удалено с часов</string>
-    <string name="remove_from_list">Убрать из списка</string>
     <string name="more_options">Другие параметры</string>
     <string name="settings_speed">Скорость</string>
     <string name="settings_conversion">Преобразование</string>

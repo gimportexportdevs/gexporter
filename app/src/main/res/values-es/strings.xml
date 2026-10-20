@@ -40,13 +40,11 @@
     <string name="served_from">De: %1$s</string>
     <string name="empty_hint">Comparte con esta app un archivo GPX o FIT, o un lugar de Google Maps u Organic Maps. O elige una carpeta.</string>
     <string name="choose_folder">Elegir carpeta</string>
-    <string name="removed_one">Se quitó «%1$s»</string>
     <string name="on_watch">en el reloj</string>
     <string name="sent_to_watch">«%1$s» enviado al reloj</string>
     <string name="send_to_watch">Enviar al reloj</string>
     <string name="delete_from_watch">Eliminar del reloj</string>
     <string name="deleted_from_watch">«%1$s» eliminado del reloj</string>
-    <string name="remove_from_list">Quitar de la lista</string>
     <string name="more_options">Más opciones</string>
     <string name="settings_speed">Velocidad</string>
     <string name="settings_conversion">Conversión</string>

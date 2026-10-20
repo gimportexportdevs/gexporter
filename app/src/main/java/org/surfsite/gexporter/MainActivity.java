@@ -36,7 +36,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.documentfile.provider.DocumentFile;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -169,7 +168,6 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
         RecyclerView list = findViewById(R.id.served_list);
         list.setLayoutManager(new LinearLayoutManager(this));
         list.setAdapter(mServedAdapter);
-        new ItemTouchHelper(new SwipeToRemove()).attachToRecyclerView(list);
 
         findViewById(R.id.choose_folder).setOnClickListener(v ->
                 openDocumentTreeLauncher.launch(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)));
@@ -1014,69 +1012,6 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
     }
 
     /**
-     * Swiping removes an entry from what is offered to the watch. Only for
-     * gexporter's own copies of shared files; files in the Downloads folder
-     * belong to the user and are never deleted.
-     */
-    private class SwipeToRemove extends ItemTouchHelper.SimpleCallback {
-        SwipeToRemove() {
-            super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
-        }
-
-        @Override
-        public int getSwipeDirs(@NonNull RecyclerView rv, @NonNull RecyclerView.ViewHolder vh) {
-            return servedAreCopies() ? super.getSwipeDirs(rv, vh) : 0;
-        }
-
-        @Override
-        public boolean onMove(@NonNull RecyclerView rv, @NonNull RecyclerView.ViewHolder vh,
-                              @NonNull RecyclerView.ViewHolder target) {
-            return false;
-        }
-
-        @Override
-        public void onSwiped(@NonNull RecyclerView.ViewHolder vh, int direction) {
-            int pos = vh.getBindingAdapterPosition();
-            if (pos == RecyclerView.NO_POSITION) {
-                return;
-            }
-            removeFromList(mServed.get(pos));
-        }
-    }
-
-    /** Whether entries are gexporter's own copies, which may be removed. */
-    private boolean servedAreCopies() {
-        return mServedDir != null && mServedDir.equals(mDirectory);
-    }
-
-    /** Stop offering an entry to the watch: delete gexporter's copy, with undo. */
-    private void removeFromList(ServedFiles.Entry entry) {
-        // a GPX file with several locations goes as a whole
-        List<ServedFiles.Entry> removed = new ArrayList<>();
-        for (ServedFiles.Entry e : mServed) {
-            if (e.file.equals(entry.file)) {
-                removed.add(e);
-            }
-        }
-        List<ServedFiles.Entry> before = new ArrayList<>(mServed);
-        List<ServedFiles.Entry> remaining = new ArrayList<>(mServed);
-        remaining.removeAll(removed);
-        showServed(remaining);
-        Snackbar.make(findViewById(R.id.main_root), getString(R.string.removed_one, entry.name), Snackbar.LENGTH_LONG)
-                .setAnchorView(R.id.choose_folder)
-                .setAction(R.string.undo, v -> showServed(before))
-                .addCallback(new Snackbar.Callback() {
-                    @Override
-                    public void onDismissed(Snackbar bar, int event) {
-                        if (event != DISMISS_EVENT_ACTION && !entry.file.delete()) {
-                            Log.warn("Could not remove {}", entry.file);
-                        }
-                    }
-                })
-                .show();
-    }
-
-    /**
      * Delete an entry's content from the watch: everything app and widget
      * imported with its fingerprint. Sent once the "Undo" snackbar is gone;
      * the watch answers with its new content, which clears the mark.
@@ -1116,15 +1051,12 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
                 .show();
     }
 
-    /** The ⋮ menu of an entry (also on long press): everything that can be done with it. */
+    /** The ⋮ menu of an entry (also on long press): send it, or delete it from the watch. */
     private void showEntryMenu(View anchor, ServedFiles.Entry entry) {
         PopupMenu menu = new PopupMenu(this, anchor);
         menu.getMenu().add(0, R.id.menu_send_to_watch, 0, R.string.send_to_watch);
         if (WatchContent.isOnWatch(entry.fingerprint, WatchLink.latestContent())) {
             menu.getMenu().add(0, R.id.menu_delete_from_watch, 1, R.string.delete_from_watch);
-        }
-        if (servedAreCopies()) {
-            menu.getMenu().add(0, R.id.menu_remove_from_list, 2, R.string.remove_from_list);
         }
         menu.setOnMenuItemClickListener(item -> {
             int id = item.getItemId();
@@ -1132,8 +1064,6 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
                 sendToWatch(entry);
             } else if (id == R.id.menu_delete_from_watch) {
                 deleteFromWatch(entry);
-            } else if (id == R.id.menu_remove_from_list) {
-                removeFromList(entry);
             }
             return true;
         });
