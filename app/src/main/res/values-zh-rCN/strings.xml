@@ -19,6 +19,7 @@
     <string name="manage_watch">管理手表</string>
     <string name="waiting_for_watch">正在等待手表上的 gimporter…</string>
     <string name="watch_no_answer">手表没有响应。请在手表上打开 gimporter 后重试。</string>
+    <string name="watch_no_answer_update">手表没有响应。请在手表上打开 gimporter 后重试。旧版 gimporter 无法从手机管理：请在 Connect IQ 商店更新 gimporter。</string>
     <string name="watch_no_content">手表上没有来自 gimporter 的路线或位置。</string>
     <string name="widget_hint">用 gimporter 小部件下载的路线会在手表上打开小部件后显示。</string>
     <string name="watch_not_connected">未连接装有 gimporter 的手表。</string>
@@ -42,6 +43,7 @@
     <string name="choose_folder">选择文件夹</string>
     <string name="on_watch">已在手表上</string>
     <string name="sent_to_watch">已将“%1$s”发送到手表</string>
+    <string name="held_for_watch">正在打开 gimporter… 应答后即发送“%1$s”。如为旧版 gimporter，请在手表的列表中选择。</string>
     <string name="send_to_watch">发送到手表</string>
     <string name="delete_from_watch">从手表删除</string>
     <string name="deleted_from_watch">已从手表删除“%1$s”</string>

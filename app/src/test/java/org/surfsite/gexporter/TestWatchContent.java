@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import com.garmin.android.connectiq.IQApp;
+
 import org.junit.Test;
 
 import java.io.File;
@@ -151,12 +153,39 @@ public class TestWatchContent {
 
     @Test
     public void busyOnlyWhileImporting() {
-        WatchLink.dispatchStatus(new WatchContent.Status("importing", "Tour.gpx"), 1000);
+        WatchLink.dispatchStatus("app", new WatchContent.Status("importing", "Tour.gpx"), 1000);
         assertEquals("Tour.gpx", WatchLink.busyWith(2000));
         // no "started" or "failed" within a minute: not busy any more
         assertNull(WatchLink.busyWith(1000 + 61000));
-        WatchLink.dispatchStatus(new WatchContent.Status("started", "Tour.gpx"), 3000);
+        WatchLink.dispatchStatus("app", new WatchContent.Status("started", "Tour.gpx"), 3000);
         assertNull(WatchLink.busyWith(4000));
+        WatchLink.clear();
+    }
+
+    @Test
+    public void heldUntilGimporterAnnouncesItself() {
+        WatchLink.clear();
+        WatchLink.addApp(null, null, new IQApp("9B0A09CF-C89E-4F7C-A5E4-AB21400EE424"), false);
+        String owner = WatchLink.ownerOf("9B0A09CF-C89E-4F7C-A5E4-AB21400EE424");
+        // an older gimporter never announces itself: nothing is sent to it
+        assertFalse(WatchLink.sendOrHold(WatchContent.listRequest(), 1000));
+        assertTrue(WatchLink.isHolding());
+        assertFalse(WatchLink.anyAnswered());
+        // a current one does when it starts; the held message goes out then
+        WatchLink.dispatchStatus(owner, new WatchContent.Status("ready", ""), 2000);
+        assertTrue(WatchLink.hasAnswered(owner));
+        assertFalse(WatchLink.isHolding());
+        WatchLink.clear();
+    }
+
+    @Test
+    public void widgetAnswerDoesNotReleaseWhatIsHeldForTheApp() {
+        WatchLink.clear();
+        WatchLink.addApp(null, null, new IQApp("app-id"), false);
+        WatchLink.addApp(null, null, new IQApp("widget-id"), true);
+        WatchLink.sendOrHold(WatchContent.listRequest(), 1000);
+        WatchLink.dispatchContent(WatchLink.ownerOf("widget-id"), java.util.Collections.<WatchContent.Item>emptyList(), 2000);
+        assertTrue(WatchLink.isHolding());
         WatchLink.clear();
     }
 }

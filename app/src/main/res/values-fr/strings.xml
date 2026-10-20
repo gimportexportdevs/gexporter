@@ -19,6 +19,7 @@
     <string name="manage_watch">Gérer la montre</string>
     <string name="waiting_for_watch">En attente de gimporter sur la montre…</string>
     <string name="watch_no_answer">La montre ne répond pas. Ouvrez gimporter sur la montre et réessayez.</string>
+    <string name="watch_no_answer_update">La montre ne répond pas. Ouvrez gimporter sur la montre et réessayez. Les anciennes versions de gimporter ne peuvent pas être gérées depuis le téléphone : mettez gimporter à jour dans le Connect IQ Store.</string>
     <string name="watch_no_content">Aucun parcours ni lieu de gimporter sur la montre.</string>
     <string name="widget_hint">Les parcours téléchargés avec le widget gimporter apparaissent dès que vous ouvrez le widget sur la montre.</string>
     <string name="watch_not_connected">Aucune montre avec gimporter connectée.</string>
@@ -42,6 +43,7 @@
     <string name="choose_folder">Choisir un dossier</string>
     <string name="on_watch">sur la montre</string>
     <string name="sent_to_watch">« %1$s » envoyé à la montre</string>
+    <string name="held_for_watch">Ouverture de gimporter… « %1$s » suit dès qu\'il répond. Avec un gimporter plus ancien, choisissez-le dans la liste sur la montre.</string>
     <string name="send_to_watch">Envoyer à la montre</string>
     <string name="delete_from_watch">Supprimer de la montre</string>
     <string name="deleted_from_watch">« %1$s » supprimé de la montre</string>

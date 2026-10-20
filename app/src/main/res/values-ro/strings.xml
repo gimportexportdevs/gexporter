@@ -19,6 +19,7 @@
     <string name="manage_watch">Gestionează ceasul</string>
     <string name="waiting_for_watch">Se așteaptă gimporter pe ceas…</string>
     <string name="watch_no_answer">Ceasul nu răspunde. Deschide gimporter pe ceas și încearcă din nou.</string>
+    <string name="watch_no_answer_update">Ceasul nu răspunde. Deschideți gimporter pe ceas și încercați din nou. Versiunile mai vechi de gimporter nu pot fi gestionate de pe telefon: actualizați gimporter din magazinul Connect IQ.</string>
     <string name="watch_no_content">Nu există trasee sau locații din gimporter pe ceas.</string>
     <string name="widget_hint">Traseele descărcate cu widgetul gimporter apar după ce deschizi widgetul pe ceas.</string>
     <string name="watch_not_connected">Niciun ceas cu gimporter conectat.</string>
@@ -42,6 +43,7 @@
     <string name="choose_folder">Alege dosarul</string>
     <string name="on_watch">pe ceas</string>
     <string name="sent_to_watch">„%1$s” a fost trimis la ceas</string>
+    <string name="held_for_watch">Se deschide gimporter… „%1$s” urmează imediat ce răspunde. Cu un gimporter mai vechi, alegeți-l din lista de pe ceas.</string>
     <string name="send_to_watch">Trimite la ceas</string>
     <string name="delete_from_watch">Șterge de pe ceas</string>
     <string name="deleted_from_watch">„%1$s” a fost șters de pe ceas</string>

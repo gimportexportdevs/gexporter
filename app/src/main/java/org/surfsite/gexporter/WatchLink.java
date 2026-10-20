@@ -10,10 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The ConnectIQ connection to gimporter on the watch, shared between
@@ -23,6 +25,12 @@ import java.util.Map;
  * gimporter exists as a device app and as a widget. The watch treats them
  * as separate apps: each one lists and deletes only the content it
  * downloaded itself, so both are asked.
+ *
+ * Only gimporter versions that announce themselves (a "status" or
+ * "content" message) get requests. An older gimporter would take a
+ * request waiting in its mailbox for the reply to its port request; a
+ * track or location for it is held until the app answers, which an older
+ * one never does.
  */
 final class WatchLink {
     private static final Logger Log = LoggerFactory.getLogger(WatchLink.class);
@@ -39,6 +47,9 @@ final class WatchLink {
     // A download on the watch normally takes seconds; a missing "started" or
     // "failed" (app killed, connection lost) must not block sending forever.
     private static final long BUSY_TIMEOUT_MS = 60000;
+    // A held track or location is sent when gimporter answers within this
+    // time after the tap; later it would surprise the user.
+    private static final long HOLD_TIMEOUT_MS = 60000;
     private static WatchContent.Status sStatus;
     private static long sStatusTime;
 
@@ -49,6 +60,10 @@ final class WatchLink {
     private static final List<Listener> sListeners = new ArrayList<>();
     // the latest reply of app and widget, for marking what is on the watch
     private static final Map<String, List<WatchContent.Item>> sLatest = new LinkedHashMap<>();
+    // owners that sent a "status" or "content" message: they understand requests
+    private static final Set<String> sAnswered = new HashSet<>();
+    private static Map<String, Object> sHeld;
+    private static long sHeldTime;
 
     private WatchLink() {
     }
@@ -79,6 +94,8 @@ final class WatchLink {
         sWidget = null;
         sLatest.clear();
         sStatus = null;
+        sAnswered.clear();
+        sHeld = null;
     }
 
     static boolean isConnected() {
@@ -104,7 +121,8 @@ final class WatchLink {
     }
 
     /** Called by MainActivity for every "content" reply from app or widget. */
-    static void dispatchContent(String owner, List<WatchContent.Item> items) {
+    static void dispatchContent(String owner, List<WatchContent.Item> items, long nowMillis) {
+        heardFrom(owner, nowMillis);
         sLatest.put(owner, items);
         for (Listener listener : new ArrayList<>(sListeners)) {
             listener.onWatchContent(owner, items);
@@ -112,12 +130,43 @@ final class WatchLink {
     }
 
     /** Called by MainActivity for every "status" message from app or widget. */
-    static void dispatchStatus(WatchContent.Status status, long nowMillis) {
+    static void dispatchStatus(String owner, WatchContent.Status status, long nowMillis) {
+        heardFrom(owner, nowMillis);
         sStatus = status;
         sStatusTime = nowMillis;
+        if ("ready".equals(status.state)) {
+            // just started: what is on it, for the marks and the manage screen
+            send(owner, WatchContent.listRequest());
+        }
         for (Listener listener : new ArrayList<>(sListeners)) {
             listener.onWatchStatus(status);
         }
+    }
+
+    /** gimporter understands requests; send what was held for it. */
+    private static void heardFrom(String owner, long nowMillis) {
+        sAnswered.add(owner);
+        Map<String, Object> held = sHeld;
+        if (held != null && owner.equals(preferredOwner())) {
+            sHeld = null;
+            if (nowMillis - sHeldTime < HOLD_TIMEOUT_MS) {
+                send(owner, held);
+            }
+        }
+    }
+
+    /** A track or location waits for gimporter to announce itself. */
+    static boolean isHolding() {
+        return sHeld != null;
+    }
+
+    static boolean hasAnswered(String owner) {
+        return sAnswered.contains(owner);
+    }
+
+    /** Whether any gimporter on the watch announced itself yet. */
+    static boolean anyAnswered() {
+        return !sAnswered.isEmpty();
     }
 
     /**
@@ -142,24 +191,40 @@ final class WatchLink {
         return all;
     }
 
-    /**
-     * Send to the app, or to the widget if there is no app. For requests that
-     * make the watch do something now: only the app can be opened from here.
-     */
-    static boolean sendToPreferred(Map<String, Object> message) {
+    /** The app, or the widget if there is no app: only the app can be opened from here. */
+    private static String preferredOwner() {
         IQApp app = sApp != null ? sApp : sWidget;
-        return app != null && send(app, message);
+        return app == null ? null : ownerOf(app);
     }
 
-    /** Send to both app and widget. @return false if there is no watch to send to */
+    /**
+     * Send a request that makes the watch do something now to the app, or
+     * to the widget if there is no app. If it has not announced itself yet,
+     * hold the message until it does: it may be an older gimporter.
+     * @return true if sent now, false if held
+     */
+    static boolean sendOrHold(Map<String, Object> message, long nowMillis) {
+        String owner = preferredOwner();
+        if (owner != null && sAnswered.contains(owner)) {
+            return send(owner, message);
+        }
+        sHeld = message;
+        sHeldTime = nowMillis;
+        return false;
+    }
+
+    /**
+     * Send to app and widget, as far as they announced themselves; the
+     * others are asked when they do.
+     * @return false if there is no watch to send to
+     */
     static boolean sendToAll(Map<String, Object> message) {
-        boolean sent = false;
         for (IQApp app : new IQApp[]{sApp, sWidget}) {
-            if (app != null) {
-                sent |= send(app, message);
+            if (app != null && sAnswered.contains(ownerOf(app))) {
+                send(app, message);
             }
         }
-        return sent;
+        return isConnected();
     }
 
     /** Send to the app or widget that owns some content. */
@@ -195,8 +260,15 @@ final class WatchLink {
             return;
         }
         try {
-            sConnectIQ.openApplication(sDevice, sApp, (device, app, status) ->
-                    Log.info("Open app: {}", status));
+            sConnectIQ.openApplication(sDevice, sApp, (device, app, status) -> {
+                Log.info("Open app: {}", status);
+                // A running gimporter does not announce itself again; ask it
+                // directly. An older one treats this like a stray port reply.
+                if (status == ConnectIQ.IQOpenApplicationStatus.APP_IS_ALREADY_RUNNING
+                        && sHeld != null && !sAnswered.contains(ownerOf(app))) {
+                    send(app, WatchContent.listRequest());
+                }
+            });
         } catch (InvalidStateException | ServiceUnavailableException e) {
             Log.error("Error opening application", e);
         }

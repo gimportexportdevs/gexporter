@@ -19,6 +19,7 @@
     <string name="manage_watch">إدارة الساعة</string>
     <string name="waiting_for_watch">في انتظار gimporter على الساعة…</string>
     <string name="watch_no_answer">الساعة لا تستجيب. افتح gimporter على الساعة وحاول مرة أخرى.</string>
+    <string name="watch_no_answer_update">الساعة لا تستجيب. افتح gimporter على الساعة وحاول مرة أخرى. لا يمكن إدارة الإصدارات الأقدم من gimporter من الهاتف: حدّث gimporter من متجر Connect IQ.</string>
     <string name="watch_no_content">لا توجد مسارات أو مواقع من gimporter على الساعة.</string>
     <string name="widget_hint">تظهر المسارات التي تم تنزيلها بأداة gimporter المصغّرة بمجرد فتح الأداة على الساعة.</string>
     <string name="watch_not_connected">لا توجد ساعة متصلة عليها gimporter.</string>
@@ -42,6 +43,7 @@
     <string name="choose_folder">اختيار مجلد</string>
     <string name="on_watch">على الساعة</string>
     <string name="sent_to_watch">تم إرسال «%1$s» إلى الساعة</string>
+    <string name="held_for_watch">جارٍ فتح gimporter… سيتبعه «%1$s» بمجرد أن يستجيب. مع إصدار أقدم من gimporter اختره من القائمة على الساعة.</string>
     <string name="send_to_watch">إرسال إلى الساعة</string>
     <string name="delete_from_watch">حذف من الساعة</string>
     <string name="deleted_from_watch">تم حذف «%1$s» من الساعة</string>

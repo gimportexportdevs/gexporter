@@ -19,6 +19,7 @@
     <string name="manage_watch">Управление часами</string>
     <string name="waiting_for_watch">Ожидание gimporter на часах…</string>
     <string name="watch_no_answer">Часы не отвечают. Откройте gimporter на часах и повторите попытку.</string>
+    <string name="watch_no_answer_update">Часы не отвечают. Откройте gimporter на часах и повторите попытку. Старыми версиями gimporter нельзя управлять с телефона: обновите gimporter в магазине Connect IQ.</string>
     <string name="watch_no_content">На часах нет треков или мест из gimporter.</string>
     <string name="widget_hint">Треки, загруженные виджетом gimporter, появятся, когда вы откроете виджет на часах.</string>
     <string name="watch_not_connected">Нет подключённых часов с gimporter.</string>
@@ -42,6 +43,7 @@
     <string name="choose_folder">Выбрать папку</string>
     <string name="on_watch">на часах</string>
     <string name="sent_to_watch">«%1$s» отправлено на часы</string>
+    <string name="held_for_watch">Открывается gimporter… «%1$s» будет отправлен, как только он ответит. В старой версии gimporter выберите его из списка на часах.</string>
     <string name="send_to_watch">Отправить на часы</string>
     <string name="delete_from_watch">Удалить с часов</string>
     <string name="deleted_from_watch">«%1$s» удалено с часов</string>

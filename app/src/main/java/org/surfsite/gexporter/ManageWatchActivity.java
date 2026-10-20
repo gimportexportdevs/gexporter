@@ -385,7 +385,8 @@ public class ManageWatchActivity extends AppCompatActivity implements WatchLink.
     private void onTimeout() {
         if (mWaiting) {
             mWaiting = false;
-            showStatus(R.string.watch_no_answer, true);
+            // an older gimporter never answers
+            showStatus(WatchLink.anyAnswered() ? R.string.watch_no_answer : R.string.watch_no_answer_update, true);
         }
     }
 

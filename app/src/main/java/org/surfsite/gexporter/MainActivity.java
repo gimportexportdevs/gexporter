@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
                             registerMessageListener(connectIQ, device, app);
                             // Before the "open app" prompt below, so the
                             // location is waiting when the app starts.
-                            sendPendingLocation(device, app);
+                            sendPendingLocation();
 
                             try {
                                 connectIQ.openApplication(device, app, (iqDevice, iqApp, status) ->
@@ -269,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
                         setWatchState(WatchState.WIDGET_ONLY, device);
                         // A widget cannot be opened from the phone; the location
                         // waits until the user opens it.
-                        sendPendingLocation(device, widget);
+                        sendPendingLocation();
                     }
                 }
 
@@ -348,13 +348,16 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
         } else {
             message = null;
         }
-        if (message == null || !WatchLink.sendToPreferred(message)) {
+        if (message == null || !WatchLink.isConnected()) {
             Snackbar.make(findViewById(R.id.main_root), R.string.watch_not_connected, Snackbar.LENGTH_LONG)
                     .setAnchorView(R.id.choose_folder).show();
             return;
         }
+        boolean sent = WatchLink.sendOrHold(message, System.currentTimeMillis());
         WatchLink.openApp();
-        Snackbar.make(findViewById(R.id.main_root), getString(R.string.sent_to_watch, entry.name), Snackbar.LENGTH_LONG)
+        Snackbar.make(findViewById(R.id.main_root),
+                        getString(sent ? R.string.sent_to_watch : R.string.held_for_watch, entry.name),
+                        Snackbar.LENGTH_LONG)
                 .setAnchorView(R.id.choose_folder).show();
     }
 
@@ -438,7 +441,8 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
                     if (watchStatus != null) {
                         Log.info("Watch status from {}: {} {}", iqApp.getApplicationId(),
                                 watchStatus.state, watchStatus.title);
-                        runOnUiThread(() -> WatchLink.dispatchStatus(watchStatus, System.currentTimeMillis()));
+                        String from = WatchLink.ownerOf(iqApp);
+                        runOnUiThread(() -> WatchLink.dispatchStatus(from, watchStatus, System.currentTimeMillis()));
                         return;
                     }
                     String owner = WatchLink.ownerOf(iqApp);
@@ -446,7 +450,7 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
                     if (content != null) {
                         Log.info("Watch content from {}: {} items", iqApp.getApplicationId(), content.size());
                         // for ManageWatchActivity
-                        runOnUiThread(() -> WatchLink.dispatchContent(owner, content));
+                        runOnUiThread(() -> WatchLink.dispatchContent(owner, content, System.currentTimeMillis()));
                         return;
                     }
                     if (!(firstElement instanceof ArrayList)) {
@@ -482,33 +486,19 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
             return;
         }
         mPendingPush = loc;
-        sendPendingLocation(mConnectedDevice, mConnectedApp);
-        try {
-            mConnectIQ.openApplication(mConnectedDevice, mConnectedApp, (iqDevice, iqApp, status) ->
-                    Log.info("Open app for location: {}", status));
-        } catch (InvalidStateException | ServiceUnavailableException e) {
-            Log.error("Error opening application", e);
-        }
+        sendPendingLocation();
+        WatchLink.openApp();
     }
 
-    private void sendPendingLocation(IQDevice device, IQApp app) {
+    /** Sent right away to a gimporter that announced itself, otherwise when it does. */
+    private void sendPendingLocation() {
         SharedLocation loc = mPendingPush;
-        if (loc == null || mConnectIQ == null) {
+        if (loc == null || !WatchLink.isConnected()) {
             return;
         }
         mPendingPush = null;
-        try {
-            mConnectIQ.sendMessage(device, app, loc.toWatchMessage(System.currentTimeMillis()),
-                    (iqDevice, iqApp, status) -> {
-                        if (status == ConnectIQ.IQMessageStatus.SUCCESS) {
-                            Log.info("Sent location {} to the watch", loc.getName());
-                        } else {
-                            Log.error("Failed to send location to the watch: {}", status);
-                        }
-                    });
-        } catch (InvalidStateException | ServiceUnavailableException e) {
-            Log.error("Error sending location to the watch", e);
-        }
+        boolean sent = WatchLink.sendOrHold(loc.toWatchMessage(System.currentTimeMillis()), System.currentTimeMillis());
+        Log.info("Location {} {}", loc.getName(), sent ? "sent to the watch" : "held until gimporter answers");
     }
 
     private void sendPortResponse(IQDevice device, IQApp app) {

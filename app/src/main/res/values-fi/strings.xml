@@ -19,6 +19,7 @@
     <string name="manage_watch">Hallitse kelloa</string>
     <string name="waiting_for_watch">Odotetaan gimporteria kellossa…</string>
     <string name="watch_no_answer">Kello ei vastaa. Avaa gimporter kellossa ja yritä uudelleen.</string>
+    <string name="watch_no_answer_update">Kello ei vastaa. Avaa gimporter kellossa ja yritä uudelleen. Vanhempia gimporter-versioita ei voi hallita puhelimesta: päivitä gimporter Connect IQ -kaupassa.</string>
     <string name="watch_no_content">Kellossa ei ole gimporterin reittejä tai sijainteja.</string>
     <string name="widget_hint">gimporter-widgetillä ladatut reitit näkyvät, kun avaat widgetin kellossa.</string>
     <string name="watch_not_connected">Gimporteria käyttävää kelloa ei ole yhdistetty.</string>
@@ -42,6 +43,7 @@
     <string name="choose_folder">Valitse kansio</string>
     <string name="on_watch">kellossa</string>
     <string name="sent_to_watch">”%1$s” lähetetty kelloon</string>
+    <string name="held_for_watch">Avataan gimporter… ”%1$s” seuraa, kun se vastaa. Vanhemmalla gimporterilla valitse se kellon luettelosta.</string>
     <string name="send_to_watch">Lähetä kelloon</string>
     <string name="delete_from_watch">Poista kellosta</string>
     <string name="deleted_from_watch">”%1$s” poistettu kellosta</string>

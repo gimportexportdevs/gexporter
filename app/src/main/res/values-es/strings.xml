@@ -19,6 +19,7 @@
     <string name="manage_watch">Gestionar reloj</string>
     <string name="waiting_for_watch">Esperando a gimporter en el reloj…</string>
     <string name="watch_no_answer">El reloj no responde. Abre gimporter en el reloj e inténtalo de nuevo.</string>
+    <string name="watch_no_answer_update">El reloj no responde. Abre gimporter en el reloj y vuelve a intentarlo. Las versiones antiguas de gimporter no se pueden gestionar desde el teléfono: actualiza gimporter en la tienda Connect IQ.</string>
     <string name="watch_no_content">No hay rutas ni lugares de gimporter en el reloj.</string>
     <string name="widget_hint">Las rutas descargadas con el widget de gimporter aparecen al abrir el widget en el reloj.</string>
     <string name="watch_not_connected">No hay ningún reloj con gimporter conectado.</string>
@@ -42,6 +43,7 @@
     <string name="choose_folder">Elegir carpeta</string>
     <string name="on_watch">en el reloj</string>
     <string name="sent_to_watch">«%1$s» enviado al reloj</string>
+    <string name="held_for_watch">Abriendo gimporter… «%1$s» llegará cuando responda. Con un gimporter más antiguo, elígelo de la lista en el reloj.</string>
     <string name="send_to_watch">Enviar al reloj</string>
     <string name="delete_from_watch">Eliminar del reloj</string>
     <string name="deleted_from_watch">«%1$s» eliminado del reloj</string>

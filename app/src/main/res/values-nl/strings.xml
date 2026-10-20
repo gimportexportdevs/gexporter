@@ -19,6 +19,7 @@
     <string name="manage_watch">Horloge beheren</string>
     <string name="waiting_for_watch">Wachten op gimporter op het horloge…</string>
     <string name="watch_no_answer">Het horloge reageert niet. Open gimporter op het horloge en probeer het opnieuw.</string>
+    <string name="watch_no_answer_update">Het horloge antwoordt niet. Open gimporter op het horloge en probeer het opnieuw. Oudere gimporter-versies kunnen niet vanaf de telefoon worden beheerd: werk gimporter bij in de Connect IQ-store.</string>
     <string name="watch_no_content">Geen routes of locaties van gimporter op het horloge.</string>
     <string name="widget_hint">Routes die met de gimporter-widget zijn gedownload, verschijnen zodra je de widget op het horloge opent.</string>
     <string name="watch_not_connected">Geen horloge met gimporter verbonden.</string>
@@ -42,6 +43,7 @@
     <string name="choose_folder">Map kiezen</string>
     <string name="on_watch">op het horloge</string>
     <string name="sent_to_watch">‘%1$s’ naar het horloge gestuurd</string>
+    <string name="held_for_watch">gimporter wordt geopend… ‘%1$s’ volgt zodra hij antwoordt. Met een oudere gimporter kies je hem uit de lijst op het horloge.</string>
     <string name="send_to_watch">Naar het horloge sturen</string>
     <string name="delete_from_watch">Verwijderen van het horloge</string>
     <string name="deleted_from_watch">‘%1$s’ verwijderd van het horloge</string>

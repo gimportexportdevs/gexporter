@@ -19,6 +19,7 @@
     <string name="manage_watch">Керувати годинником</string>
     <string name="waiting_for_watch">Очікування gimporter на годиннику…</string>
     <string name="watch_no_answer">Годинник не відповідає. Відкрийте gimporter на годиннику та повторіть спробу.</string>
+    <string name="watch_no_answer_update">Годинник не відповідає. Відкрийте gimporter на годиннику й спробуйте ще раз. Старішими версіями gimporter не можна керувати з телефона: оновіть gimporter у магазині Connect IQ.</string>
     <string name="watch_no_content">На годиннику немає маршрутів чи місць із gimporter.</string>
     <string name="widget_hint">Маршрути, завантажені віджетом gimporter, з’являться, коли ви відкриєте віджет на годиннику.</string>
     <string name="watch_not_connected">Немає підключеного годинника з gimporter.</string>
@@ -42,6 +43,7 @@
     <string name="choose_folder">Вибрати папку</string>
     <string name="on_watch">на годиннику</string>
     <string name="sent_to_watch">«%1$s» надіслано на годинник</string>
+    <string name="held_for_watch">Відкривається gimporter… «%1$s» буде надіслано, щойно він відповість. У старішій версії gimporter виберіть його зі списку на годиннику.</string>
     <string name="send_to_watch">Надіслати на годинник</string>
     <string name="delete_from_watch">Видалити з годинника</string>
     <string name="deleted_from_watch">«%1$s» видалено з годинника</string>

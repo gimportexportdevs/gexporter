@@ -19,6 +19,7 @@
     <string name="manage_watch">จัดการนาฬิกา</string>
     <string name="waiting_for_watch">กำลังรอ gimporter บนนาฬิกา…</string>
     <string name="watch_no_answer">นาฬิกาไม่ตอบสนอง เปิด gimporter บนนาฬิกาแล้วลองอีกครั้ง</string>
+    <string name="watch_no_answer_update">นาฬิกาไม่ตอบสนอง เปิด gimporter บนนาฬิกาแล้วลองอีกครั้ง gimporter รุ่นเก่าไม่สามารถจัดการจากโทรศัพท์ได้ โปรดอัปเดต gimporter ใน Connect IQ store</string>
     <string name="watch_no_content">ไม่มีเส้นทางหรือตำแหน่งจาก gimporter บนนาฬิกา</string>
     <string name="widget_hint">เส้นทางที่ดาวน์โหลดด้วยวิดเจ็ต gimporter จะแสดงเมื่อคุณเปิดวิดเจ็ตบนนาฬิกา</string>
     <string name="watch_not_connected">ไม่มีนาฬิกาที่มี gimporter เชื่อมต่ออยู่</string>
@@ -42,6 +43,7 @@
     <string name="choose_folder">เลือกโฟลเดอร์</string>
     <string name="on_watch">อยู่บนนาฬิกา</string>
     <string name="sent_to_watch">ส่ง “%1$s” ไปยังนาฬิกาแล้ว</string>
+    <string name="held_for_watch">กำลังเปิด gimporter… จะส่ง “%1$s” เมื่อแอปตอบกลับ หากเป็น gimporter รุ่นเก่า ให้เลือกจากรายการบนนาฬิกา</string>
     <string name="send_to_watch">ส่งไปยังนาฬิกา</string>
     <string name="delete_from_watch">ลบออกจากนาฬิกา</string>
     <string name="deleted_from_watch">ลบ “%1$s” ออกจากนาฬิกาแล้ว</string>

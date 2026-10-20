@@ -19,6 +19,7 @@
     <string name="manage_watch">Saati yönet</string>
     <string name="waiting_for_watch">Saatteki gimporter bekleniyor…</string>
     <string name="watch_no_answer">Saat yanıt vermiyor. Saatte gimporter uygulamasını açıp tekrar deneyin.</string>
+    <string name="watch_no_answer_update">Saat yanıt vermiyor. Saatte gimporter\'ı açıp tekrar deneyin. Eski gimporter sürümleri telefondan yönetilemez: gimporter\'ı Connect IQ mağazasından güncelleyin.</string>
     <string name="watch_no_content">Saatte gimporter rotası veya konumu yok.</string>
     <string name="widget_hint">gimporter widget\'ıyla indirilen rotalar, widget\'ı saatte açtığınızda görünür.</string>
     <string name="watch_not_connected">gimporter yüklü bağlı saat yok.</string>
@@ -42,6 +43,7 @@
     <string name="choose_folder">Klasör seç</string>
     <string name="on_watch">saatte</string>
     <string name="sent_to_watch">“%1$s” saate gönderildi</string>
+    <string name="held_for_watch">gimporter açılıyor… Yanıt verdiğinde “%1$s” gönderilir. Eski bir gimporter ile saatteki listeden seçin.</string>
     <string name="send_to_watch">Saate gönder</string>
     <string name="delete_from_watch">Saatten sil</string>
     <string name="deleted_from_watch">“%1$s” saatten silindi</string>

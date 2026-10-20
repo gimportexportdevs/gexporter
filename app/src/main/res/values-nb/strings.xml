@@ -19,6 +19,7 @@
     <string name="manage_watch">Administrer klokken</string>
     <string name="waiting_for_watch">Venter på gimporter på klokken…</string>
     <string name="watch_no_answer">Klokken svarer ikke. Åpne gimporter på klokken og prøv igjen.</string>
+    <string name="watch_no_answer_update">Klokken svarer ikke. Åpne gimporter på klokken og prøv igjen. Eldre gimporter-versjoner kan ikke administreres fra telefonen: oppdater gimporter i Connect IQ-butikken.</string>
     <string name="watch_no_content">Ingen ruter eller steder fra gimporter på klokken.</string>
     <string name="widget_hint">Ruter lastet ned med gimporter-widgeten vises når du åpner widgeten på klokken.</string>
     <string name="watch_not_connected">Ingen klokke med gimporter er tilkoblet.</string>
@@ -42,6 +43,7 @@
     <string name="choose_folder">Velg mappe</string>
     <string name="on_watch">på klokken</string>
     <string name="sent_to_watch">«%1$s» sendt til klokken</string>
+    <string name="held_for_watch">Åpner gimporter … «%1$s» følger når den svarer. Med en eldre gimporter velger du den fra listen på klokken.</string>
     <string name="send_to_watch">Send til klokken</string>
     <string name="delete_from_watch">Slett fra klokken</string>
     <string name="deleted_from_watch">«%1$s» slettet fra klokken</string>

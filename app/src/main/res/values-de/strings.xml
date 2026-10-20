@@ -19,6 +19,7 @@
     <string name="manage_watch">Uhr verwalten</string>
     <string name="waiting_for_watch">Warte auf gimporter auf der Uhr…</string>
     <string name="watch_no_answer">Die Uhr antwortet nicht. Öffne gimporter auf der Uhr und versuche es erneut.</string>
+    <string name="watch_no_answer_update">Die Uhr antwortet nicht. Öffne gimporter auf der Uhr und versuche es erneut. Ältere gimporter-Versionen lassen sich nicht vom Telefon aus verwalten: gimporter im Connect IQ Store aktualisieren.</string>
     <string name="watch_no_content">Keine Strecken oder Orte von gimporter auf der Uhr.</string>
     <string name="widget_hint">Strecken, die das gimporter-Widget geladen hat, erscheinen, sobald du das Widget auf der Uhr öffnest.</string>
     <string name="watch_not_connected">Keine Uhr mit gimporter verbunden.</string>
@@ -42,6 +43,7 @@
     <string name="choose_folder">Ordner wählen</string>
     <string name="on_watch">auf der Uhr</string>
     <string name="sent_to_watch">„%1$s“ an die Uhr geschickt</string>
+    <string name="held_for_watch">gimporter wird geöffnet … „%1$s“ folgt, sobald er antwortet. Mit einem älteren gimporter auf der Uhr aus der Liste wählen.</string>
     <string name="send_to_watch">An die Uhr senden</string>
     <string name="delete_from_watch">Von der Uhr löschen</string>
     <string name="deleted_from_watch">„%1$s“ von der Uhr gelöscht</string>

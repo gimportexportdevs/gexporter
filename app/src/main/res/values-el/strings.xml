@@ -19,6 +19,7 @@
     <string name="manage_watch">Διαχείριση ρολογιού</string>
     <string name="waiting_for_watch">Αναμονή για το gimporter στο ρολόι…</string>
     <string name="watch_no_answer">Το ρολόι δεν απαντά. Ανοίξτε το gimporter στο ρολόι και δοκιμάστε ξανά.</string>
+    <string name="watch_no_answer_update">Το ρολόι δεν απαντά. Ανοίξτε το gimporter στο ρολόι και δοκιμάστε ξανά. Παλαιότερες εκδόσεις του gimporter δεν διαχειρίζονται από το τηλέφωνο: ενημερώστε το gimporter από το Connect IQ store.</string>
     <string name="watch_no_content">Δεν υπάρχουν διαδρομές ή τοποθεσίες από το gimporter στο ρολόι.</string>
     <string name="widget_hint">Οι διαδρομές που λήφθηκαν με το widget του gimporter εμφανίζονται μόλις ανοίξετε το widget στο ρολόι.</string>
     <string name="watch_not_connected">Δεν είναι συνδεδεμένο ρολόι με gimporter.</string>
@@ -42,6 +43,7 @@
     <string name="choose_folder">Επιλογή φακέλου</string>
     <string name="on_watch">στο ρολόι</string>
     <string name="sent_to_watch">Το «%1$s» στάλθηκε στο ρολόι</string>
+    <string name="held_for_watch">Άνοιγμα του gimporter… Το «%1$s» ακολουθεί μόλις απαντήσει. Με παλαιότερο gimporter επιλέξτε το από τη λίστα στο ρολόι.</string>
     <string name="send_to_watch">Αποστολή στο ρολόι</string>
     <string name="delete_from_watch">Διαγραφή από το ρολόι</string>
     <string name="deleted_from_watch">Το «%1$s» διαγράφηκε από το ρολόι</string>

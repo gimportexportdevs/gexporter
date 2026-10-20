@@ -19,6 +19,7 @@
     <string name="manage_watch">Spravovat hodinky</string>
     <string name="waiting_for_watch">Čekání na gimporter v hodinkách…</string>
     <string name="watch_no_answer">Hodinky neodpovídají. Otevřete v hodinkách gimporter a zkuste to znovu.</string>
+    <string name="watch_no_answer_update">Hodinky neodpovídají. Otevřete gimporter v hodinkách a zkuste to znovu. Starší verze gimporteru nelze spravovat z telefonu: aktualizujte gimporter v obchodě Connect IQ.</string>
     <string name="watch_no_content">V hodinkách nejsou žádné trasy ani místa z gimporteru.</string>
     <string name="widget_hint">Trasy stažené widgetem gimporter se zobrazí, jakmile widget v hodinkách otevřete.</string>
     <string name="watch_not_connected">Nejsou připojené žádné hodinky s gimporterem.</string>
@@ -42,6 +43,7 @@
     <string name="choose_folder">Vybrat složku</string>
     <string name="on_watch">v hodinkách</string>
     <string name="sent_to_watch">„%1$s“ odesláno do hodinek</string>
+    <string name="held_for_watch">Otevírá se gimporter… „%1$s“ následuje, jakmile odpoví. Se starším gimporterem jej vyberte ze seznamu v hodinkách.</string>
     <string name="send_to_watch">Odeslat do hodinek</string>
     <string name="delete_from_watch">Smazat z hodinek</string>
     <string name="deleted_from_watch">„%1$s“ smazáno z hodinek</string>

@@ -19,6 +19,7 @@
     <string name="manage_watch">ウォッチを管理</string>
     <string name="waiting_for_watch">ウォッチの gimporter を待っています…</string>
     <string name="watch_no_answer">ウォッチが応答しません。ウォッチで gimporter を開いてもう一度お試しください。</string>
+    <string name="watch_no_answer_update">ウォッチが応答しません。ウォッチでgimporterを開いて、もう一度お試しください。古いgimporterはスマートフォンから管理できません。Connect IQストアでgimporterを更新してください。</string>
     <string name="watch_no_content">ウォッチに gimporter のトラックや地点はありません。</string>
     <string name="widget_hint">gimporter ウィジェットでダウンロードしたトラックは、ウォッチでウィジェットを開くと表示されます。</string>
     <string name="watch_not_connected">gimporter のあるウォッチが接続されていません。</string>
@@ -42,6 +43,7 @@
     <string name="choose_folder">フォルダを選択</string>
     <string name="on_watch">ウォッチにあり</string>
     <string name="sent_to_watch">「%1$s」をウォッチに送信しました</string>
+    <string name="held_for_watch">gimporterを開いています…応答があり次第「%1$s」を送ります。古いgimporterではウォッチのリストから選んでください。</string>
     <string name="send_to_watch">ウォッチに送信</string>
     <string name="delete_from_watch">ウォッチから削除</string>
     <string name="deleted_from_watch">「%1$s」をウォッチから削除しました</string>

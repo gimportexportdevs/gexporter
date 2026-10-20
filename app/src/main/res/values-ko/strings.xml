@@ -19,6 +19,7 @@
     <string name="manage_watch">시계 관리</string>
     <string name="waiting_for_watch">시계의 gimporter를 기다리는 중…</string>
     <string name="watch_no_answer">시계가 응답하지 않습니다. 시계에서 gimporter를 열고 다시 시도하세요.</string>
+    <string name="watch_no_answer_update">시계가 응답하지 않습니다. 시계에서 gimporter를 열고 다시 시도하세요. 이전 버전의 gimporter는 휴대폰에서 관리할 수 없습니다. Connect IQ 스토어에서 gimporter를 업데이트하세요.</string>
     <string name="watch_no_content">시계에 gimporter 트랙이나 위치가 없습니다.</string>
     <string name="widget_hint">gimporter 위젯으로 다운로드한 트랙은 시계에서 위젯을 열면 표시됩니다.</string>
     <string name="watch_not_connected">gimporter가 있는 시계가 연결되어 있지 않습니다.</string>
@@ -42,6 +43,7 @@
     <string name="choose_folder">폴더 선택</string>
     <string name="on_watch">시계에 있음</string>
     <string name="sent_to_watch">‘%1$s’을(를) 시계로 보냈습니다</string>
+    <string name="held_for_watch">gimporter를 여는 중… 응답하면 ‘%1$s’을(를) 보냅니다. 이전 버전의 gimporter에서는 시계의 목록에서 선택하세요.</string>
     <string name="send_to_watch">시계로 보내기</string>
     <string name="delete_from_watch">시계에서 삭제</string>
     <string name="deleted_from_watch">‘%1$s’을(를) 시계에서 삭제했습니다</string>

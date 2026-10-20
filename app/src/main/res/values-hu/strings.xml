@@ -19,6 +19,7 @@
     <string name="manage_watch">Óra kezelése</string>
     <string name="waiting_for_watch">Várakozás a gimporterre az órán…</string>
     <string name="watch_no_answer">Az óra nem válaszol. Nyissa meg a gimportert az órán, és próbálja újra.</string>
+    <string name="watch_no_answer_update">Az óra nem válaszol. Nyissa meg a gimportert az órán, és próbálja újra. A régebbi gimporter-verziók nem kezelhetők a telefonról: frissítse a gimportert a Connect IQ áruházban.</string>
     <string name="watch_no_content">Nincs gimporteres útvonal vagy hely az órán.</string>
     <string name="widget_hint">A gimporter widgettel letöltött útvonalak akkor jelennek meg, amikor megnyitod a widgetet az órán.</string>
     <string name="watch_not_connected">Nincs csatlakoztatva gimporteres óra.</string>
@@ -42,6 +43,7 @@
     <string name="choose_folder">Mappa kiválasztása</string>
     <string name="on_watch">az órán</string>
     <string name="sent_to_watch">„%1$s” elküldve az órára</string>
+    <string name="held_for_watch">A gimporter megnyitása… „%1$s” akkor következik, amikor válaszol. Régebbi gimporterrel válassza ki az óra listájából.</string>
     <string name="send_to_watch">Küldés az órára</string>
     <string name="delete_from_watch">Törlés az óráról</string>
     <string name="deleted_from_watch">„%1$s” törölve az óráról</string>

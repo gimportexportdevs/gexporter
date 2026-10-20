@@ -19,6 +19,7 @@
     <string name="manage_watch">Quản lý đồng hồ</string>
     <string name="waiting_for_watch">Đang chờ gimporter trên đồng hồ…</string>
     <string name="watch_no_answer">Đồng hồ không phản hồi. Hãy mở gimporter trên đồng hồ và thử lại.</string>
+    <string name="watch_no_answer_update">Đồng hồ không phản hồi. Hãy mở gimporter trên đồng hồ rồi thử lại. Không thể quản lý các phiên bản gimporter cũ từ điện thoại: hãy cập nhật gimporter trong cửa hàng Connect IQ.</string>
     <string name="watch_no_content">Không có tuyến đường hay vị trí nào từ gimporter trên đồng hồ.</string>
     <string name="widget_hint">Các tuyến đường tải bằng tiện ích gimporter sẽ hiện khi bạn mở tiện ích trên đồng hồ.</string>
     <string name="watch_not_connected">Không có đồng hồ nào có gimporter được kết nối.</string>
@@ -42,6 +43,7 @@
     <string name="choose_folder">Chọn thư mục</string>
     <string name="on_watch">trên đồng hồ</string>
     <string name="sent_to_watch">Đã gửi “%1$s” đến đồng hồ</string>
+    <string name="held_for_watch">Đang mở gimporter… “%1$s” sẽ được gửi khi ứng dụng phản hồi. Với gimporter cũ, hãy chọn từ danh sách trên đồng hồ.</string>
     <string name="send_to_watch">Gửi đến đồng hồ</string>
     <string name="delete_from_watch">Xóa khỏi đồng hồ</string>
     <string name="deleted_from_watch">Đã xóa “%1$s” khỏi đồng hồ</string>

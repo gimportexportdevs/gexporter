@@ -19,6 +19,7 @@
     <string name="manage_watch">Kelola jam</string>
     <string name="waiting_for_watch">Menunggu gimporter di jam…</string>
     <string name="watch_no_answer">Jam tidak merespons. Buka gimporter di jam lalu coba lagi.</string>
+    <string name="watch_no_answer_update">Jam tidak menjawab. Buka gimporter di jam lalu coba lagi. Versi gimporter lama tidak dapat dikelola dari ponsel: perbarui gimporter di toko Connect IQ.</string>
     <string name="watch_no_content">Tidak ada rute atau lokasi dari gimporter di jam.</string>
     <string name="widget_hint">Rute yang diunduh dengan widget gimporter muncul setelah Anda membuka widget di jam.</string>
     <string name="watch_not_connected">Tidak ada jam dengan gimporter yang terhubung.</string>
@@ -42,6 +43,7 @@
     <string name="choose_folder">Pilih folder</string>
     <string name="on_watch">di jam</string>
     <string name="sent_to_watch">“%1$s” dikirim ke jam</string>
+    <string name="held_for_watch">Membuka gimporter… “%1$s” menyusul setelah ia menjawab. Dengan gimporter lama, pilih dari daftar di jam.</string>
     <string name="send_to_watch">Kirim ke jam</string>
     <string name="delete_from_watch">Hapus dari jam</string>
     <string name="deleted_from_watch">“%1$s” dihapus dari jam</string>
