@@ -43,6 +43,10 @@
     <string name="removed_one">«%1$s» fjernet</string>
     <string name="on_watch">på klokken</string>
     <string name="sent_to_watch">«%1$s» sendt til klokken</string>
+    <string name="send_to_watch">Send til klokken</string>
+    <string name="delete_from_watch">Slett fra klokken</string>
+    <string name="deleted_from_watch">«%1$s» slettet fra klokken</string>
+    <string name="remove_from_list">Fjern fra listen</string>
     <string name="settings_speed">Hastighet</string>
     <string name="settings_conversion">Konvertering</string>
     <string name="default_speed">Standardhastighet</string>

@@ -43,6 +43,10 @@
     <string name="removed_one">已移除“%1$s”</string>
     <string name="on_watch">已在手表上</string>
     <string name="sent_to_watch">已将“%1$s”发送到手表</string>
+    <string name="send_to_watch">发送到手表</string>
+    <string name="delete_from_watch">从手表删除</string>
+    <string name="deleted_from_watch">已从手表删除“%1$s”</string>
+    <string name="remove_from_list">从列表中移除</string>
     <string name="settings_speed">速度</string>
     <string name="settings_conversion">转换</string>
     <string name="default_speed">默认速度</string>

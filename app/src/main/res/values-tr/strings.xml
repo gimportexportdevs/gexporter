@@ -43,6 +43,10 @@
     <string name="removed_one">“%1$s” kaldırıldı</string>
     <string name="on_watch">saatte</string>
     <string name="sent_to_watch">“%1$s” saate gönderildi</string>
+    <string name="send_to_watch">Saate gönder</string>
+    <string name="delete_from_watch">Saatten sil</string>
+    <string name="deleted_from_watch">“%1$s” saatten silindi</string>
+    <string name="remove_from_list">Listeden kaldır</string>
     <string name="settings_speed">Hız</string>
     <string name="settings_conversion">Dönüştürme</string>
     <string name="default_speed">Varsayılan hız</string>

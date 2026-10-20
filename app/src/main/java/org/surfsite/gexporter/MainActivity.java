@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -63,6 +64,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -1023,7 +1025,7 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
 
         @Override
         public int getSwipeDirs(@NonNull RecyclerView rv, @NonNull RecyclerView.ViewHolder vh) {
-            return mServedDir != null && mServedDir.equals(mDirectory) ? super.getSwipeDirs(rv, vh) : 0;
+            return servedAreCopies() ? super.getSwipeDirs(rv, vh) : 0;
         }
 
         @Override
@@ -1038,31 +1040,104 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
             if (pos == RecyclerView.NO_POSITION) {
                 return;
             }
-            ServedFiles.Entry entry = mServed.get(pos);
-            // a GPX file with several locations goes as a whole
-            List<ServedFiles.Entry> removed = new ArrayList<>();
-            for (ServedFiles.Entry e : mServed) {
-                if (e.file.equals(entry.file)) {
-                    removed.add(e);
-                }
-            }
-            List<ServedFiles.Entry> before = new ArrayList<>(mServed);
-            List<ServedFiles.Entry> remaining = new ArrayList<>(mServed);
-            remaining.removeAll(removed);
-            showServed(remaining);
-            Snackbar.make(findViewById(R.id.main_root), getString(R.string.removed_one, entry.name), Snackbar.LENGTH_LONG)
-                    .setAnchorView(R.id.choose_folder)
-                    .setAction(R.string.undo, v -> showServed(before))
-                    .addCallback(new Snackbar.Callback() {
-                        @Override
-                        public void onDismissed(Snackbar bar, int event) {
-                            if (event != DISMISS_EVENT_ACTION && !entry.file.delete()) {
-                                Log.warn("Could not remove {}", entry.file);
-                            }
-                        }
-                    })
-                    .show();
+            removeFromList(mServed.get(pos));
         }
+    }
+
+    /** Whether entries are gexporter's own copies, which may be removed. */
+    private boolean servedAreCopies() {
+        return mServedDir != null && mServedDir.equals(mDirectory);
+    }
+
+    /** Stop offering an entry to the watch: delete gexporter's copy, with undo. */
+    private void removeFromList(ServedFiles.Entry entry) {
+        // a GPX file with several locations goes as a whole
+        List<ServedFiles.Entry> removed = new ArrayList<>();
+        for (ServedFiles.Entry e : mServed) {
+            if (e.file.equals(entry.file)) {
+                removed.add(e);
+            }
+        }
+        List<ServedFiles.Entry> before = new ArrayList<>(mServed);
+        List<ServedFiles.Entry> remaining = new ArrayList<>(mServed);
+        remaining.removeAll(removed);
+        showServed(remaining);
+        Snackbar.make(findViewById(R.id.main_root), getString(R.string.removed_one, entry.name), Snackbar.LENGTH_LONG)
+                .setAnchorView(R.id.choose_folder)
+                .setAction(R.string.undo, v -> showServed(before))
+                .addCallback(new Snackbar.Callback() {
+                    @Override
+                    public void onDismissed(Snackbar bar, int event) {
+                        if (event != DISMISS_EVENT_ACTION && !entry.file.delete()) {
+                            Log.warn("Could not remove {}", entry.file);
+                        }
+                    }
+                })
+                .show();
+    }
+
+    /**
+     * Delete an entry's content from the watch: everything app and widget
+     * imported with its fingerprint. Sent once the "Undo" snackbar is gone;
+     * the watch answers with its new content, which clears the mark.
+     */
+    private void deleteFromWatch(ServedFiles.Entry entry) {
+        Map<String, List<WatchContent.Item>> byOwner = new LinkedHashMap<>();
+        for (WatchContent.Item item : WatchLink.latestContent()) {
+            if (entry.fingerprint.equals(item.fingerprint)) {
+                List<WatchContent.Item> list = byOwner.get(item.owner);
+                if (list == null) {
+                    list = new ArrayList<>();
+                    byOwner.put(item.owner, list);
+                }
+                list.add(item);
+            }
+        }
+        if (byOwner.isEmpty()) {
+            return;
+        }
+        Snackbar.make(findViewById(R.id.main_root), getString(R.string.deleted_from_watch, entry.name),
+                        Snackbar.LENGTH_LONG)
+                .setAnchorView(R.id.choose_folder)
+                .setAction(R.string.undo, v -> { })
+                .addCallback(new Snackbar.Callback() {
+                    @Override
+                    public void onDismissed(Snackbar bar, int event) {
+                        if (event == DISMISS_EVENT_ACTION) {
+                            return;
+                        }
+                        for (Map.Entry<String, List<WatchContent.Item>> e : byOwner.entrySet()) {
+                            WatchLink.send(e.getKey(), WatchContent.deleteRequest(e.getValue(), System.currentTimeMillis()));
+                        }
+                        // the delete only runs while gimporter runs; it expires otherwise
+                        WatchLink.openApp();
+                    }
+                })
+                .show();
+    }
+
+    /** Long press: everything that can be done with an entry. */
+    private void showEntryMenu(View anchor, ServedFiles.Entry entry) {
+        PopupMenu menu = new PopupMenu(this, anchor);
+        menu.getMenu().add(0, R.id.menu_send_to_watch, 0, R.string.send_to_watch);
+        if (WatchContent.isOnWatch(entry.fingerprint, WatchLink.latestContent())) {
+            menu.getMenu().add(0, R.id.menu_delete_from_watch, 1, R.string.delete_from_watch);
+        }
+        if (servedAreCopies()) {
+            menu.getMenu().add(0, R.id.menu_remove_from_list, 2, R.string.remove_from_list);
+        }
+        menu.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.menu_send_to_watch) {
+                sendToWatch(entry);
+            } else if (id == R.id.menu_delete_from_watch) {
+                deleteFromWatch(entry);
+            } else if (id == R.id.menu_remove_from_list) {
+                removeFromList(entry);
+            }
+            return true;
+        });
+        menu.show();
     }
 
     private class ServedAdapter extends RecyclerView.Adapter<ServedAdapter.Holder> {
@@ -1083,6 +1158,14 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
                     if (pos != RecyclerView.NO_POSITION) {
                         sendToWatch(mServed.get(pos));
                     }
+                });
+                v.setOnLongClickListener(x -> {
+                    int pos = getBindingAdapterPosition();
+                    if (pos == RecyclerView.NO_POSITION) {
+                        return false;
+                    }
+                    showEntryMenu(x, mServed.get(pos));
+                    return true;
                 });
             }
         }

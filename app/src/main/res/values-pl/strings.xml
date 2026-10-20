@@ -43,6 +43,10 @@
     <string name="removed_one">Usunięto „%1$s”</string>
     <string name="on_watch">w zegarku</string>
     <string name="sent_to_watch">Wysłano „%1$s” do zegarka</string>
+    <string name="send_to_watch">Wyślij do zegarka</string>
+    <string name="delete_from_watch">Usuń z zegarka</string>
+    <string name="deleted_from_watch">Usunięto „%1$s” z zegarka</string>
+    <string name="remove_from_list">Usuń z listy</string>
     <string name="settings_speed">Prędkość</string>
     <string name="settings_conversion">Konwersja</string>
     <string name="default_speed">Domyślna prędkość</string>

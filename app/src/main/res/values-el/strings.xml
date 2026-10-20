@@ -43,6 +43,10 @@
     <string name="removed_one">Αφαιρέθηκε: «%1$s»</string>
     <string name="on_watch">στο ρολόι</string>
     <string name="sent_to_watch">Το «%1$s» στάλθηκε στο ρολόι</string>
+    <string name="send_to_watch">Αποστολή στο ρολόι</string>
+    <string name="delete_from_watch">Διαγραφή από το ρολόι</string>
+    <string name="deleted_from_watch">Το «%1$s» διαγράφηκε από το ρολόι</string>
+    <string name="remove_from_list">Αφαίρεση από τη λίστα</string>
     <string name="settings_speed">Ταχύτητα</string>
     <string name="settings_conversion">Μετατροπή</string>
     <string name="default_speed">Προεπιλεγμένη ταχύτητα</string>

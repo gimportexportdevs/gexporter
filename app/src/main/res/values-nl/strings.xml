@@ -43,6 +43,10 @@
     <string name="removed_one">‘%1$s’ verwijderd</string>
     <string name="on_watch">op het horloge</string>
     <string name="sent_to_watch">‘%1$s’ naar het horloge gestuurd</string>
+    <string name="send_to_watch">Naar het horloge sturen</string>
+    <string name="delete_from_watch">Verwijderen van het horloge</string>
+    <string name="deleted_from_watch">‘%1$s’ verwijderd van het horloge</string>
+    <string name="remove_from_list">Uit de lijst verwijderen</string>
     <string name="settings_speed">Snelheid</string>
     <string name="settings_conversion">Conversie</string>
     <string name="default_speed">Standaardsnelheid</string>

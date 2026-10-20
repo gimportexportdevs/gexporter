@@ -43,6 +43,10 @@
     <string name="removed_one">«%1$s» вилучено</string>
     <string name="on_watch">на годиннику</string>
     <string name="sent_to_watch">«%1$s» надіслано на годинник</string>
+    <string name="send_to_watch">Надіслати на годинник</string>
+    <string name="delete_from_watch">Видалити з годинника</string>
+    <string name="deleted_from_watch">«%1$s» видалено з годинника</string>
+    <string name="remove_from_list">Вилучити зі списку</string>
     <string name="settings_speed">Швидкість</string>
     <string name="settings_conversion">Перетворення</string>
     <string name="default_speed">Типова швидкість</string>

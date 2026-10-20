@@ -43,6 +43,10 @@
     <string name="removed_one">تمت إزالة «%1$s»</string>
     <string name="on_watch">على الساعة</string>
     <string name="sent_to_watch">تم إرسال «%1$s» إلى الساعة</string>
+    <string name="send_to_watch">إرسال إلى الساعة</string>
+    <string name="delete_from_watch">حذف من الساعة</string>
+    <string name="deleted_from_watch">تم حذف «%1$s» من الساعة</string>
+    <string name="remove_from_list">إزالة من القائمة</string>
     <string name="settings_speed">السرعة</string>
     <string name="settings_conversion">التحويل</string>
     <string name="default_speed">السرعة الافتراضية</string>

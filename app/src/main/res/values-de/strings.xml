@@ -43,6 +43,10 @@
     <string name="removed_one">„%1$s“ entfernt</string>
     <string name="on_watch">auf der Uhr</string>
     <string name="sent_to_watch">„%1$s“ an die Uhr geschickt</string>
+    <string name="send_to_watch">An die Uhr senden</string>
+    <string name="delete_from_watch">Von der Uhr löschen</string>
+    <string name="deleted_from_watch">„%1$s“ von der Uhr gelöscht</string>
+    <string name="remove_from_list">Aus der Liste entfernen</string>
     <string name="settings_speed">Geschwindigkeit</string>
     <string name="settings_conversion">Umwandlung</string>
     <string name="default_speed">Standardgeschwindigkeit</string>

@@ -43,6 +43,10 @@
     <string name="removed_one">„%1$s“ odebráno</string>
     <string name="on_watch">v hodinkách</string>
     <string name="sent_to_watch">„%1$s“ odesláno do hodinek</string>
+    <string name="send_to_watch">Odeslat do hodinek</string>
+    <string name="delete_from_watch">Smazat z hodinek</string>
+    <string name="deleted_from_watch">„%1$s“ smazáno z hodinek</string>
+    <string name="remove_from_list">Odebrat ze seznamu</string>
     <string name="settings_speed">Rychlost</string>
     <string name="settings_conversion">Převod</string>
     <string name="default_speed">Výchozí rychlost</string>
