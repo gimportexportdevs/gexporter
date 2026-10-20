@@ -48,6 +48,7 @@
     <string name="more_options">その他のオプション</string>
     <string name="watch_importing">ウォッチが「%1$s」を読み込み中…</string>
     <string name="watch_started">「%1$s」がウォッチで実行中</string>
+    <string name="watch_imported">「%1$s」はウォッチにあります。ウォッチでStartを押してください</string>
     <string name="watch_import_failed">ウォッチで「%1$s」のインポートに失敗しました</string>
     <string name="watch_busy">ウォッチはまだ「%1$s」を処理中です</string>
     <string name="settings_speed">速度</string>

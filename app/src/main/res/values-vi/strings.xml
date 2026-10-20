@@ -48,6 +48,7 @@
     <string name="more_options">Tùy chọn khác</string>
     <string name="watch_importing">Đồng hồ đang tải “%1$s” …</string>
     <string name="watch_started">“%1$s” đang chạy trên đồng hồ</string>
+    <string name="watch_imported">“%1$s” đã có trên đồng hồ, hãy nhấn Start trên đó</string>
     <string name="watch_import_failed">Nhập “%1$s” vào đồng hồ thất bại</string>
     <string name="watch_busy">Đồng hồ vẫn đang bận với “%1$s”</string>
     <string name="settings_speed">Tốc độ</string>

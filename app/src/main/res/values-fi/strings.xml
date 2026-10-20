@@ -48,6 +48,7 @@
     <string name="more_options">Lisää vaihtoehtoja</string>
     <string name="watch_importing">Kello lataa ”%1$s” …</string>
     <string name="watch_started">”%1$s” on käynnissä kellossa</string>
+    <string name="watch_imported">”%1$s” on kellossa, paina siellä Start</string>
     <string name="watch_import_failed">”%1$s” tuonti kelloon epäonnistui</string>
     <string name="watch_busy">Kello on vielä varattu: ”%1$s”</string>
     <string name="settings_speed">Nopeus</string>

@@ -48,6 +48,7 @@
     <string name="more_options">Mai multe opțiuni</string>
     <string name="watch_importing">Ceasul încarcă „%1$s” …</string>
     <string name="watch_started">„%1$s” rulează pe ceas</string>
+    <string name="watch_imported">„%1$s” este pe ceas, apăsați Start acolo</string>
     <string name="watch_import_failed">Importul „%1$s” pe ceas a eșuat</string>
     <string name="watch_busy">Ceasul este încă ocupat cu „%1$s”</string>
     <string name="settings_speed">Viteză</string>

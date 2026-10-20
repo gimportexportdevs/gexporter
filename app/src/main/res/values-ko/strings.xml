@@ -48,6 +48,7 @@
     <string name="more_options">옵션 더보기</string>
     <string name="watch_importing">시계가 ‘%1$s’을(를) 불러오는 중…</string>
     <string name="watch_started">‘%1$s’이(가) 시계에서 실행 중</string>
+    <string name="watch_imported">‘%1$s’이(가) 시계에 있습니다. 시계에서 Start를 누르세요</string>
     <string name="watch_import_failed">시계에서 ‘%1$s’ 가져오기 실패</string>
     <string name="watch_busy">시계가 아직 ‘%1$s’을(를) 처리 중입니다</string>
     <string name="settings_speed">속도</string>

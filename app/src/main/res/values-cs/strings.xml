@@ -48,6 +48,7 @@
     <string name="more_options">Další možnosti</string>
     <string name="watch_importing">Hodinky načítají „%1$s“ …</string>
     <string name="watch_started">„%1$s“ běží v hodinkách</string>
+    <string name="watch_imported">„%1$s“ je v hodinkách, stiskněte tam Start</string>
     <string name="watch_import_failed">Import „%1$s“ v hodinkách selhal</string>
     <string name="watch_busy">Hodinky jsou ještě zaneprázdněné s „%1$s“</string>
     <string name="settings_speed">Rychlost</string>

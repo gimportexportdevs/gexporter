@@ -48,6 +48,7 @@
     <string name="more_options">خيارات إضافية</string>
     <string name="watch_importing">الساعة تحمّل «%1$s» …</string>
     <string name="watch_started">«%1$s» يعمل على الساعة</string>
+    <string name="watch_imported">«%1$s» على الساعة، اضغط Start هناك</string>
     <string name="watch_import_failed">فشل استيراد «%1$s» على الساعة</string>
     <string name="watch_busy">الساعة لا تزال مشغولة بـ «%1$s»</string>
     <string name="settings_speed">السرعة</string>

@@ -309,6 +309,9 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
             case "importing":
                 setStatusText(getString(R.string.watch_importing, title));
                 break;
+            case "imported":
+                setStatusText(getString(R.string.watch_imported, title));
+                break;
             case "started":
                 setStatusText(getString(R.string.watch_started, title));
                 break;

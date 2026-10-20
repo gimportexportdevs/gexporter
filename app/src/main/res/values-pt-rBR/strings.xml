@@ -48,6 +48,7 @@
     <string name="more_options">Mais opções</string>
     <string name="watch_importing">O relógio está carregando “%1$s” …</string>
     <string name="watch_started">“%1$s” está em execução no relógio</string>
+    <string name="watch_imported">“%1$s” está no relógio, pressione Start nele</string>
     <string name="watch_import_failed">A importação de “%1$s” falhou no relógio</string>
     <string name="watch_busy">O relógio ainda está ocupado com “%1$s”</string>
     <string name="settings_speed">Velocidade</string>

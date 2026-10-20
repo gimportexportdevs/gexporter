@@ -48,6 +48,7 @@
     <string name="more_options">Diğer seçenekler</string>
     <string name="watch_importing">Saat “%1$s” yüklüyor …</string>
     <string name="watch_started">“%1$s” saatte çalışıyor</string>
+    <string name="watch_imported">“%1$s” saatte, orada Start\'a basın</string>
     <string name="watch_import_failed">“%1$s” saate aktarılamadı</string>
     <string name="watch_busy">Saat hâlâ “%1$s” ile meşgul</string>
     <string name="settings_speed">Hız</string>

@@ -48,6 +48,7 @@
     <string name="more_options">ตัวเลือกเพิ่มเติม</string>
     <string name="watch_importing">นาฬิกากำลังโหลด “%1$s” …</string>
     <string name="watch_started">“%1$s” กำลังทำงานบนนาฬิกา</string>
+    <string name="watch_imported">“%1$s” อยู่บนนาฬิกาแล้ว กด Start ที่นาฬิกา</string>
     <string name="watch_import_failed">นำเข้า “%1$s” บนนาฬิกาไม่สำเร็จ</string>
     <string name="watch_busy">นาฬิกายังทำงานกับ “%1$s” อยู่</string>
     <string name="settings_speed">ความเร็ว</string>

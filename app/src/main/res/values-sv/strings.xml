@@ -48,6 +48,7 @@
     <string name="more_options">Fler alternativ</string>
     <string name="watch_importing">Klockan läser in ”%1$s” …</string>
     <string name="watch_started">”%1$s” körs på klockan</string>
+    <string name="watch_imported">”%1$s” finns på klockan, tryck på Start där</string>
     <string name="watch_import_failed">Import av ”%1$s” misslyckades på klockan</string>
     <string name="watch_busy">Klockan är fortfarande upptagen med ”%1$s”</string>
     <string name="settings_speed">Hastighet</string>

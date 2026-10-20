@@ -48,6 +48,7 @@
     <string name="more_options">Plus d\'options</string>
     <string name="watch_importing">La montre charge « %1$s » …</string>
     <string name="watch_started">« %1$s » est lancé sur la montre</string>
+    <string name="watch_imported">« %1$s » est sur la montre, appuyez sur Start</string>
     <string name="watch_import_failed">L\'import de « %1$s » a échoué sur la montre</string>
     <string name="watch_busy">La montre est encore occupée avec « %1$s »</string>
     <string name="settings_speed">Vitesse</string>

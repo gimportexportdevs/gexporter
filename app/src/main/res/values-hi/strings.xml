@@ -48,6 +48,7 @@
     <string name="more_options">अधिक विकल्प</string>
     <string name="watch_importing">घड़ी “%1$s” लोड कर रही है …</string>
     <string name="watch_started">“%1$s” घड़ी पर चल रहा है</string>
+    <string name="watch_imported">“%1$s” घड़ी पर है, वहाँ Start दबाएँ</string>
     <string name="watch_import_failed">घड़ी पर “%1$s” आयात विफल रहा</string>
     <string name="watch_busy">घड़ी अभी “%1$s” में व्यस्त है</string>
     <string name="settings_speed">गति</string>

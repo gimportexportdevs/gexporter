@@ -48,6 +48,7 @@
     <string name="more_options">Інші параметри</string>
     <string name="watch_importing">Годинник завантажує «%1$s» …</string>
     <string name="watch_started">«%1$s» запущено на годиннику</string>
+    <string name="watch_imported">«%1$s» на годиннику, натисніть там Start</string>
     <string name="watch_import_failed">Не вдалося імпортувати «%1$s» на годинник</string>
     <string name="watch_busy">Годинник ще зайнятий «%1$s»</string>
     <string name="settings_speed">Швидкість</string>

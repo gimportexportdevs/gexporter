@@ -48,6 +48,7 @@
     <string name="more_options">Więcej opcji</string>
     <string name="watch_importing">Zegarek wczytuje „%1$s” …</string>
     <string name="watch_started">„%1$s” działa w zegarku</string>
+    <string name="watch_imported">„%1$s” jest w zegarku, naciśnij tam Start</string>
     <string name="watch_import_failed">Import „%1$s” w zegarku nie powiódł się</string>
     <string name="watch_busy">Zegarek jest jeszcze zajęty „%1$s”</string>
     <string name="settings_speed">Prędkość</string>

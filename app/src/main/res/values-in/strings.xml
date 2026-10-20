@@ -48,6 +48,7 @@
     <string name="more_options">Opsi lainnya</string>
     <string name="watch_importing">Jam sedang memuat “%1$s” …</string>
     <string name="watch_started">“%1$s” berjalan di jam</string>
+    <string name="watch_imported">“%1$s” ada di jam, tekan Start di sana</string>
     <string name="watch_import_failed">Impor “%1$s” di jam gagal</string>
     <string name="watch_busy">Jam masih sibuk dengan “%1$s”</string>
     <string name="settings_speed">Kecepatan</string>

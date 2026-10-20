@@ -48,6 +48,7 @@
     <string name="more_options">Flere muligheder</string>
     <string name="watch_importing">Uret indlæser “%1$s” …</string>
     <string name="watch_started">“%1$s” kører på uret</string>
+    <string name="watch_imported">“%1$s” er på uret, tryk på Start der</string>
     <string name="watch_import_failed">Import af “%1$s” mislykkedes på uret</string>
     <string name="watch_busy">Uret er stadig optaget af “%1$s”</string>
     <string name="settings_speed">Hastighed</string>

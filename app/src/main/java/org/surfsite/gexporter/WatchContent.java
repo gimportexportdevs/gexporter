@@ -25,7 +25,7 @@ import java.util.Map;
  * phone → watch  {"type": "track", "url": file, "title": file, "port": n, "hash": fingerprint,
  *                  "time": epochSeconds}
  * watch → phone  {"type": "content", "items": [[kind, name, id, fingerprint], ...]}
- * watch → phone  {"type": "status", "state": "ready"|"importing"|"started"|"failed", "title": track}
+ * watch → phone  {"type": "status", "state": "ready"|"importing"|"imported"|"started"|"failed", "title": track}
  * </pre>
  */
 final class WatchContent {

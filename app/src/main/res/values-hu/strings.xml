@@ -48,6 +48,7 @@
     <string name="more_options">További lehetőségek</string>
     <string name="watch_importing">Az óra betölti: „%1$s” …</string>
     <string name="watch_started">„%1$s” fut az órán</string>
+    <string name="watch_imported">„%1$s” az órán van, ott nyomja meg a Start gombot</string>
     <string name="watch_import_failed">„%1$s” importálása nem sikerült az órán</string>
     <string name="watch_busy">Az óra még ezzel foglalkozik: „%1$s”</string>
     <string name="settings_speed">Sebesség</string>

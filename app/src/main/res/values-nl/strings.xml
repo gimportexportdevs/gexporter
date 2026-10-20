@@ -48,6 +48,7 @@
     <string name="more_options">Meer opties</string>
     <string name="watch_importing">Het horloge laadt ‘%1$s’ …</string>
     <string name="watch_started">‘%1$s’ loopt op het horloge</string>
+    <string name="watch_imported">‘%1$s’ staat op het horloge, druk daar op Start</string>
     <string name="watch_import_failed">Importeren van ‘%1$s’ op het horloge mislukt</string>
     <string name="watch_busy">Het horloge is nog bezig met ‘%1$s’</string>
     <string name="settings_speed">Snelheid</string>

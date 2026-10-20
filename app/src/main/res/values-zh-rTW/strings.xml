@@ -48,6 +48,7 @@
     <string name="more_options">更多選項</string>
     <string name="watch_importing">手錶正在載入「%1$s」…</string>
     <string name="watch_started">「%1$s」正在手錶上執行</string>
+    <string name="watch_imported">「%1$s」已在手錶上，請在手錶上按 Start</string>
     <string name="watch_import_failed">在手錶上匯入「%1$s」失敗</string>
     <string name="watch_busy">手錶仍在處理「%1$s」</string>
     <string name="settings_speed">速度</string>
