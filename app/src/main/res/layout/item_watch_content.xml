@@ -47,11 +47,21 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="4dp"
         android:contentDescription="@string/on_watch"
         android:src="@drawable/ic_watch"
         android:visibility="gone"
         app:tint="?attr/colorPrimary" />
+
+    <!-- main screen: the entry's menu (send, delete from watch, remove) -->
+    <ImageButton
+        android:id="@+id/item_more"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/more_options"
+        android:src="@drawable/ic_more_vert"
+        android:visibility="gone" />
 
     <!-- shown in selection mode; the whole row toggles it -->
     <com.google.android.material.checkbox.MaterialCheckBox

@@ -47,6 +47,7 @@
     <string name="delete_from_watch">Verwijderen van het horloge</string>
     <string name="deleted_from_watch">‘%1$s’ verwijderd van het horloge</string>
     <string name="remove_from_list">Uit de lijst verwijderen</string>
+    <string name="more_options">Meer opties</string>
     <string name="settings_speed">Snelheid</string>
     <string name="settings_conversion">Conversie</string>
     <string name="default_speed">Standaardsnelheid</string>

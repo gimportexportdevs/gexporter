@@ -47,6 +47,7 @@
     <string name="delete_from_watch">حذف من الساعة</string>
     <string name="deleted_from_watch">تم حذف «%1$s» من الساعة</string>
     <string name="remove_from_list">إزالة من القائمة</string>
+    <string name="more_options">خيارات إضافية</string>
     <string name="settings_speed">السرعة</string>
     <string name="settings_conversion">التحويل</string>
     <string name="default_speed">السرعة الافتراضية</string>

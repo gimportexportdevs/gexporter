@@ -47,6 +47,7 @@
     <string name="delete_from_watch">Eliminar del reloj</string>
     <string name="deleted_from_watch">«%1$s» eliminado del reloj</string>
     <string name="remove_from_list">Quitar de la lista</string>
+    <string name="more_options">Más opciones</string>
     <string name="settings_speed">Velocidad</string>
     <string name="settings_conversion">Conversión</string>
     <string name="default_speed">Velocidad predeterminada</string>

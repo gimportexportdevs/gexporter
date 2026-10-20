@@ -47,6 +47,7 @@
     <string name="delete_from_watch">從手錶刪除</string>
     <string name="deleted_from_watch">已從手錶刪除「%1$s」</string>
     <string name="remove_from_list">從清單移除</string>
+    <string name="more_options">更多選項</string>
     <string name="settings_speed">速度</string>
     <string name="settings_conversion">轉換</string>
     <string name="default_speed">預設速度</string>

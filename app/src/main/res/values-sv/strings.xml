@@ -47,6 +47,7 @@
     <string name="delete_from_watch">Radera från klockan</string>
     <string name="deleted_from_watch">”%1$s” raderad från klockan</string>
     <string name="remove_from_list">Ta bort från listan</string>
+    <string name="more_options">Fler alternativ</string>
     <string name="settings_speed">Hastighet</string>
     <string name="settings_conversion">Konvertering</string>
     <string name="default_speed">Standardhastighet</string>

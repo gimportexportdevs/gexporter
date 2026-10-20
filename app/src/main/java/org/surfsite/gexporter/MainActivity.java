@@ -1116,7 +1116,7 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
                 .show();
     }
 
-    /** Long press: everything that can be done with an entry. */
+    /** The ⋮ menu of an entry (also on long press): everything that can be done with it. */
     private void showEntryMenu(View anchor, ServedFiles.Entry entry) {
         PopupMenu menu = new PopupMenu(this, anchor);
         menu.getMenu().add(0, R.id.menu_send_to_watch, 0, R.string.send_to_watch);
@@ -1146,11 +1146,20 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
             final TextView name;
             final TextView detail;
             final ImageView onWatch;
+            final View more;
 
             Holder(View v) {
                 super(v);
                 icon = v.findViewById(R.id.item_icon);
                 onWatch = v.findViewById(R.id.item_on_watch);
+                more = v.findViewById(R.id.item_more);
+                more.setVisibility(View.VISIBLE);
+                more.setOnClickListener(x -> {
+                    int pos = getBindingAdapterPosition();
+                    if (pos != RecyclerView.NO_POSITION) {
+                        showEntryMenu(more, mServed.get(pos));
+                    }
+                });
                 name = v.findViewById(R.id.item_name);
                 detail = v.findViewById(R.id.item_kind);
                 v.setOnClickListener(x -> {
@@ -1159,12 +1168,13 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
                         sendToWatch(mServed.get(pos));
                     }
                 });
+                // shortcut to the ⋮ menu
                 v.setOnLongClickListener(x -> {
                     int pos = getBindingAdapterPosition();
                     if (pos == RecyclerView.NO_POSITION) {
                         return false;
                     }
-                    showEntryMenu(x, mServed.get(pos));
+                    showEntryMenu(more, mServed.get(pos));
                     return true;
                 });
             }

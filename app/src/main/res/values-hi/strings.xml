@@ -47,6 +47,7 @@
     <string name="delete_from_watch">घड़ी से हटाएँ</string>
     <string name="deleted_from_watch">“%1$s” घड़ी से हटाया गया</string>
     <string name="remove_from_list">सूची से हटाएँ</string>
+    <string name="more_options">अधिक विकल्प</string>
     <string name="settings_speed">गति</string>
     <string name="settings_conversion">रूपांतरण</string>
     <string name="default_speed">डिफ़ॉल्ट गति</string>

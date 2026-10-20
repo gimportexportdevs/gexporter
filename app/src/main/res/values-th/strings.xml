@@ -47,6 +47,7 @@
     <string name="delete_from_watch">ลบออกจากนาฬิกา</string>
     <string name="deleted_from_watch">ลบ “%1$s” ออกจากนาฬิกาแล้ว</string>
     <string name="remove_from_list">นำออกจากรายการ</string>
+    <string name="more_options">ตัวเลือกเพิ่มเติม</string>
     <string name="settings_speed">ความเร็ว</string>
     <string name="settings_conversion">การแปลง</string>
     <string name="default_speed">ความเร็วเริ่มต้น</string>

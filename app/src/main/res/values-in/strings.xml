@@ -47,6 +47,7 @@
     <string name="delete_from_watch">Hapus dari jam</string>
     <string name="deleted_from_watch">“%1$s” dihapus dari jam</string>
     <string name="remove_from_list">Hapus dari daftar</string>
+    <string name="more_options">Opsi lainnya</string>
     <string name="settings_speed">Kecepatan</string>
     <string name="settings_conversion">Konversi</string>
     <string name="default_speed">Kecepatan default</string>
