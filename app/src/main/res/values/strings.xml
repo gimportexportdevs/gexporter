@@ -22,6 +22,7 @@
     <string name="waiting_for_watch">Waiting for gimporter on the watch…</string>
     <string name="watch_no_answer">The watch does not answer. Open gimporter on the watch and try again.</string>
     <string name="watch_no_content">No tracks or locations from gimporter on the watch.</string>
+    <string name="widget_hint">Tracks downloaded with the gimporter widget appear once you open the widget on the watch.</string>
     <string name="watch_not_connected">No watch with gimporter connected.</string>
     <string name="kind_track">Track</string>
     <string name="kind_location">Location</string>

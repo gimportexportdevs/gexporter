@@ -20,6 +20,7 @@
     <string name="waiting_for_watch">시계의 gimporter를 기다리는 중…</string>
     <string name="watch_no_answer">시계가 응답하지 않습니다. 시계에서 gimporter를 열고 다시 시도하세요.</string>
     <string name="watch_no_content">시계에 gimporter 트랙이나 위치가 없습니다.</string>
+    <string name="widget_hint">gimporter 위젯으로 다운로드한 트랙은 시계에서 위젯을 열면 표시됩니다.</string>
     <string name="watch_not_connected">gimporter가 있는 시계가 연결되어 있지 않습니다.</string>
     <string name="kind_track">트랙</string>
     <string name="kind_location">위치</string>

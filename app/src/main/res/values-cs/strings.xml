@@ -20,6 +20,7 @@
     <string name="waiting_for_watch">Čekání na gimporter v hodinkách…</string>
     <string name="watch_no_answer">Hodinky neodpovídají. Otevřete v hodinkách gimporter a zkuste to znovu.</string>
     <string name="watch_no_content">V hodinkách nejsou žádné trasy ani místa z gimporteru.</string>
+    <string name="widget_hint">Trasy stažené widgetem gimporter se zobrazí, jakmile widget v hodinkách otevřete.</string>
     <string name="watch_not_connected">Nejsou připojené žádné hodinky s gimporterem.</string>
     <string name="kind_track">Trasa</string>
     <string name="kind_location">Místo</string>

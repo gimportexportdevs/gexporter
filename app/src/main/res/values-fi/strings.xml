@@ -20,6 +20,7 @@
     <string name="waiting_for_watch">Odotetaan gimporteria kellossa…</string>
     <string name="watch_no_answer">Kello ei vastaa. Avaa gimporter kellossa ja yritä uudelleen.</string>
     <string name="watch_no_content">Kellossa ei ole gimporterin reittejä tai sijainteja.</string>
+    <string name="widget_hint">gimporter-widgetillä ladatut reitit näkyvät, kun avaat widgetin kellossa.</string>
     <string name="watch_not_connected">Gimporteria käyttävää kelloa ei ole yhdistetty.</string>
     <string name="kind_track">Reitti</string>
     <string name="kind_location">Sijainti</string>

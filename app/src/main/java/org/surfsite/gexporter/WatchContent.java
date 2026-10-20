@@ -22,13 +22,16 @@ final class WatchContent {
     private WatchContent() {
     }
 
-    /** One course, track, route or waypoint stored by gimporter. */
+    /** One course, track, route or waypoint stored by gimporter's app or widget. */
     static final class Item {
+        /** WatchLink.ownerOf() of the app or widget that stored it */
+        final String owner;
         final String kind;
         final String name;
         final int id;
 
-        Item(String kind, String name, int id) {
+        Item(String owner, String kind, String name, int id) {
+            this.owner = owner;
             this.kind = kind;
             this.name = name;
             this.id = id;
@@ -36,6 +39,11 @@ final class WatchContent {
 
         boolean isLocation() {
             return "waypoint".equals(kind);
+        }
+
+        /** ids are only unique per kind and per owner */
+        boolean sameAs(Item other) {
+            return id == other.id && kind.equals(other.kind) && owner.equals(other.owner);
         }
     }
 
@@ -65,7 +73,7 @@ final class WatchContent {
      * The items of a "content" reply, or null if the message is something
      * else. Malformed entries are skipped.
      */
-    static List<Item> parseContent(Object message) {
+    static List<Item> parseContent(Object message, String owner) {
         if (!(message instanceof Map)) {
             return null;
         }
@@ -84,7 +92,7 @@ final class WatchContent {
             }
             List<?> e = (List<?>) entry;
             if (e.get(0) instanceof String && e.get(1) instanceof String && e.get(2) instanceof Number) {
-                result.add(new Item((String) e.get(0), (String) e.get(1), ((Number) e.get(2)).intValue()));
+                result.add(new Item(owner, (String) e.get(0), (String) e.get(1), ((Number) e.get(2)).intValue()));
             }
         }
         return result;

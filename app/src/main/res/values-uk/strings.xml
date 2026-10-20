@@ -20,6 +20,7 @@
     <string name="waiting_for_watch">Очікування gimporter на годиннику…</string>
     <string name="watch_no_answer">Годинник не відповідає. Відкрийте gimporter на годиннику та повторіть спробу.</string>
     <string name="watch_no_content">На годиннику немає маршрутів чи місць із gimporter.</string>
+    <string name="widget_hint">Маршрути, завантажені віджетом gimporter, з’являться, коли ви відкриєте віджет на годиннику.</string>
     <string name="watch_not_connected">Немає підключеного годинника з gimporter.</string>
     <string name="kind_track">Маршрут</string>
     <string name="kind_location">Місце</string>

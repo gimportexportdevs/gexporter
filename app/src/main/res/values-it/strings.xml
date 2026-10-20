@@ -20,6 +20,7 @@
     <string name="waiting_for_watch">In attesa di gimporter sull\'orologio…</string>
     <string name="watch_no_answer">L\'orologio non risponde. Apri gimporter sull\'orologio e riprova.</string>
     <string name="watch_no_content">Nessun percorso o luogo di gimporter sull\'orologio.</string>
+    <string name="widget_hint">I percorsi scaricati con il widget gimporter compaiono quando apri il widget sull\'orologio.</string>
     <string name="watch_not_connected">Nessun orologio con gimporter collegato.</string>
     <string name="kind_track">Percorso</string>
     <string name="kind_location">Luogo</string>

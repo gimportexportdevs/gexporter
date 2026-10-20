@@ -20,6 +20,7 @@
     <string name="waiting_for_watch">Đang chờ gimporter trên đồng hồ…</string>
     <string name="watch_no_answer">Đồng hồ không phản hồi. Hãy mở gimporter trên đồng hồ và thử lại.</string>
     <string name="watch_no_content">Không có tuyến đường hay vị trí nào từ gimporter trên đồng hồ.</string>
+    <string name="widget_hint">Các tuyến đường tải bằng tiện ích gimporter sẽ hiện khi bạn mở tiện ích trên đồng hồ.</string>
     <string name="watch_not_connected">Không có đồng hồ nào có gimporter được kết nối.</string>
     <string name="kind_track">Tuyến đường</string>
     <string name="kind_location">Vị trí</string>

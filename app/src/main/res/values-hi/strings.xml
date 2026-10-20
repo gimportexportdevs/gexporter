@@ -20,6 +20,7 @@
     <string name="waiting_for_watch">घड़ी पर gimporter की प्रतीक्षा…</string>
     <string name="watch_no_answer">घड़ी जवाब नहीं दे रही। घड़ी पर gimporter खोलें और फिर से प्रयास करें।</string>
     <string name="watch_no_content">घड़ी पर gimporter का कोई ट्रैक या स्थान नहीं है।</string>
+    <string name="widget_hint">gimporter विजेट से डाउनलोड किए गए ट्रैक तब दिखेंगे जब आप घड़ी पर विजेट खोलेंगे।</string>
     <string name="watch_not_connected">gimporter वाली कोई घड़ी कनेक्ट नहीं है।</string>
     <string name="kind_track">ट्रैक</string>
     <string name="kind_location">स्थान</string>

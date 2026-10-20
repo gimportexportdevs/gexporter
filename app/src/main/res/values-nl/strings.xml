@@ -20,6 +20,7 @@
     <string name="waiting_for_watch">Wachten op gimporter op het horloge…</string>
     <string name="watch_no_answer">Het horloge reageert niet. Open gimporter op het horloge en probeer het opnieuw.</string>
     <string name="watch_no_content">Geen routes of locaties van gimporter op het horloge.</string>
+    <string name="widget_hint">Routes die met de gimporter-widget zijn gedownload, verschijnen zodra je de widget op het horloge opent.</string>
     <string name="watch_not_connected">Geen horloge met gimporter verbonden.</string>
     <string name="kind_track">Route</string>
     <string name="kind_location">Locatie</string>

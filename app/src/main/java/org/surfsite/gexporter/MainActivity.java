@@ -100,7 +100,8 @@ public class MainActivity extends AppCompatActivity {
     private ConnectIQ mConnectIQ = null;
     private IQDevice mConnectedDevice = null;
     private IQApp mConnectedApp = null;
-    private final Set<Long> mRegisteredDevices = new HashSet<>();
+    // "device:app" pairs with a message listener; app and widget each need one
+    private final Set<String> mRegisteredApps = new HashSet<>();
     
     private ActivityResultLauncher<Intent> openDocumentTreeLauncher;
 
@@ -188,7 +189,8 @@ public class MainActivity extends AppCompatActivity {
                         public void onApplicationInfoReceived(IQApp app) {
                             mConnectedDevice = device;
                             mConnectedApp = app;
-                            onWatchAppFound(connectIQ, device, app);
+                            WatchLink.addApp(connectIQ, device, app, false);
+                            setWatchState(WatchState.CONNECTED, device);
 
                             // Register the GET_PORT listener as soon as we know the
                             // app is installed - independent of whether the user
@@ -207,11 +209,13 @@ public class MainActivity extends AppCompatActivity {
                             } catch (InvalidStateException | ServiceUnavailableException e) {
                                 Log.error("Error opening application", e);
                             }
+                            // The widget keeps its own tracks; it is managed too.
+                            checkWidget(connectIQ, device, true);
                         }
 
                         @Override
                         public void onApplicationNotInstalled(String applicationId) {
-                            handleAppNotInstalled(connectIQ, device);
+                            checkWidget(connectIQ, device, false);
                         }
                     });
                 }
@@ -223,33 +227,34 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /** gimporter (app or widget) is on the watch. */
-    private void onWatchAppFound(ConnectIQ connectIQ, IQDevice device, IQApp app) {
-        WatchLink.setConnection(connectIQ, device, app);
-        setWatchState(CONNECT_IQ_GIMPORTER_WIDGET.equalsIgnoreCase(app.getApplicationId())
-                ? WatchState.WIDGET_ONLY : WatchState.CONNECTED, device);
-    }
-
-    private void handleAppNotInstalled(ConnectIQ connectIQ, IQDevice device) {
+    /**
+     * Look for the gimporter widget as well: it downloads and owns content of
+     * its own. Without the app, it is also what locations and port replies go
+     * to.
+     */
+    private void checkWidget(ConnectIQ connectIQ, IQDevice device, boolean appInstalled) {
         try {
             connectIQ.getApplicationInfo(CONNECT_IQ_GIMPORTER_WIDGET, device, new ConnectIQ.IQApplicationInfoListener() {
                 @Override
-                public void onApplicationInfoReceived(IQApp app) {
-                    mConnectedDevice = device;
-                    mConnectedApp = app;
-                    onWatchAppFound(connectIQ, device, app);
-
-                    Log.info("Garmin widget {} connected to device {}",
-                            app.getApplicationId(), device.getDeviceIdentifier());
-                    registerMessageListener(connectIQ, device, app);
-                    // A widget cannot be opened from the phone; the location
-                    // waits until the user opens it.
-                    sendPendingLocation(device, app);
+                public void onApplicationInfoReceived(IQApp widget) {
+                    Log.info("Garmin widget {} on device {}", widget.getApplicationId(), device.getDeviceIdentifier());
+                    WatchLink.addApp(connectIQ, device, widget, true);
+                    registerMessageListener(connectIQ, device, widget);
+                    if (!appInstalled) {
+                        mConnectedDevice = device;
+                        mConnectedApp = widget;
+                        setWatchState(WatchState.WIDGET_ONLY, device);
+                        // A widget cannot be opened from the phone; the location
+                        // waits until the user opens it.
+                        sendPendingLocation(device, widget);
+                    }
                 }
 
                 @Override
                 public void onApplicationNotInstalled(String applicationId) {
-                    setWatchState(WatchState.NOT_INSTALLED, device);
+                    if (!appInstalled) {
+                        setWatchState(WatchState.NOT_INSTALLED, device);
+                    }
                 }
             });
         } catch (InvalidStateException | ServiceUnavailableException e) {
@@ -321,10 +326,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void registerMessageListener(ConnectIQ connectIQ, IQDevice device, IQApp app) {
         long deviceId = device.getDeviceIdentifier();
+        String key = deviceId + ":" + WatchLink.ownerOf(app);
 
-        // Only register once per device
-        if (mRegisteredDevices.contains(deviceId)) {
-            Log.debug("Device {} already registered for app events", deviceId);
+        // Only register once per device and app
+        if (!mRegisteredApps.add(key)) {
+            Log.debug("{} already registered for app events", key);
             return;
         }
 
@@ -332,10 +338,12 @@ public class MainActivity extends AppCompatActivity {
             connectIQ.registerForAppEvents(device, app, (iqDevice, iqApp, message, status) -> {
                 if (message instanceof ArrayList && !message.isEmpty()) {
                     Object firstElement = ((ArrayList<?>) message).get(0);
-                    List<WatchContent.Item> content = WatchContent.parseContent(firstElement);
+                    String owner = WatchLink.ownerOf(iqApp);
+                    List<WatchContent.Item> content = WatchContent.parseContent(firstElement, owner);
                     if (content != null) {
+                        Log.info("Watch content from {}: {} items", iqApp.getApplicationId(), content.size());
                         // for ManageWatchActivity
-                        runOnUiThread(() -> WatchLink.dispatchContent(content));
+                        runOnUiThread(() -> WatchLink.dispatchContent(owner, content));
                         return;
                     }
                     if (!(firstElement instanceof ArrayList)) {
@@ -352,10 +360,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            mRegisteredDevices.add(deviceId);
-            Log.info("Registered message listener for Garmin app on device {}", deviceId);
+            Log.info("Registered message listener for {}", key);
         } catch (InvalidStateException | ServiceUnavailableException e) {
-            Log.error("Error registering message listener for device {}", deviceId, e);
+            mRegisteredApps.remove(key);
+            Log.error("Error registering message listener for {}", key, e);
         }
     }
 
@@ -645,7 +653,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.error("Error shutting down ConnectIQ", e);
             }
         }
-        mRegisteredDevices.clear();
+        mRegisteredApps.clear();
         WatchLink.clear();
         mScanner.shutdownNow();
         super.onDestroy();

@@ -20,6 +20,7 @@
     <string name="waiting_for_watch">กำลังรอ gimporter บนนาฬิกา…</string>
     <string name="watch_no_answer">นาฬิกาไม่ตอบสนอง เปิด gimporter บนนาฬิกาแล้วลองอีกครั้ง</string>
     <string name="watch_no_content">ไม่มีเส้นทางหรือตำแหน่งจาก gimporter บนนาฬิกา</string>
+    <string name="widget_hint">เส้นทางที่ดาวน์โหลดด้วยวิดเจ็ต gimporter จะแสดงเมื่อคุณเปิดวิดเจ็ตบนนาฬิกา</string>
     <string name="watch_not_connected">ไม่มีนาฬิกาที่มี gimporter เชื่อมต่ออยู่</string>
     <string name="kind_track">เส้นทาง</string>
     <string name="kind_location">ตำแหน่ง</string>

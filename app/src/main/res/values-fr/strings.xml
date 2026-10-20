@@ -20,6 +20,7 @@
     <string name="waiting_for_watch">En attente de gimporter sur la montre…</string>
     <string name="watch_no_answer">La montre ne répond pas. Ouvrez gimporter sur la montre et réessayez.</string>
     <string name="watch_no_content">Aucun parcours ni lieu de gimporter sur la montre.</string>
+    <string name="widget_hint">Les parcours téléchargés avec le widget gimporter apparaissent dès que vous ouvrez le widget sur la montre.</string>
     <string name="watch_not_connected">Aucune montre avec gimporter connectée.</string>
     <string name="kind_track">Parcours</string>
     <string name="kind_location">Lieu</string>

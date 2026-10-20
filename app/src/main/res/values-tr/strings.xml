@@ -20,6 +20,7 @@
     <string name="waiting_for_watch">Saatteki gimporter bekleniyor…</string>
     <string name="watch_no_answer">Saat yanıt vermiyor. Saatte gimporter uygulamasını açıp tekrar deneyin.</string>
     <string name="watch_no_content">Saatte gimporter rotası veya konumu yok.</string>
+    <string name="widget_hint">gimporter widget\'ıyla indirilen rotalar, widget\'ı saatte açtığınızda görünür.</string>
     <string name="watch_not_connected">gimporter yüklü bağlı saat yok.</string>
     <string name="kind_track">Rota</string>
     <string name="kind_location">Konum</string>

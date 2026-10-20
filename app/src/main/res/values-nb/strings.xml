@@ -20,6 +20,7 @@
     <string name="waiting_for_watch">Venter på gimporter på klokken…</string>
     <string name="watch_no_answer">Klokken svarer ikke. Åpne gimporter på klokken og prøv igjen.</string>
     <string name="watch_no_content">Ingen ruter eller steder fra gimporter på klokken.</string>
+    <string name="widget_hint">Ruter lastet ned med gimporter-widgeten vises når du åpner widgeten på klokken.</string>
     <string name="watch_not_connected">Ingen klokke med gimporter er tilkoblet.</string>
     <string name="kind_track">Rute</string>
     <string name="kind_location">Sted</string>

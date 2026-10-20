@@ -20,6 +20,7 @@
     <string name="waiting_for_watch">正在等待手錶上的 gimporter…</string>
     <string name="watch_no_answer">手錶沒有回應。請在手錶上開啟 gimporter 後再試一次。</string>
     <string name="watch_no_content">手錶上沒有來自 gimporter 的路線或位置。</string>
+    <string name="widget_hint">用 gimporter 小工具下載的路線會在手錶上開啟小工具後顯示。</string>
     <string name="watch_not_connected">未連接安裝 gimporter 的手錶。</string>
     <string name="kind_track">路線</string>
     <string name="kind_location">位置</string>

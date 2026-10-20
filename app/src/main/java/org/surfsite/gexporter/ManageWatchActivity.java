@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +43,8 @@ import java.util.Set;
  * sent to the watch only once the "Undo" snackbar is gone (Material's undo
  * pattern instead of a confirmation dialog). gimporter must be running on
  * the watch to answer, so opening this screen asks the watch to open it.
+ * The gimporter widget owns the tracks it downloaded itself; it is asked as
+ * well and answers once the user opens it, which can be much later.
  */
 public class ManageWatchActivity extends AppCompatActivity implements WatchLink.Listener {
     private static final long REPLY_TIMEOUT_MS = 20000;
@@ -59,6 +62,8 @@ public class ManageWatchActivity extends AppCompatActivity implements WatchLink.
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final Runnable mTimeout = this::onTimeout;
     private final List<WatchContent.Item> mItems = new ArrayList<>();
+    // the latest reply of app and widget, each owning its own content
+    private final Map<String, List<WatchContent.Item>> mByOwner = new LinkedHashMap<>();
     // position in the watch's reply, to put undone items back in place
     private final Map<WatchContent.Item, Integer> mOrder = new IdentityHashMap<>();
     private final Set<WatchContent.Item> mSelected = new HashSet<>();
@@ -138,7 +143,7 @@ public class ManageWatchActivity extends AppCompatActivity implements WatchLink.
     }
 
     private void requestList() {
-        if (!WatchLink.send(WatchContent.listRequest())) {
+        if (!WatchLink.sendToAll(WatchContent.listRequest())) {
             showStatus(R.string.watch_not_connected, true);
             return;
         }
@@ -157,9 +162,7 @@ public class ManageWatchActivity extends AppCompatActivity implements WatchLink.
         mItems.removeAll(items);
         mSelected.removeAll(items);
         notifyListReplaced();
-        if (mItems.isEmpty()) {
-            showStatus(R.string.watch_no_content, false);
-        }
+        showContentState();
 
         String message = items.size() == 1
                 ? getString(R.string.deleted_one, items.get(0).name)
@@ -185,10 +188,8 @@ public class ManageWatchActivity extends AppCompatActivity implements WatchLink.
         mPending.remove(pending);
         mItems.addAll(pending.items);
         Collections.sort(mItems, (a, b) -> Integer.compare(order(a), order(b)));
-        mStatus.setVisibility(View.GONE);
-        mRetry.setVisibility(View.GONE);
-        mList.setVisibility(View.VISIBLE);
         notifyListReplaced();
+        showContentState();
     }
 
     private int order(WatchContent.Item item) {
@@ -202,7 +203,21 @@ public class ManageWatchActivity extends AppCompatActivity implements WatchLink.
         }
         pending.done = true;
         mPending.remove(pending);
-        if (WatchLink.send(WatchContent.deleteRequest(pending.items, System.currentTimeMillis()))) {
+        // app and widget can only delete what they stored themselves
+        Map<String, List<WatchContent.Item>> byOwner = new LinkedHashMap<>();
+        for (WatchContent.Item item : pending.items) {
+            List<WatchContent.Item> list = byOwner.get(item.owner);
+            if (list == null) {
+                list = new ArrayList<>();
+                byOwner.put(item.owner, list);
+            }
+            list.add(item);
+        }
+        boolean sent = false;
+        for (Map.Entry<String, List<WatchContent.Item>> e : byOwner.entrySet()) {
+            sent |= WatchLink.send(e.getKey(), WatchContent.deleteRequest(e.getValue(), System.currentTimeMillis()));
+        }
+        if (sent) {
             // the watch answers with the updated list
             showWaiting();
         } else {
@@ -298,41 +313,62 @@ public class ManageWatchActivity extends AppCompatActivity implements WatchLink.
     // --- watch replies ---
 
     @Override
-    public void onWatchContent(List<WatchContent.Item> items) {
-        if (!mWaiting) {
-            return;  // e.g. a late reply after a timeout was shown and retried
-        }
+    public void onWatchContent(String owner, List<WatchContent.Item> items) {
+        // Replies are merged whenever they come: the widget only answers once
+        // the user opens it on the watch, possibly long after the app.
         mWaiting = false;
         mHandler.removeCallbacks(mTimeout);
         mProgress.setVisibility(View.GONE);
         if (mActionMode != null) {
             mActionMode.finish();
         }
+        mByOwner.put(owner, items);
 
         mItems.clear();
         mOrder.clear();
-        for (int i = 0; i < items.size(); i++) {
-            WatchContent.Item item = items.get(i);
-            mOrder.put(item, i);
-            if (!isPendingDelete(item)) {
-                mItems.add(item);
+        for (List<WatchContent.Item> list : mByOwner.values()) {
+            for (WatchContent.Item item : list) {
+                mOrder.put(item, mOrder.size());
+                if (!isPendingDelete(item)) {
+                    mItems.add(item);
+                }
             }
         }
         notifyListReplaced();
+        showContentState();
+    }
+
+    /** The list, or why it is empty; plus a hint while the widget has not answered. */
+    private void showContentState() {
+        boolean widgetPending = WatchLink.hasWidget() && !widgetAnswered();
         if (mItems.isEmpty()) {
-            showStatus(R.string.watch_no_content, false);
+            showStatus(widgetPending ? R.string.widget_hint : R.string.watch_no_content, false);
+            return;
+        }
+        mList.setVisibility(View.VISIBLE);
+        mRetry.setVisibility(View.GONE);
+        if (widgetPending) {
+            mStatus.setText(R.string.widget_hint);
+            mStatus.setVisibility(View.VISIBLE);
         } else {
             mStatus.setVisibility(View.GONE);
-            mRetry.setVisibility(View.GONE);
-            mList.setVisibility(View.VISIBLE);
         }
+    }
+
+    private boolean widgetAnswered() {
+        for (String owner : mByOwner.keySet()) {
+            if (WatchLink.isWidget(owner)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Removed locally but not yet sent: keep it hidden when a fresh list arrives. */
     private boolean isPendingDelete(WatchContent.Item item) {
         for (PendingDelete pending : mPending) {
             for (WatchContent.Item p : pending.items) {
-                if (p.id == item.id && p.kind.equals(item.kind)) {
+                if (p.sameAs(item)) {
                     return true;
                 }
             }
@@ -423,7 +459,9 @@ public class ManageWatchActivity extends AppCompatActivity implements WatchLink.
             WatchContent.Item item = mItems.get(position);
             h.icon.setImageResource(item.isLocation() ? R.drawable.ic_location : R.drawable.ic_track);
             h.name.setText(item.name);
-            h.kind.setText(item.isLocation() ? R.string.kind_location : R.string.kind_track);
+            String kind = getString(item.isLocation() ? R.string.kind_location : R.string.kind_track);
+            // the widget's own downloads, deleted through the widget
+            h.kind.setText(WatchLink.isWidget(item.owner) ? kind + " · Widget" : kind);
             // checkboxes only in selection mode, as in other Android apps
             h.check.setVisibility(mActionMode != null ? View.VISIBLE : View.GONE);
             h.check.setChecked(mSelected.contains(item));

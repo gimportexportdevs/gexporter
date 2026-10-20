@@ -20,6 +20,7 @@
     <string name="waiting_for_watch">Esperando a gimporter en el reloj…</string>
     <string name="watch_no_answer">El reloj no responde. Abre gimporter en el reloj e inténtalo de nuevo.</string>
     <string name="watch_no_content">No hay rutas ni lugares de gimporter en el reloj.</string>
+    <string name="widget_hint">Las rutas descargadas con el widget de gimporter aparecen al abrir el widget en el reloj.</string>
     <string name="watch_not_connected">No hay ningún reloj con gimporter conectado.</string>
     <string name="kind_track">Ruta</string>
     <string name="kind_location">Lugar</string>

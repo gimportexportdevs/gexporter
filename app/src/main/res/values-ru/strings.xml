@@ -20,6 +20,7 @@
     <string name="waiting_for_watch">Ожидание gimporter на часах…</string>
     <string name="watch_no_answer">Часы не отвечают. Откройте gimporter на часах и повторите попытку.</string>
     <string name="watch_no_content">На часах нет треков или мест из gimporter.</string>
+    <string name="widget_hint">Треки, загруженные виджетом gimporter, появятся, когда вы откроете виджет на часах.</string>
     <string name="watch_not_connected">Нет подключённых часов с gimporter.</string>
     <string name="kind_track">Трек</string>
     <string name="kind_location">Место</string>

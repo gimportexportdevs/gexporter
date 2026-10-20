@@ -20,6 +20,7 @@
     <string name="waiting_for_watch">في انتظار gimporter على الساعة…</string>
     <string name="watch_no_answer">الساعة لا تستجيب. افتح gimporter على الساعة وحاول مرة أخرى.</string>
     <string name="watch_no_content">لا توجد مسارات أو مواقع من gimporter على الساعة.</string>
+    <string name="widget_hint">تظهر المسارات التي تم تنزيلها بأداة gimporter المصغّرة بمجرد فتح الأداة على الساعة.</string>
     <string name="watch_not_connected">لا توجد ساعة متصلة عليها gimporter.</string>
     <string name="kind_track">مسار</string>
     <string name="kind_location">موقع</string>

@@ -20,6 +20,7 @@
     <string name="waiting_for_watch">Warte auf gimporter auf der Uhr…</string>
     <string name="watch_no_answer">Die Uhr antwortet nicht. Öffne gimporter auf der Uhr und versuche es erneut.</string>
     <string name="watch_no_content">Keine Strecken oder Orte von gimporter auf der Uhr.</string>
+    <string name="widget_hint">Strecken, die das gimporter-Widget geladen hat, erscheinen, sobald du das Widget auf der Uhr öffnest.</string>
     <string name="watch_not_connected">Keine Uhr mit gimporter verbunden.</string>
     <string name="kind_track">Strecke</string>
     <string name="kind_location">Ort</string>

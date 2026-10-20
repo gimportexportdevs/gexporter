@@ -20,6 +20,7 @@
     <string name="waiting_for_watch">Venter på gimporter på uret…</string>
     <string name="watch_no_answer">Uret svarer ikke. Åbn gimporter på uret, og prøv igen.</string>
     <string name="watch_no_content">Ingen ruter eller steder fra gimporter på uret.</string>
+    <string name="widget_hint">Ruter, der er hentet med gimporter-widgetten, vises, når du åbner widgetten på uret.</string>
     <string name="watch_not_connected">Intet ur med gimporter er forbundet.</string>
     <string name="kind_track">Rute</string>
     <string name="kind_location">Sted</string>
