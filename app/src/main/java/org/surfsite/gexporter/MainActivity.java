@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
     private SharedLocation mSharedLocation;
     // Resolved before the ConnectIQ SDK found the watch app; sent once it has.
     private SharedLocation mPendingPush;
+    private static final int HELD_HINT_MS = 8000;
     private ContentResolver mCR;
 
     private ConnectIQ mConnectIQ = null;
@@ -355,10 +356,21 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
         }
         boolean sent = WatchLink.sendOrHold(message, System.currentTimeMillis());
         WatchLink.openApp();
-        Snackbar.make(findViewById(R.id.main_root),
-                        getString(sent ? R.string.sent_to_watch : R.string.held_for_watch, entry.name),
-                        Snackbar.LENGTH_LONG)
-                .setAnchorView(R.id.choose_folder).show();
+        if (sent) {
+            Snackbar.make(findViewById(R.id.main_root), getString(R.string.sent_to_watch, entry.name),
+                            Snackbar.LENGTH_LONG)
+                    .setAnchorView(R.id.choose_folder).show();
+            return;
+        }
+        // longer than the two lines and few seconds of a usual snackbar
+        Snackbar held = Snackbar.make(findViewById(R.id.main_root),
+                        getString(R.string.held_for_watch, entry.name), HELD_HINT_MS)
+                .setAnchorView(R.id.choose_folder);
+        TextView text = held.getView().findViewById(com.google.android.material.R.id.snackbar_text);
+        if (text != null) {
+            text.setMaxLines(4);
+        }
+        held.show();
     }
 
     private enum WatchState { CONNECTING, NO_DEVICE, INIT_FAILED, NOT_INSTALLED, WIDGET_ONLY, CONNECTED }

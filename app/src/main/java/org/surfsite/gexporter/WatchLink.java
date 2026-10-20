@@ -62,6 +62,8 @@ final class WatchLink {
     private static final Map<String, List<WatchContent.Item>> sLatest = new LinkedHashMap<>();
     // owners that sent a "status" or "content" message: they understand requests
     private static final Set<String> sAnswered = new HashSet<>();
+    // owners asked once whether they understand requests
+    private static final Set<String> sProbed = new HashSet<>();
     private static Map<String, Object> sHeld;
     private static long sHeldTime;
 
@@ -95,6 +97,7 @@ final class WatchLink {
         sLatest.clear();
         sStatus = null;
         sAnswered.clear();
+        sProbed.clear();
         sHeld = null;
     }
 
@@ -263,9 +266,11 @@ final class WatchLink {
             sConnectIQ.openApplication(sDevice, sApp, (device, app, status) -> {
                 Log.info("Open app: {}", status);
                 // A running gimporter does not announce itself again; ask it
-                // directly. An older one treats this like a stray port reply.
+                // directly, once: an older one keeps the request in its
+                // mailbox and takes it for a port reply later.
                 if (status == ConnectIQ.IQOpenApplicationStatus.APP_IS_ALREADY_RUNNING
-                        && sHeld != null && !sAnswered.contains(ownerOf(app))) {
+                        && sHeld != null && !sAnswered.contains(ownerOf(app))
+                        && sProbed.add(ownerOf(app))) {
                     send(app, WatchContent.listRequest());
                 }
             });
