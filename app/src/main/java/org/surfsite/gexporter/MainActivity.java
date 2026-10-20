@@ -302,8 +302,34 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
         mServedAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void onWatchStatus(WatchContent.Status status) {
+        String title = status.title.isEmpty() ? getString(R.string.watch_generic) : ServedFiles.withoutExtension(status.title);
+        switch (status.state) {
+            case "importing":
+                setStatusText(getString(R.string.watch_importing, title));
+                break;
+            case "started":
+                setStatusText(getString(R.string.watch_started, title));
+                break;
+            case "failed":
+                setStatusText(getString(R.string.watch_import_failed, title));
+                break;
+            default:
+                setStatusText(null);
+                break;
+        }
+    }
+
     /** Tapping an entry: gimporter downloads the track, or navigates to the location, right away. */
     private void sendToWatch(ServedFiles.Entry entry) {
+        String busy = WatchLink.busyWith(System.currentTimeMillis());
+        if (busy != null) {
+            Snackbar.make(findViewById(R.id.main_root),
+                            getString(R.string.watch_busy, ServedFiles.withoutExtension(busy)), Snackbar.LENGTH_LONG)
+                    .setAnchorView(R.id.choose_folder).show();
+            return;
+        }
         Map<String, Object> message;
         if (entry.location) {
             message = new SharedLocation(entry.name, entry.lat, entry.lon).toWatchMessage(System.currentTimeMillis());
@@ -405,6 +431,13 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
             connectIQ.registerForAppEvents(device, app, (iqDevice, iqApp, message, status) -> {
                 if (message instanceof ArrayList && !message.isEmpty()) {
                     Object firstElement = ((ArrayList<?>) message).get(0);
+                    WatchContent.Status watchStatus = WatchContent.parseStatus(firstElement);
+                    if (watchStatus != null) {
+                        Log.info("Watch status from {}: {} {}", iqApp.getApplicationId(),
+                                watchStatus.state, watchStatus.title);
+                        runOnUiThread(() -> WatchLink.dispatchStatus(watchStatus, System.currentTimeMillis()));
+                        return;
+                    }
                     String owner = WatchLink.ownerOf(iqApp);
                     List<WatchContent.Item> content = WatchContent.parseContent(firstElement, owner);
                     if (content != null) {
@@ -1009,7 +1042,11 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
 
     /** A line under the list title for progress and problems; 0 hides it. */
     private void setStatus(int text) {
-        if (text == 0) {
+        setStatusText(text == 0 ? null : getString(text));
+    }
+
+    private void setStatusText(@Nullable CharSequence text) {
+        if (text == null) {
             mStatusText.setVisibility(View.GONE);
         } else {
             mStatusText.setText(text);

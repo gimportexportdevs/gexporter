@@ -46,6 +46,10 @@
     <string name="delete_from_watch">Видалити з годинника</string>
     <string name="deleted_from_watch">«%1$s» видалено з годинника</string>
     <string name="more_options">Інші параметри</string>
+    <string name="watch_importing">Годинник завантажує «%1$s» …</string>
+    <string name="watch_started">«%1$s» запущено на годиннику</string>
+    <string name="watch_import_failed">Не вдалося імпортувати «%1$s» на годинник</string>
+    <string name="watch_busy">Годинник ще зайнятий «%1$s»</string>
     <string name="settings_speed">Швидкість</string>
     <string name="settings_conversion">Перетворення</string>
     <string name="default_speed">Типова швидкість</string>

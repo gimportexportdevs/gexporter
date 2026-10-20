@@ -46,6 +46,10 @@
     <string name="delete_from_watch">Удалить с часов</string>
     <string name="deleted_from_watch">«%1$s» удалено с часов</string>
     <string name="more_options">Другие параметры</string>
+    <string name="watch_importing">Часы загружают «%1$s» …</string>
+    <string name="watch_started">«%1$s» запущено на часах</string>
+    <string name="watch_import_failed">Не удалось импортировать «%1$s» на часы</string>
+    <string name="watch_busy">Часы ещё заняты «%1$s»</string>
     <string name="settings_speed">Скорость</string>
     <string name="settings_conversion">Преобразование</string>
     <string name="default_speed">Скорость по умолчанию</string>

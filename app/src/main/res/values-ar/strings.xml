@@ -46,6 +46,10 @@
     <string name="delete_from_watch">حذف من الساعة</string>
     <string name="deleted_from_watch">تم حذف «%1$s» من الساعة</string>
     <string name="more_options">خيارات إضافية</string>
+    <string name="watch_importing">الساعة تحمّل «%1$s» …</string>
+    <string name="watch_started">«%1$s» يعمل على الساعة</string>
+    <string name="watch_import_failed">فشل استيراد «%1$s» على الساعة</string>
+    <string name="watch_busy">الساعة لا تزال مشغولة بـ «%1$s»</string>
     <string name="settings_speed">السرعة</string>
     <string name="settings_conversion">التحويل</string>
     <string name="default_speed">السرعة الافتراضية</string>

@@ -46,6 +46,10 @@
     <string name="delete_from_watch">Usuń z zegarka</string>
     <string name="deleted_from_watch">Usunięto „%1$s” z zegarka</string>
     <string name="more_options">Więcej opcji</string>
+    <string name="watch_importing">Zegarek wczytuje „%1$s” …</string>
+    <string name="watch_started">„%1$s” działa w zegarku</string>
+    <string name="watch_import_failed">Import „%1$s” w zegarku nie powiódł się</string>
+    <string name="watch_busy">Zegarek jest jeszcze zajęty „%1$s”</string>
     <string name="settings_speed">Prędkość</string>
     <string name="settings_conversion">Konwersja</string>
     <string name="default_speed">Domyślna prędkość</string>

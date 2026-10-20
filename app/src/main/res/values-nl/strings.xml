@@ -46,6 +46,10 @@
     <string name="delete_from_watch">Verwijderen van het horloge</string>
     <string name="deleted_from_watch">‘%1$s’ verwijderd van het horloge</string>
     <string name="more_options">Meer opties</string>
+    <string name="watch_importing">Het horloge laadt ‘%1$s’ …</string>
+    <string name="watch_started">‘%1$s’ loopt op het horloge</string>
+    <string name="watch_import_failed">Importeren van ‘%1$s’ op het horloge mislukt</string>
+    <string name="watch_busy">Het horloge is nog bezig met ‘%1$s’</string>
     <string name="settings_speed">Snelheid</string>
     <string name="settings_conversion">Conversie</string>
     <string name="default_speed">Standaardsnelheid</string>

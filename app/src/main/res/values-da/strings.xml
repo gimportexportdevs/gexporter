@@ -46,6 +46,10 @@
     <string name="delete_from_watch">Slet fra uret</string>
     <string name="deleted_from_watch">“%1$s” slettet fra uret</string>
     <string name="more_options">Flere muligheder</string>
+    <string name="watch_importing">Uret indlæser “%1$s” …</string>
+    <string name="watch_started">“%1$s” kører på uret</string>
+    <string name="watch_import_failed">Import af “%1$s” mislykkedes på uret</string>
+    <string name="watch_busy">Uret er stadig optaget af “%1$s”</string>
     <string name="settings_speed">Hastighed</string>
     <string name="settings_conversion">Konvertering</string>
     <string name="default_speed">Standardhastighed</string>

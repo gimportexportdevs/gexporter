@@ -46,6 +46,10 @@
     <string name="delete_from_watch">Smazat z hodinek</string>
     <string name="deleted_from_watch">„%1$s“ smazáno z hodinek</string>
     <string name="more_options">Další možnosti</string>
+    <string name="watch_importing">Hodinky načítají „%1$s“ …</string>
+    <string name="watch_started">„%1$s“ běží v hodinkách</string>
+    <string name="watch_import_failed">Import „%1$s“ v hodinkách selhal</string>
+    <string name="watch_busy">Hodinky jsou ještě zaneprázdněné s „%1$s“</string>
     <string name="settings_speed">Rychlost</string>
     <string name="settings_conversion">Převod</string>
     <string name="default_speed">Výchozí rychlost</string>

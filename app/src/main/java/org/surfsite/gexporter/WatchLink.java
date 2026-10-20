@@ -30,7 +30,17 @@ final class WatchLink {
     interface Listener {
         /** @param owner the {@link #ownerOf app id} of the app or widget that answered */
         void onWatchContent(String owner, List<WatchContent.Item> items);
+
+        /** gimporter reported what it is doing */
+        default void onWatchStatus(WatchContent.Status status) {
+        }
     }
+
+    // A download on the watch normally takes seconds; a missing "started" or
+    // "failed" (app killed, connection lost) must not block sending forever.
+    private static final long BUSY_TIMEOUT_MS = 60000;
+    private static WatchContent.Status sStatus;
+    private static long sStatusTime;
 
     private static ConnectIQ sConnectIQ;
     private static IQDevice sDevice;
@@ -68,6 +78,7 @@ final class WatchLink {
         sApp = null;
         sWidget = null;
         sLatest.clear();
+        sStatus = null;
     }
 
     static boolean isConnected() {
@@ -98,6 +109,28 @@ final class WatchLink {
         for (Listener listener : new ArrayList<>(sListeners)) {
             listener.onWatchContent(owner, items);
         }
+    }
+
+    /** Called by MainActivity for every "status" message from app or widget. */
+    static void dispatchStatus(WatchContent.Status status, long nowMillis) {
+        sStatus = status;
+        sStatusTime = nowMillis;
+        for (Listener listener : new ArrayList<>(sListeners)) {
+            listener.onWatchStatus(status);
+        }
+    }
+
+    /**
+     * gimporter is downloading a track: another track or location sent now
+     * would arrive while it finishes and then leaves the app.
+     * @return the title being imported, or null if not busy
+     */
+    static String busyWith(long nowMillis) {
+        WatchContent.Status status = sStatus;
+        if (status != null && "importing".equals(status.state) && nowMillis - sStatusTime < BUSY_TIMEOUT_MS) {
+            return status.title;
+        }
+        return null;
     }
 
     /** Everything app and widget reported last; empty until one answered. */

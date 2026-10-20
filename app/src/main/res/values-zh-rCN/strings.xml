@@ -46,6 +46,10 @@
     <string name="delete_from_watch">从手表删除</string>
     <string name="deleted_from_watch">已从手表删除“%1$s”</string>
     <string name="more_options">更多选项</string>
+    <string name="watch_importing">手表正在加载“%1$s”…</string>
+    <string name="watch_started">“%1$s”正在手表上运行</string>
+    <string name="watch_import_failed">在手表上导入“%1$s”失败</string>
+    <string name="watch_busy">手表仍在处理“%1$s”</string>
     <string name="settings_speed">速度</string>
     <string name="settings_conversion">转换</string>
     <string name="default_speed">默认速度</string>

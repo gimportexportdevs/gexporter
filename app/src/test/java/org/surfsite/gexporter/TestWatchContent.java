@@ -134,4 +134,29 @@ public class TestWatchContent {
         assertEquals("aaaa", items.get(0).fingerprint);
         assertEquals("", items.get(1).fingerprint);
     }
+
+    @Test
+    public void statusMessage() {
+        Map<String, Object> msg = new HashMap<>();
+        msg.put("type", "status");
+        msg.put("state", "importing");
+        msg.put("title", "Tour.gpx");
+        WatchContent.Status status = WatchContent.parseStatus(msg);
+        assertEquals("importing", status.state);
+        assertEquals("Tour.gpx", status.title);
+        assertNull(WatchContent.parseStatus("GET_PORT"));
+        msg.put("type", "content");
+        assertNull(WatchContent.parseStatus(msg));
+    }
+
+    @Test
+    public void busyOnlyWhileImporting() {
+        WatchLink.dispatchStatus(new WatchContent.Status("importing", "Tour.gpx"), 1000);
+        assertEquals("Tour.gpx", WatchLink.busyWith(2000));
+        // no "started" or "failed" within a minute: not busy any more
+        assertNull(WatchLink.busyWith(1000 + 61000));
+        WatchLink.dispatchStatus(new WatchContent.Status("started", "Tour.gpx"), 3000);
+        assertNull(WatchLink.busyWith(4000));
+        WatchLink.clear();
+    }
 }

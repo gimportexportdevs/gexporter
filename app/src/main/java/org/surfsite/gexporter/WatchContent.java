@@ -25,6 +25,7 @@ import java.util.Map;
  * phone → watch  {"type": "track", "url": file, "title": file, "port": n, "hash": fingerprint,
  *                  "time": epochSeconds}
  * watch → phone  {"type": "content", "items": [[kind, name, id, fingerprint], ...]}
+ * watch → phone  {"type": "status", "state": "ready"|"importing"|"started"|"failed", "title": track}
  * </pre>
  */
 final class WatchContent {
@@ -157,6 +158,30 @@ final class WatchContent {
             sb.append(String.format(Locale.ROOT, "%02x", digest[i]));
         }
         return sb.toString();
+    }
+
+    /** A "status" message: what gimporter is doing, see WatchLink.isBusy(). */
+    static final class Status {
+        final String state;
+        final String title;
+
+        Status(String state, String title) {
+            this.state = state;
+            this.title = title;
+        }
+    }
+
+    /** The status of a "status" message, or null if the message is something else. */
+    static Status parseStatus(Object message) {
+        if (!(message instanceof Map)) {
+            return null;
+        }
+        Map<?, ?> map = (Map<?, ?>) message;
+        if (!"status".equals(map.get("type")) || !(map.get("state") instanceof String)) {
+            return null;
+        }
+        Object title = map.get("title");
+        return new Status((String) map.get("state"), title instanceof String ? (String) title : "");
     }
 
     /**

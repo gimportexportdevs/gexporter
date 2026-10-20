@@ -46,6 +46,10 @@
     <string name="delete_from_watch">Hapus dari jam</string>
     <string name="deleted_from_watch">“%1$s” dihapus dari jam</string>
     <string name="more_options">Opsi lainnya</string>
+    <string name="watch_importing">Jam sedang memuat “%1$s” …</string>
+    <string name="watch_started">“%1$s” berjalan di jam</string>
+    <string name="watch_import_failed">Impor “%1$s” di jam gagal</string>
+    <string name="watch_busy">Jam masih sibuk dengan “%1$s”</string>
     <string name="settings_speed">Kecepatan</string>
     <string name="settings_conversion">Konversi</string>
     <string name="default_speed">Kecepatan default</string>

@@ -46,6 +46,10 @@
     <string name="delete_from_watch">Eliminar del reloj</string>
     <string name="deleted_from_watch">«%1$s» eliminado del reloj</string>
     <string name="more_options">Más opciones</string>
+    <string name="watch_importing">El reloj está cargando «%1$s» …</string>
+    <string name="watch_started">«%1$s» se está ejecutando en el reloj</string>
+    <string name="watch_import_failed">Falló la importación de «%1$s» en el reloj</string>
+    <string name="watch_busy">El reloj sigue ocupado con «%1$s»</string>
     <string name="settings_speed">Velocidad</string>
     <string name="settings_conversion">Conversión</string>
     <string name="default_speed">Velocidad predeterminada</string>

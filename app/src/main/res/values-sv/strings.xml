@@ -46,6 +46,10 @@
     <string name="delete_from_watch">Radera från klockan</string>
     <string name="deleted_from_watch">”%1$s” raderad från klockan</string>
     <string name="more_options">Fler alternativ</string>
+    <string name="watch_importing">Klockan läser in ”%1$s” …</string>
+    <string name="watch_started">”%1$s” körs på klockan</string>
+    <string name="watch_import_failed">Import av ”%1$s” misslyckades på klockan</string>
+    <string name="watch_busy">Klockan är fortfarande upptagen med ”%1$s”</string>
     <string name="settings_speed">Hastighet</string>
     <string name="settings_conversion">Konvertering</string>
     <string name="default_speed">Standardhastighet</string>

@@ -49,6 +49,10 @@
     <string name="delete_from_watch">Delete from the watch</string>
     <string name="deleted_from_watch">“%1$s” deleted from the watch</string>
     <string name="more_options">More options</string>
+    <string name="watch_importing">The watch is loading “%1$s” …</string>
+    <string name="watch_started">“%1$s” is running on the watch</string>
+    <string name="watch_import_failed">Importing “%1$s” failed on the watch</string>
+    <string name="watch_busy">The watch is still busy with “%1$s”</string>
     <string name="settings_speed">Speed</string>
     <string name="settings_conversion">Conversion</string>
     <string name="default_speed">Default speed</string>

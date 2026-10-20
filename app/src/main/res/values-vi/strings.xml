@@ -46,6 +46,10 @@
     <string name="delete_from_watch">Xóa khỏi đồng hồ</string>
     <string name="deleted_from_watch">Đã xóa “%1$s” khỏi đồng hồ</string>
     <string name="more_options">Tùy chọn khác</string>
+    <string name="watch_importing">Đồng hồ đang tải “%1$s” …</string>
+    <string name="watch_started">“%1$s” đang chạy trên đồng hồ</string>
+    <string name="watch_import_failed">Nhập “%1$s” vào đồng hồ thất bại</string>
+    <string name="watch_busy">Đồng hồ vẫn đang bận với “%1$s”</string>
     <string name="settings_speed">Tốc độ</string>
     <string name="settings_conversion">Chuyển đổi</string>
     <string name="default_speed">Tốc độ mặc định</string>

@@ -46,6 +46,10 @@
     <string name="delete_from_watch">Poista kellosta</string>
     <string name="deleted_from_watch">”%1$s” poistettu kellosta</string>
     <string name="more_options">Lisää vaihtoehtoja</string>
+    <string name="watch_importing">Kello lataa ”%1$s” …</string>
+    <string name="watch_started">”%1$s” on käynnissä kellossa</string>
+    <string name="watch_import_failed">”%1$s” tuonti kelloon epäonnistui</string>
+    <string name="watch_busy">Kello on vielä varattu: ”%1$s”</string>
     <string name="settings_speed">Nopeus</string>
     <string name="settings_conversion">Muunnos</string>
     <string name="default_speed">Oletusnopeus</string>

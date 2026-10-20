@@ -46,6 +46,10 @@
     <string name="delete_from_watch">Șterge de pe ceas</string>
     <string name="deleted_from_watch">„%1$s” a fost șters de pe ceas</string>
     <string name="more_options">Mai multe opțiuni</string>
+    <string name="watch_importing">Ceasul încarcă „%1$s” …</string>
+    <string name="watch_started">„%1$s” rulează pe ceas</string>
+    <string name="watch_import_failed">Importul „%1$s” pe ceas a eșuat</string>
+    <string name="watch_busy">Ceasul este încă ocupat cu „%1$s”</string>
     <string name="settings_speed">Viteză</string>
     <string name="settings_conversion">Conversie</string>
     <string name="default_speed">Viteză implicită</string>
