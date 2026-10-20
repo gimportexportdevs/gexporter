@@ -6,6 +6,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -110,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
     private SharedLocation mSharedLocation;
     // Resolved before the ConnectIQ SDK found the watch app; sent once it has.
     private SharedLocation mPendingPush;
+    private boolean mSdkReady;
     private static final int HELD_HINT_MS = 8000;
     private ContentResolver mCR;
 
@@ -181,11 +183,31 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
         setWatchState(WatchState.CONNECTING, null);
     }
 
+    /**
+     * Debug builds started with {@code --ez simulator true} talk to the
+     * Connect IQ simulator instead of the watch: the SDK then listens on
+     * port 7381 for the simulator's "adb Connection". On the Mac:
+     * {@code adb forward tcp:7381 tcp:7381} and, for its web requests,
+     * {@code adb forward tcp:22222 tcp:22222}.
+     */
+    private boolean useSimulator() {
+        boolean debuggable = (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+        return debuggable && getIntent().getBooleanExtra("simulator", false);
+    }
+
     private void initConnectIQ() {
-        mConnectIQ = ConnectIQ.getInstance();
+        if (useSimulator()) {
+            Log.info("Connecting to the Connect IQ simulator over adb");
+            mConnectIQ = ConnectIQ.getInstance(this, ConnectIQ.IQConnectType.TETHERED);
+            mConnectIQ.setAdbPort(7381);
+            WatchLink.useSimulator();
+        } else {
+            mConnectIQ = ConnectIQ.getInstance();
+        }
         mConnectIQ.initialize(this, true, new ConnectIQ.ConnectIQListener() {
             @Override
             public void onSdkReady() {
+                mSdkReady = true;
                 launchIQApp(mConnectIQ);
             }
 
@@ -437,7 +459,10 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
 
     private void registerMessageListener(ConnectIQ connectIQ, IQDevice device, IQApp app) {
         long deviceId = device.getDeviceIdentifier();
-        String key = deviceId + ":" + WatchLink.ownerOf(app);
+        // The simulator's messages carry no app id: the SDK looks up the
+        // listener for "". It runs only one app, the device app.
+        IQApp listenTo = useSimulator() ? new IQApp("") : app;
+        String key = deviceId + ":" + WatchLink.ownerOf(listenTo);
 
         // Only register once per device and app
         if (!mRegisteredApps.add(key)) {
@@ -446,21 +471,21 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
         }
 
         try {
-            connectIQ.registerForAppEvents(device, app, (iqDevice, iqApp, message, status) -> {
+            connectIQ.registerForAppEvents(device, listenTo, (iqDevice, iqApp, message, status) -> {
                 if (message instanceof ArrayList && !message.isEmpty()) {
                     Object firstElement = ((ArrayList<?>) message).get(0);
                     WatchContent.Status watchStatus = WatchContent.parseStatus(firstElement);
                     if (watchStatus != null) {
-                        Log.info("Watch status from {}: {} {}", iqApp.getApplicationId(),
+                        Log.info("Watch status from {}: {} {}", app.getApplicationId(),
                                 watchStatus.state, watchStatus.title);
-                        String from = WatchLink.ownerOf(iqApp);
+                        String from = WatchLink.ownerOf(app);
                         runOnUiThread(() -> WatchLink.dispatchStatus(from, watchStatus, System.currentTimeMillis()));
                         return;
                     }
-                    String owner = WatchLink.ownerOf(iqApp);
+                    String owner = WatchLink.ownerOf(app);
                     List<WatchContent.Item> content = WatchContent.parseContent(firstElement, owner);
                     if (content != null) {
-                        Log.info("Watch content from {}: {} items", iqApp.getApplicationId(), content.size());
+                        Log.info("Watch content from {}: {} items", app.getApplicationId(), content.size());
                         // for ManageWatchActivity
                         runOnUiThread(() -> WatchLink.dispatchContent(owner, content, System.currentTimeMillis()));
                         return;
@@ -474,7 +499,7 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
                     }
                     String msg = (String) request;
                     if ("GET_PORT".equals(msg)) {
-                        sendPortResponse(iqDevice, iqApp);
+                        sendPortResponse(iqDevice, app);
                     }
                 }
             });
@@ -515,18 +540,21 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
 
     private void sendPortResponse(IQDevice device, IQApp app) {
         if (mConnectIQ != null && server != null) {
-            try {
-                int port = server.getListeningPort();
-                mConnectIQ.sendMessage(device, app, port, (iqDevice, iqApp, status) -> {
-                    if (status == ConnectIQ.IQMessageStatus.SUCCESS) {
-                        Log.info("Successfully sent port {} to Garmin app", port);
-                    } else {
-                        Log.error("Failed to send port to Garmin app: {}", status);
-                    }
-                });
-            } catch (InvalidStateException | ServiceUnavailableException e) {
-                Log.error("Error sending port response to Garmin app", e);
-            }
+            int port = server.getListeningPort();
+            ConnectIQ connectIQ = mConnectIQ;
+            WatchLink.post(() -> {
+                try {
+                    connectIQ.sendMessage(device, app, port, (iqDevice, iqApp, status) -> {
+                        if (status == ConnectIQ.IQMessageStatus.SUCCESS) {
+                            Log.info("Successfully sent port {} to Garmin app", port);
+                        } else {
+                            Log.error("Failed to send port to Garmin app: {}", status);
+                        }
+                    });
+                } catch (InvalidStateException | ServiceUnavailableException e) {
+                    Log.error("Error sending port response to Garmin app", e);
+                }
+            });
         }
     }
 
@@ -575,6 +603,10 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
             checkPermissionsAndServe();
         }
         requestWatchContent();
+        // the watch (or the simulator) may have connected since the start
+        if (mSdkReady && !WatchLink.isConnected()) {
+            launchIQApp(mConnectIQ);
+        }
     }
 
     @Override

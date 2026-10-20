@@ -34,6 +34,18 @@ work the same; point `local.properties`'s `sdk.dir` at your SDK.
 
 Run `TestRunServer.main()` to start a standalone HTTP server on localhost:22222 that serves files from `~/Downloads/`. Use this with the ConnectIQ simulator for development.
 
+## Testing Against the ConnectIQ Simulator
+
+A debug build can talk to the ConnectIQ simulator instead of a watch, with the real phone serving the files:
+
+```bash
+adb forward tcp:7381 tcp:7381     # simulator <-> Connect IQ SDK (TETHERED mode)
+adb forward tcp:22222 tcp:22222   # simulator's web requests -> gexporter's server
+adb shell am start -n org.surfsite.gexporter/.MainActivity --ez simulator true
+```
+
+Then in the simulator: Settings > Connection Type > BLE > Connected, Settings > Use Device HTTPS Requirements off, adb Connection > Start, and start gimporter with `monkeydo`. Reinstalling the APK drops the connection (the simulator shows "ADB Disconnected"); start it again. In this mode the SDK delivers the simulator's messages with an empty app id and writes to its socket on the calling thread, which `MainActivity.registerMessageListener` and `WatchLink.post` account for.
+
 ## Architecture
 
 ### HTTP Server (WebServer.java)

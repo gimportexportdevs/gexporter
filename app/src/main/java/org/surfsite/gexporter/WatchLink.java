@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * The ConnectIQ connection to gimporter on the watch, shared between
@@ -57,6 +59,7 @@ final class WatchLink {
     private static IQDevice sDevice;
     private static IQApp sApp;
     private static IQApp sWidget;
+    private static Executor sSender = Runnable::run;
     private static final List<Listener> sListeners = new ArrayList<>();
     // the latest reply of app and widget, for marking what is on the watch
     private static final Map<String, List<WatchContent.Item>> sLatest = new LinkedHashMap<>();
@@ -244,14 +247,31 @@ final class WatchLink {
         if (sConnectIQ == null || sDevice == null) {
             return false;
         }
-        try {
-            sConnectIQ.sendMessage(sDevice, app, message, (device, a, status) ->
-                    Log.info("Watch request {} to {}: {}", message.get("type"), a.getApplicationId(), status));
-            return true;
-        } catch (InvalidStateException | ServiceUnavailableException e) {
-            Log.error("Error sending to the watch", e);
-            return false;
-        }
+        ConnectIQ connectIQ = sConnectIQ;
+        IQDevice device = sDevice;
+        post(() -> {
+            try {
+                connectIQ.sendMessage(device, app, message, (d, a, status) ->
+                        Log.info("Watch request {} to {}: {}", message.get("type"), a.getApplicationId(), status));
+            } catch (InvalidStateException | ServiceUnavailableException e) {
+                Log.error("Error sending to the watch", e);
+            }
+        });
+        return true;
+    }
+
+    /**
+     * Run a call into the Connect IQ SDK. Towards the simulator the SDK
+     * writes to a socket right away, which Android forbids on the main
+     * thread; towards the watch it only hands over to Garmin Connect.
+     */
+    static void post(Runnable call) {
+        sSender.execute(call);
+    }
+
+    /** The phone talks to the Connect IQ simulator over adb. */
+    static void useSimulator() {
+        sSender = Executors.newSingleThreadExecutor();
     }
 
     /**
