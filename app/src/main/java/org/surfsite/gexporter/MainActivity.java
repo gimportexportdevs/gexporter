@@ -1070,10 +1070,12 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
             final ImageView icon;
             final TextView name;
             final TextView detail;
+            final ImageView onWatch;
 
             Holder(View v) {
                 super(v);
                 icon = v.findViewById(R.id.item_icon);
+                onWatch = v.findViewById(R.id.item_on_watch);
                 name = v.findViewById(R.id.item_name);
                 detail = v.findViewById(R.id.item_kind);
                 v.setOnClickListener(x -> {
@@ -1105,10 +1107,9 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
             } else {
                 detail = entry.file.getName().toLowerCase(Locale.ROOT).endsWith(".fit") ? "FIT" : "GPX";
             }
-            if (WatchContent.isOnWatch(entry.fingerprint, WatchLink.latestContent())) {
-                detail += " · " + getString(R.string.on_watch);
-            }
             h.detail.setText(detail);
+            h.onWatch.setVisibility(WatchContent.isOnWatch(entry.fingerprint, WatchLink.latestContent())
+                    ? View.VISIBLE : View.GONE);
         }
 
         @Override
