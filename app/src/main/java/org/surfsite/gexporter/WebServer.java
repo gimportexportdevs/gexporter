@@ -264,7 +264,8 @@ public class WebServer extends NanoHTTPD {
             try {
                 super.close();
             } finally {
-                if (!mFile.delete()) {
+                // NanoHTTPD may close the stream more than once
+                if (!mFile.delete() && mFile.exists()) {
                     Log.warn("Could not delete {}", mFile);
                 }
             }
