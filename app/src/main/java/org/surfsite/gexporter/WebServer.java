@@ -90,8 +90,12 @@ public class WebServer extends NanoHTTPD {
                 Log.debug("doLongname == true");
             }
 
+            // Sent by gimporter versions that save shared locations as
+            // waypoints; older ones would try to import them as courses.
+            boolean doLocations = parms.containsKey("locations") && parms.get("locations").get(0).equals("1");
+
             if(uri.equals("/dir.json")){
-                return getDir(doGPXonly, doShort, doLongname);
+                return getDir(doGPXonly, doShort, doLongname, doLocations);
             }
 
             String path = uri;
@@ -163,7 +167,7 @@ public class WebServer extends NanoHTTPD {
     }
 
     @NonNull
-    private Response getDir(boolean doGPXonly, boolean doShort, boolean doLongname) {
+    private Response getDir(boolean doGPXonly, boolean doShort, boolean doLongname, boolean doLocations) {
         FilenameFilter filenameFilter;
         if (doGPXonly) {
             filenameFilter = new FilenameFilter() {
@@ -206,6 +210,11 @@ public class WebServer extends NanoHTTPD {
                 String courseName = (doLongname ? aFilelist : getCourseName(aFilelist));
 
                 List<WayPoint> locations = waypointOnlyGpx(new File(mRootDir, aFilelist));
+                if (locations != null && !doLocations) {
+                    // An older gimporter cannot use a location and would
+                    // fail to convert it to a course; do not offer it.
+                    continue;
+                }
                 if (locations != null) {
                     // A destination, not a course: the watch saves each one as
                     // a location from lat/lon, so no download is needed. The

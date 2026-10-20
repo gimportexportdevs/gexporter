@@ -71,7 +71,8 @@ public class TestDirListing {
 
     @Test
     public void locationHasCoordinatesTrackDoesNot() throws Exception {
-        for (String query : new String[]{"type=FIT&short=1&longname=1", "type=GPX&short=1&longname=1"}) {
+        for (String query : new String[]{"type=FIT&short=1&longname=1&locations=1",
+                "type=GPX&short=1&longname=1&locations=1"}) {
             JsonArray tracks = listing(query);
             assertEquals(query, 2, tracks.size());
 
@@ -86,5 +87,13 @@ public class TestDirListing {
             assertFalse(track.has("lat"));
             assertTrue(track.has("url"));
         }
+    }
+
+    @Test
+    public void olderGimporterGetsNoLocations() throws Exception {
+        // without locations=1 the watch would try to import it as a course
+        JsonArray tracks = listing("type=FIT&short=1&longname=1");
+        assertEquals(1, tracks.size());
+        assertEquals("track.gpx", tracks.get(0).getAsJsonObject().get("title").getAsString());
     }
 }
