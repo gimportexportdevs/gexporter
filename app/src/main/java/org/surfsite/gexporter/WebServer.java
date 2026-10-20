@@ -9,12 +9,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +41,10 @@ public class WebServer extends NanoHTTPD {
         mRootDir = rootDir;
         mCacheDir = cacheDir;
         mGpx2FitOptions = options;
+    }
+
+    File getRootDir() {
+        return mRootDir;
     }
 
     /**
@@ -100,6 +104,7 @@ public class WebServer extends NanoHTTPD {
 
             String path = uri;
             File src = null;
+            boolean deleteAfterServing = false;
             try{
                 if(path.endsWith(".json")){
                     mime_type = MIME_JSON;
@@ -117,24 +122,19 @@ public class WebServer extends NanoHTTPD {
                     } else {
                         String courseName = (doLongname ? gpx.getName() : getCourseName(gpx.getName()));
 
-                        File out = new File(mCacheDir, path + ".fit");
-                        // Convert into a private temp file and atomically move it
-                        // into place, so a concurrent request for the same course
-                        // never streams a half-written cache file.
-                        File tmp = File.createTempFile("conv", ".fit", mCacheDir);
+                        // Every request converts with the current options into
+                        // its own temp file, which is deleted once served.
+                        File tmp = File.createTempFile(CONVERTED_PREFIX, ".fit", mCacheDir);
                         try (FileInputStream fis = new FileInputStream(gpx)) {
                             Gpx2Fit loader = new Gpx2Fit(courseName, fis, mGpx2FitOptions);
-                            Log.warn("Generating {}", out.getAbsolutePath());
+                            Log.debug("Converting {}", gpx.getName());
                             loader.writeFit(tmp);
                         } catch (Exception e) {
                             tmp.delete();
                             throw e;
                         }
-                        if (!tmp.renameTo(out)) {
-                            tmp.delete();
-                            throw new IOException("Could not move converted file into cache");
-                        }
-                        src = out;
+                        src = tmp;
+                        deleteAfterServing = true;
                         mime_type = MIME_FIT;
                     }
                 }
@@ -151,11 +151,10 @@ public class WebServer extends NanoHTTPD {
             }
 
             try {
-                // Open file from SD Card
-                InputStream descriptor = new FileInputStream(src);
-                Log.debug("Serving bytes: {}", src.length());
-                return NanoHTTPD.newFixedLengthResponse(Response.Status.OK, mime_type,
-                        descriptor, src.length());
+                long length = src.length();
+                InputStream descriptor = deleteAfterServing ? new DeleteOnCloseInputStream(src) : new FileInputStream(src);
+                Log.debug("Serving bytes: {}", length);
+                return NanoHTTPD.newFixedLengthResponse(Response.Status.OK, mime_type, descriptor, length);
 
             } catch(IOException ioe) {
                 Log.error("Serving exception {}", ioe.toString());
@@ -209,7 +208,7 @@ public class WebServer extends NanoHTTPD {
                 }
                 String courseName = (doLongname ? aFilelist : getCourseName(aFilelist));
 
-                List<WayPoint> locations = waypointOnlyGpx(new File(mRootDir, aFilelist));
+                List<WayPoint> locations = ServedFiles.locationsIn(new File(mRootDir, aFilelist));
                 if (locations != null && !doLocations) {
                     // An older gimporter cannot use a location and would
                     // fail to convert it to a course; do not offer it.
@@ -246,48 +245,28 @@ public class WebServer extends NanoHTTPD {
         return NanoHTTPD.newFixedLengthResponse(Response.Status.OK, MIME_JSON, ret);
     }
 
-    /**
-     * The waypoints of a GPX file that holds only {@code <wpt>} elements
-     * (a shared destination), or null for tracks, routes, FIT files and
-     * unparseable files.
-     */
-    private List<WayPoint> waypointOnlyGpx(File file) {
-        String name = file.getName();
-        if (!(name.endsWith(".gpx") || name.endsWith(".GPX")) || mentionsTrackOrRoute(file)) {
-            return null;
-        }
-        try (FileInputStream fis = new FileInputStream(file)) {
-            Gpx2Fit gpx = new Gpx2Fit(name, fis, mGpx2FitOptions);
-            if (gpx.hasTrackOrRoute() || gpx.getWptPoints().isEmpty()) {
-                return null;
-            }
-            return gpx.getWptPoints();
-        } catch (Exception e) {
-            Log.warn("Could not parse {}: {}", name, e.toString());
-            return null;
-        }
-    }
+    /** Name prefix of the temporary FIT files of a conversion. */
+    static final String CONVERTED_PREFIX = "converted";
 
-    /**
-     * Cheap pre-check so listing a directory of large tracks does not fully
-     * parse each of them: track and route points show up early in the file.
-     */
-    private static boolean mentionsTrackOrRoute(File file) {
-        try (InputStream in = new FileInputStream(file)) {
-            byte[] buf = new byte[8192];
-            String tail = "";
-            int len;
-            while ((len = in.read(buf)) > 0) {
-                String chunk = tail + new String(buf, 0, len, StandardCharsets.ISO_8859_1);
-                if (chunk.contains("trkpt") || chunk.contains("rtept")) {
-                    return true;
-                }
-                tail = chunk.substring(Math.max(0, chunk.length() - 8));
-            }
-        } catch (IOException e) {
-            return true;
+    /** A converted file, deleted when NanoHTTPD has sent it and closes the stream. */
+    private static final class DeleteOnCloseInputStream extends FileInputStream {
+        private final File mFile;
+
+        DeleteOnCloseInputStream(File file) throws FileNotFoundException {
+            super(file);
+            mFile = file;
         }
-        return false;
+
+        @Override
+        public void close() throws IOException {
+            try {
+                super.close();
+            } finally {
+                if (!mFile.delete()) {
+                    Log.warn("Could not delete {}", mFile);
+                }
+            }
+        }
     }
 
     @NonNull

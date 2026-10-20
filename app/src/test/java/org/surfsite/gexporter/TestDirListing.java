@@ -90,6 +90,26 @@ public class TestDirListing {
     }
 
     @Test
+    public void convertedFitIsNotLeftInTheCache() throws Exception {
+        URL url = new URL("http://127.0.0.1:" + server.getListeningPort() + "/track.gpx?type=FIT");
+        HttpURLConnection c = (HttpURLConnection) url.openConnection();
+        byte[] fit;
+        try (InputStream in = c.getInputStream()) {
+            fit = in.readAllBytes();
+        } finally {
+            c.disconnect();
+        }
+        assertEquals("FIT header", '.', fit[8]);
+        assertEquals('F', fit[9]);
+
+        // NanoHTTPD closes the stream once sent; give it a moment
+        for (int i = 0; i < 50 && cache.list().length > 0; i++) {
+            Thread.sleep(20);
+        }
+        assertEquals(0, cache.list().length);
+    }
+
+    @Test
     public void olderGimporterGetsNoLocations() throws Exception {
         // without locations=1 the watch would try to import it as a course
         JsonArray tracks = listing("type=FIT&short=1&longname=1");

@@ -6,6 +6,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -52,7 +53,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -88,7 +88,13 @@ public class MainActivity extends AppCompatActivity {
     private final ExecutorService mScanner = Executors.newSingleThreadExecutor();
     private File mServedDir;
     private Gpx2FitOptions mGpx2FitOptions = null;
-    private File mDirectory = null;
+    // gexporter's copies of shared files, a shared location or the chosen
+    // folder; replaced by the next share, kept across restarts of the app
+    private File mDirectory;
+    // a share arrived and still has to replace the content of mDirectory
+    private boolean mPendingShare = false;
+    // the chosen folder is mirrored once per app start
+    private boolean mFolderSynced = false;
     private ArrayList<Uri> mUris;
     // Text or geo: URI shared from a map app; served as a one-waypoint GPX.
     private String mSharedText;
@@ -126,6 +132,11 @@ public class MainActivity extends AppCompatActivity {
         );
 
         setContentView(R.layout.activity_main);
+        mDirectory = new File(getCacheDir(), SHARED_DIR);
+        if (!mDirectory.isDirectory() && !mDirectory.mkdirs()) {
+            Log.error("Could not create {}", mDirectory);
+        }
+        removeStaleCache();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         // Handle window insets for edge-to-edge display using modern approach
@@ -466,11 +477,8 @@ public class MainActivity extends AppCompatActivity {
         }
         processIntent(getIntent());
 
-        if (server == null) {
-            Log.debug("Server is null, checking permissions and serving");
+        if (server == null || mPendingShare) {
             checkPermissionsAndServe();
-        } else {
-            Log.debug("Server already running");
         }
     }
 
@@ -511,13 +519,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Consume the intent so a later resume doesn't reprocess the sticky
-        // share and abort an in-flight download by rebuilding the server.
+        // share; serveFiles() replaces the served content with it.
         setIntent(new Intent());
-
-        if (server != null) {
-            server.stop();
-            server = null;
-        }
+        mPendingShare = true;
     }
 
     private void processSingleFile(Intent intent) {
@@ -587,12 +591,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkPermissionsAndServe() {
-        Log.debug("checkPermissionsAndServe called");
-
-        // For Android 13+ (API 33+), READ_EXTERNAL_STORAGE is largely deprecated
-        // We'll rely on the Downloads directory and intent-based file sharing
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            Log.info("Android 13+, skipping permission check");
+        // Only the Downloads folder fallback (Android 12 and older) needs the
+        // storage permission; shared files and the chosen folder do not.
+        if (!usesDownloadsFolder()) {
             serveFiles();
             return;
         }
@@ -631,7 +632,6 @@ public class MainActivity extends AppCompatActivity {
         if (server != null) {
             server.stop();
             server = null;
-            clearTempDir();
         }
     }
 
@@ -670,44 +670,132 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == GEXPORTER_OPEN_DIR && data != null) {
             Uri uri = data.getData();
             if (uri != null) {
-                mUris = new ArrayList<>();
-                mUris.add(uri);
+                rememberFolder(uri);
             }
         }
     }
 
     protected void serveFiles() {
-        Log.debug("serveFiles called");
         setStatus(0);
-        String rootDirectoryUserDisplayable;
-        File directory;
-
-        if (mUris == null) {
-            directory = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS);
-            rootDirectoryUserDisplayable = directory.getAbsolutePath();
-            Log.info("Using DIRECTORY_DOWNLOADS: {}", rootDirectoryUserDisplayable);
-        } else {
-            clearTempDir();
-
-            mDirectory = new File(getCacheDir(), Long.toString(System.nanoTime()));
-
-            boolean _mkdir = mDirectory.mkdir();
-
-            directory = mDirectory;
-            rootDirectoryUserDisplayable = mUris.isEmpty() ? "unknown" : formatUriForUserDisplay(mUris.get(0));
-            if (mUris.size() > 1) {
-                rootDirectoryUserDisplayable += " and others";
-            }
-            Log.info("OpenDir {}", mDirectory.getAbsolutePath());
-
+        SharedPreferences prefs = servingPrefs();
+        if (mPendingShare) {
+            mPendingShare = false;
+            clearDirectory(mDirectory);
             processUris();
+            // a location is named once resolved, see writeSharedLocation()
+            saveSource(SOURCE_SHARED, mSharedText != null ? null : describe(mUris));
+        } else if (SOURCE_FOLDER.equals(prefs.getString(PREF_SOURCE, null)) && !mFolderSynced) {
+            syncFolder(Uri.parse(prefs.getString(PREF_FOLDER_URI, "")));
         }
 
-        startWebServer(directory);
-        if (mSharedText != null && mDirectory != null) {
+        File directory = usesDownloadsFolder()
+                ? Environment.getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS) : mDirectory;
+        String label = usesDownloadsFolder() ? directory.getAbsolutePath() : prefs.getString(PREF_SOURCE_LABEL, null);
+        if (server != null && !directory.equals(server.getRootDir())) {
+            server.stop();
+            server = null;
+        }
+        if (server == null) {
+            startWebServer(directory);
+        }
+        if (mSharedText != null && mSharedLocation == null) {
             serveSharedLocation(mDirectory);
         } else {
-            displayFileList(directory, rootDirectoryUserDisplayable);
+            displayFileList(directory, label);
+        }
+    }
+
+    // --- where the served files come from ---
+
+    private static final String SHARED_DIR = "shared";
+    private static final String PREF_SOURCE = "source";
+    private static final String PREF_SOURCE_LABEL = "source_label";
+    private static final String PREF_FOLDER_URI = "folder_uri";
+    private static final String SOURCE_SHARED = "shared";
+    private static final String SOURCE_FOLDER = "folder";
+
+    private SharedPreferences servingPrefs() {
+        return getSharedPreferences("serving", MODE_PRIVATE);
+    }
+
+    private void saveSource(String source, @Nullable String label) {
+        servingPrefs().edit().putString(PREF_SOURCE, source).putString(PREF_SOURCE_LABEL, label).apply();
+    }
+
+    /**
+     * Nothing was shared or chosen yet: serve the Downloads folder, but only
+     * where the app may still list it (Android 12 and older).
+     */
+    private boolean usesDownloadsFolder() {
+        return servingPrefs().getString(PREF_SOURCE, null) == null
+                && android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.S_V2;
+    }
+
+    /** Keep access to a chosen folder across restarts and serve it from now on. */
+    private void rememberFolder(Uri tree) {
+        try {
+            getContentResolver().takePersistableUriPermission(tree, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } catch (SecurityException e) {
+            Log.error("No lasting access to {}", tree, e);
+        }
+        String previous = servingPrefs().getString(PREF_FOLDER_URI, null);
+        if (previous != null && !previous.equals(tree.toString())) {
+            try {
+                getContentResolver().releasePersistableUriPermission(Uri.parse(previous),
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } catch (SecurityException e) {
+                Log.debug("Access to {} already gone", previous);
+            }
+        }
+        servingPrefs().edit().putString(PREF_FOLDER_URI, tree.toString()).apply();
+        saveSource(SOURCE_FOLDER, formatUriForUserDisplay(tree));
+        mSharedText = null;
+        mSharedLocation = null;
+        mFolderSynced = false;
+    }
+
+    /** Mirror the chosen folder's GPX and FIT files into mDirectory. */
+    private void syncFolder(Uri tree) {
+        mFolderSynced = true;
+        clearDirectory(mDirectory);
+        DocumentFile folder = null;
+        try {
+            folder = DocumentFile.fromTreeUri(getApplicationContext(), tree);
+        } catch (Exception e) {
+            Log.error("Cannot open {}", tree, e);
+        }
+        if (folder == null || !folder.canRead()) {
+            // the folder is gone or access was revoked
+            setStatus(R.string.no_permission);
+            return;
+        }
+        processDirectory(folder);
+    }
+
+    private static String describe(@Nullable List<Uri> uris) {
+        if (uris == null || uris.isEmpty()) {
+            return null;
+        }
+        String label = uris.get(0).getLastPathSegment();
+        return uris.size() > 1 ? label + " …" : label;
+    }
+
+    /**
+     * Remove what earlier versions left in the cache: a directory per share
+     * (named by a timestamp) and converted FIT files that were never deleted.
+     */
+    private void removeStaleCache() {
+        File[] files = getCacheDir().listFiles();
+        if (files == null) {
+            return;
+        }
+        for (File f : files) {
+            String name = f.getName();
+            if ((f.isDirectory() && name.matches("\\d+")) || name.endsWith(".gpx.fit")
+                    || name.startsWith("conv") || name.startsWith(WebServer.CONVERTED_PREFIX)) {
+                Log.info("Removing stale cache entry {}", name);
+                rmdirQuietly(f);
+            }
         }
     }
 
@@ -717,11 +805,6 @@ public class MainActivity extends AppCompatActivity {
      * server is already up and lists the file as soon as it exists.
      */
     private void serveSharedLocation(File directory) {
-        if (mSharedLocation != null) {
-            writeSharedLocation(directory, mSharedLocation);
-            return;
-        }
-
         setStatus(R.string.resolving_location);
         final String text = mSharedText;
         new Thread(() -> {
@@ -736,11 +819,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 mSharedLocation = loc;
                 pushLocationToWatch(loc);
-                // onStop() may have cleared the directory meanwhile; the next
-                // serveFiles() writes the cached location into the new one.
-                if (directory.equals(mDirectory)) {
-                    writeSharedLocation(directory, loc);
-                }
+                writeSharedLocation(directory, loc);
             });
         }, "resolve-location").start();
     }
@@ -753,11 +832,15 @@ public class MainActivity extends AppCompatActivity {
             Log.error("Could not write {}", file, e);
         }
         Log.info("Serving location {} at {}, {}", loc.getName(), loc.getLat(), loc.getLon());
+        saveSource(SOURCE_SHARED, loc.getName());
         setStatus(0);
         displayFileList(directory, loc.getName());
     }
 
     private void processUris() {
+        if (mUris == null) {
+            return;
+        }
         for (Uri uri : mUris) {
             String scheme = uri.getScheme();
 
@@ -841,7 +924,12 @@ public class MainActivity extends AppCompatActivity {
     /** List what the watch can fetch; GPX files are parsed in the background. */
     private void displayFileList(File directory, String rootDirectoryUserDisplayable) {
         mServedDir = directory;
-        mServedFrom.setText(getString(R.string.served_from, rootDirectoryUserDisplayable));
+        if (rootDirectoryUserDisplayable == null) {
+            mServedFrom.setVisibility(View.GONE);
+        } else {
+            mServedFrom.setText(getString(R.string.served_from, rootDirectoryUserDisplayable));
+            mServedFrom.setVisibility(View.VISIBLE);
+        }
         mScanner.execute(() -> {
             List<ServedFiles.Entry> entries = ServedFiles.scan(directory);
             runOnUiThread(() -> {
@@ -899,7 +987,6 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             ServedFiles.Entry entry = mServed.get(pos);
-            File dir = mServedDir;
             // a GPX file with several locations goes as a whole
             List<ServedFiles.Entry> removed = new ArrayList<>();
             for (ServedFiles.Entry e : mServed) {
@@ -907,12 +994,13 @@ public class MainActivity extends AppCompatActivity {
                     removed.add(e);
                 }
             }
+            List<ServedFiles.Entry> before = new ArrayList<>(mServed);
             List<ServedFiles.Entry> remaining = new ArrayList<>(mServed);
             remaining.removeAll(removed);
             showServed(remaining);
             Snackbar.make(findViewById(R.id.main_root), getString(R.string.removed_one, entry.name), Snackbar.LENGTH_LONG)
                     .setAnchorView(R.id.choose_folder)
-                    .setAction(R.string.undo, v -> displayFileList(dir, String.valueOf(mServedFrom.getText())))
+                    .setAction(R.string.undo, v -> showServed(before))
                     .addCallback(new Snackbar.Callback() {
                         @Override
                         public void onDismissed(Snackbar bar, int event) {
@@ -1046,29 +1134,25 @@ public class MainActivity extends AppCompatActivity {
         return displayString;
     }
 
-    private void clearTempDir() {
-        if (mDirectory != null) {
-            try {
-                rmdir(mDirectory);
-            } catch (IOException e) {
-                Log.error("Failed to delete directory {}: {}", mDirectory.getAbsolutePath(), e.getMessage());
-            } finally {
-                mDirectory = null;
+    /** Empty a directory, keeping the directory itself. */
+    private static void clearDirectory(File dir) {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File f : files) {
+                rmdirQuietly(f);
             }
         }
     }
 
-    private void rmdir(File f) throws IOException {
-        if (f.isDirectory()) {
-            File[] files = f.listFiles();
-            if (files != null) {
-                for (File c : files) {
-                    rmdir(c);
-                }
+    private static void rmdirQuietly(File f) {
+        File[] children = f.isDirectory() ? f.listFiles() : null;
+        if (children != null) {
+            for (File c : children) {
+                rmdirQuietly(c);
             }
         }
         if (!f.delete()) {
-            throw new FileNotFoundException("Failed to delete file: " + f);
+            Log.warn("Could not delete {}", f);
         }
     }
 }

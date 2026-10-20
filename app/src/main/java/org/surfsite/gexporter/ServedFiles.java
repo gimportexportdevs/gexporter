@@ -5,6 +5,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,24 +56,68 @@ final class ServedFiles {
                 entries.add(new Entry(file, title, false, NO_LENGTH));
                 continue;
             }
-            try (FileInputStream in = new FileInputStream(file)) {
-                Gpx2Fit gpx = new Gpx2Fit(name, in, new Gpx2FitOptions());
-                if (!gpx.hasTrackOrRoute() && !gpx.getWptPoints().isEmpty()) {
-                    for (WayPoint wpt : gpx.getWptPoints()) {
-                        String wptName = wpt.getName();
-                        entries.add(new Entry(file,
-                                wptName == null || wptName.trim().isEmpty() ? title : wptName.trim(),
-                                true, NO_LENGTH));
-                    }
-                } else {
-                    entries.add(new Entry(file, title, false, gpx.getLength()));
+            List<WayPoint> locations = locationsIn(file);
+            if (locations != null) {
+                for (WayPoint wpt : locations) {
+                    String wptName = wpt.getName();
+                    entries.add(new Entry(file,
+                            wptName == null || wptName.trim().isEmpty() ? title : wptName.trim(),
+                            true, NO_LENGTH));
                 }
+                continue;
+            }
+            try (FileInputStream in = new FileInputStream(file)) {
+                entries.add(new Entry(file, title, false, new Gpx2Fit(name, in, new Gpx2FitOptions()).getLength()));
             } catch (Exception e) {
                 Log.warn("Could not read {}: {}", name, e.toString());
                 entries.add(new Entry(file, title, false, NO_LENGTH));
             }
         }
         return entries;
+    }
+
+    /**
+     * The waypoints of a GPX file that holds only {@code <wpt>} elements (a
+     * shared destination), or null for tracks, routes, FIT files and
+     * unparseable files.
+     */
+    static List<WayPoint> locationsIn(File file) {
+        String name = file.getName();
+        if (!(name.endsWith(".gpx") || name.endsWith(".GPX")) || mentionsTrackOrRoute(file)) {
+            return null;
+        }
+        try (FileInputStream in = new FileInputStream(file)) {
+            Gpx2Fit gpx = new Gpx2Fit(name, in, new Gpx2FitOptions());
+            if (gpx.hasTrackOrRoute() || gpx.getWptPoints().isEmpty()) {
+                return null;
+            }
+            return gpx.getWptPoints();
+        } catch (Exception e) {
+            Log.warn("Could not parse {}: {}", name, e.toString());
+            return null;
+        }
+    }
+
+    /**
+     * Cheap pre-check so a directory of large tracks is not parsed fully just
+     * to find the locations: track and route points show up early in a file.
+     */
+    private static boolean mentionsTrackOrRoute(File file) {
+        try (InputStream in = new FileInputStream(file)) {
+            byte[] buf = new byte[8192];
+            String tail = "";
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                String chunk = tail + new String(buf, 0, len, StandardCharsets.ISO_8859_1);
+                if (chunk.contains("trkpt") || chunk.contains("rtept")) {
+                    return true;
+                }
+                tail = chunk.substring(Math.max(0, chunk.length() - 8));
+            }
+        } catch (IOException e) {
+            return true;
+        }
+        return false;
     }
 
     static String withoutExtension(String name) {
