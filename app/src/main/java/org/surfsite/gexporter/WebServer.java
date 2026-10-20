@@ -227,6 +227,7 @@ public class WebServer extends NanoHTTPD {
                         loc.put("url", url);
                         loc.put("lat", String.format(Locale.ROOT, "%.7f", wpt.getLat()));
                         loc.put("lon", String.format(Locale.ROOT, "%.7f", wpt.getLon()));
+                        loc.put("hash", WatchContent.fingerprint(loc.get("title"), wpt.getLat(), wpt.getLon()));
                         tracks.add(loc);
                     }
                     continue;
@@ -235,6 +236,7 @@ public class WebServer extends NanoHTTPD {
                 Map<String, String> track = new LinkedHashMap<>();
                 track.put("title", courseName);
                 track.put("url", url);
+                track.put("hash", WatchContent.fingerprint(new File(mRootDir, aFilelist)));
                 tracks.add(track);
             }
         }

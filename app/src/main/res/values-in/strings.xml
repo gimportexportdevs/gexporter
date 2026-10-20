@@ -41,6 +41,8 @@
     <string name="empty_hint">Bagikan file GPX atau FIT, atau tempat dari Google Maps atau Organic Maps, ke aplikasi ini. Atau pilih folder.</string>
     <string name="choose_folder">Pilih folder</string>
     <string name="removed_one">“%1$s” dihapus</string>
+    <string name="on_watch">di jam</string>
+    <string name="sent_to_watch">“%1$s” dikirim ke jam</string>
     <string name="settings_speed">Kecepatan</string>
     <string name="settings_conversion">Konversi</string>
     <string name="default_speed">Kecepatan default</string>

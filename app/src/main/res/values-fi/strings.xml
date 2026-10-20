@@ -41,6 +41,8 @@
     <string name="empty_hint">Jaa tähän sovellukseen GPX- tai FIT-tiedosto tai paikka Google Mapsista tai Organic Mapsista. Tai valitse kansio.</string>
     <string name="choose_folder">Valitse kansio</string>
     <string name="removed_one">”%1$s” poistettu</string>
+    <string name="on_watch">kellossa</string>
+    <string name="sent_to_watch">”%1$s” lähetetty kelloon</string>
     <string name="settings_speed">Nopeus</string>
     <string name="settings_conversion">Muunnos</string>
     <string name="default_speed">Oletusnopeus</string>

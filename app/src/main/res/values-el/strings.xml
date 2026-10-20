@@ -41,6 +41,8 @@
     <string name="empty_hint">Μοιραστείτε με αυτή την εφαρμογή ένα αρχείο GPX ή FIT ή ένα μέρος από το Google Maps ή το Organic Maps. Ή επιλέξτε φάκελο.</string>
     <string name="choose_folder">Επιλογή φακέλου</string>
     <string name="removed_one">Αφαιρέθηκε: «%1$s»</string>
+    <string name="on_watch">στο ρολόι</string>
+    <string name="sent_to_watch">Το «%1$s» στάλθηκε στο ρολόι</string>
     <string name="settings_speed">Ταχύτητα</string>
     <string name="settings_conversion">Μετατροπή</string>
     <string name="default_speed">Προεπιλεγμένη ταχύτητα</string>

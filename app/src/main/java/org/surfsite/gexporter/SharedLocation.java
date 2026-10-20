@@ -443,6 +443,7 @@ public class SharedLocation {
         msg.put("lat", String.format(Locale.ROOT, "%.7f", lat));
         msg.put("lon", String.format(Locale.ROOT, "%.7f", lon));
         msg.put("time", (int) (nowMillis / 1000));
+        msg.put("hash", WatchContent.fingerprint(name, lat, lon));
         return msg;
     }
 

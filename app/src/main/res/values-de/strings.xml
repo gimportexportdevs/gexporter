@@ -41,6 +41,8 @@
     <string name="empty_hint">Teile eine GPX- oder FIT-Datei oder einen Ort aus Google Maps oder Organic Maps mit dieser App. Oder wähle einen Ordner.</string>
     <string name="choose_folder">Ordner wählen</string>
     <string name="removed_one">„%1$s“ entfernt</string>
+    <string name="on_watch">auf der Uhr</string>
+    <string name="sent_to_watch">„%1$s“ an die Uhr geschickt</string>
     <string name="settings_speed">Geschwindigkeit</string>
     <string name="settings_conversion">Umwandlung</string>
     <string name="default_speed">Standardgeschwindigkeit</string>

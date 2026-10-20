@@ -41,6 +41,8 @@
     <string name="empty_hint">Partajează cu această aplicație un fișier GPX sau FIT ori un loc din Google Maps sau Organic Maps. Sau alege un dosar.</string>
     <string name="choose_folder">Alege dosarul</string>
     <string name="removed_one">„%1$s” a fost eliminat</string>
+    <string name="on_watch">pe ceas</string>
+    <string name="sent_to_watch">„%1$s” a fost trimis la ceas</string>
     <string name="settings_speed">Viteză</string>
     <string name="settings_conversion">Conversie</string>
     <string name="default_speed">Viteză implicită</string>

@@ -41,6 +41,8 @@
     <string name="empty_hint">Chia sẻ tệp GPX hoặc FIT, hoặc một địa điểm từ Google Maps hay Organic Maps, với ứng dụng này. Hoặc chọn một thư mục.</string>
     <string name="choose_folder">Chọn thư mục</string>
     <string name="removed_one">Đã xóa “%1$s”</string>
+    <string name="on_watch">trên đồng hồ</string>
+    <string name="sent_to_watch">Đã gửi “%1$s” đến đồng hồ</string>
     <string name="settings_speed">Tốc độ</string>
     <string name="settings_conversion">Chuyển đổi</string>
     <string name="default_speed">Tốc độ mặc định</string>

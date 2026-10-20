@@ -9,6 +9,8 @@ import com.garmin.android.connectiq.exception.ServiceUnavailableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -34,7 +36,9 @@ final class WatchLink {
     private static IQDevice sDevice;
     private static IQApp sApp;
     private static IQApp sWidget;
-    private static Listener sListener;
+    private static final List<Listener> sListeners = new ArrayList<>();
+    // the latest reply of app and widget, for marking what is on the watch
+    private static final Map<String, List<WatchContent.Item>> sLatest = new LinkedHashMap<>();
 
     private WatchLink() {
     }
@@ -63,6 +67,7 @@ final class WatchLink {
         sDevice = null;
         sApp = null;
         sWidget = null;
+        sLatest.clear();
     }
 
     static boolean isConnected() {
@@ -77,15 +82,40 @@ final class WatchLink {
         return sWidget != null && ownerOf(sWidget).equals(owner);
     }
 
-    static void setListener(Listener listener) {
-        sListener = listener;
+    static void addListener(Listener listener) {
+        if (!sListeners.contains(listener)) {
+            sListeners.add(listener);
+        }
+    }
+
+    static void removeListener(Listener listener) {
+        sListeners.remove(listener);
     }
 
     /** Called by MainActivity for every "content" reply from app or widget. */
     static void dispatchContent(String owner, List<WatchContent.Item> items) {
-        if (sListener != null) {
-            sListener.onWatchContent(owner, items);
+        sLatest.put(owner, items);
+        for (Listener listener : new ArrayList<>(sListeners)) {
+            listener.onWatchContent(owner, items);
         }
+    }
+
+    /** Everything app and widget reported last; empty until one answered. */
+    static List<WatchContent.Item> latestContent() {
+        List<WatchContent.Item> all = new ArrayList<>();
+        for (List<WatchContent.Item> items : sLatest.values()) {
+            all.addAll(items);
+        }
+        return all;
+    }
+
+    /**
+     * Send to the app, or to the widget if there is no app. For requests that
+     * make the watch do something now: only the app can be opened from here.
+     */
+    static boolean sendToPreferred(Map<String, Object> message) {
+        IQApp app = sApp != null ? sApp : sWidget;
+        return app != null && send(app, message);
     }
 
     /** Send to both app and widget. @return false if there is no watch to send to */

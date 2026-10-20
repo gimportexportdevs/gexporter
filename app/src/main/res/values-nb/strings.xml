@@ -41,6 +41,8 @@
     <string name="empty_hint">Del en GPX- eller FIT-fil eller et sted fra Google Maps eller Organic Maps med denne appen. Eller velg en mappe.</string>
     <string name="choose_folder">Velg mappe</string>
     <string name="removed_one">«%1$s» fjernet</string>
+    <string name="on_watch">på klokken</string>
+    <string name="sent_to_watch">«%1$s» sendt til klokken</string>
     <string name="settings_speed">Hastighet</string>
     <string name="settings_conversion">Konvertering</string>
     <string name="default_speed">Standardhastighet</string>

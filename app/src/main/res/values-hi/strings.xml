@@ -41,6 +41,8 @@
     <string name="empty_hint">इस ऐप के साथ कोई GPX या FIT फ़ाइल, या Google Maps या Organic Maps से कोई स्थान साझा करें। या कोई फ़ोल्डर चुनें।</string>
     <string name="choose_folder">फ़ोल्डर चुनें</string>
     <string name="removed_one">“%1$s” हटाया गया</string>
+    <string name="on_watch">घड़ी पर</string>
+    <string name="sent_to_watch">“%1$s” घड़ी पर भेजा गया</string>
     <string name="settings_speed">गति</string>
     <string name="settings_conversion">रूपांतरण</string>
     <string name="default_speed">डिफ़ॉल्ट गति</string>

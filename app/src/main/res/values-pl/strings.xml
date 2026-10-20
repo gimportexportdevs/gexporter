@@ -41,6 +41,8 @@
     <string name="empty_hint">Udostępnij tej aplikacji plik GPX lub FIT albo miejsce z Map Google lub Organic Maps. Możesz też wybrać folder.</string>
     <string name="choose_folder">Wybierz folder</string>
     <string name="removed_one">Usunięto „%1$s”</string>
+    <string name="on_watch">w zegarku</string>
+    <string name="sent_to_watch">Wysłano „%1$s” do zegarka</string>
     <string name="settings_speed">Prędkość</string>
     <string name="settings_conversion">Konwersja</string>
     <string name="default_speed">Domyślna prędkość</string>

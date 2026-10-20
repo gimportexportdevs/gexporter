@@ -41,6 +41,8 @@
     <string name="empty_hint">Deel een GPX- of FIT-bestand of een plaats uit Google Maps of Organic Maps met deze app. Of kies een map.</string>
     <string name="choose_folder">Map kiezen</string>
     <string name="removed_one">‘%1$s’ verwijderd</string>
+    <string name="on_watch">op het horloge</string>
+    <string name="sent_to_watch">‘%1$s’ naar het horloge gestuurd</string>
     <string name="settings_speed">Snelheid</string>
     <string name="settings_conversion">Conversie</string>
     <string name="default_speed">Standaardsnelheid</string>

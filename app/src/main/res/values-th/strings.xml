@@ -41,6 +41,8 @@
     <string name="empty_hint">แชร์ไฟล์ GPX หรือ FIT หรือสถานที่จาก Google Maps หรือ Organic Maps มายังแอปนี้ หรือเลือกโฟลเดอร์</string>
     <string name="choose_folder">เลือกโฟลเดอร์</string>
     <string name="removed_one">นำ “%1$s” ออกแล้ว</string>
+    <string name="on_watch">อยู่บนนาฬิกา</string>
+    <string name="sent_to_watch">ส่ง “%1$s” ไปยังนาฬิกาแล้ว</string>
     <string name="settings_speed">ความเร็ว</string>
     <string name="settings_conversion">การแปลง</string>
     <string name="default_speed">ความเร็วเริ่มต้น</string>

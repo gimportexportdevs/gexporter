@@ -41,6 +41,8 @@
     <string name="empty_hint">شارك ملف GPX أو FIT، أو مكانًا من Google Maps أو Organic Maps، مع هذا التطبيق. أو اختر مجلدًا.</string>
     <string name="choose_folder">اختيار مجلد</string>
     <string name="removed_one">تمت إزالة «%1$s»</string>
+    <string name="on_watch">على الساعة</string>
+    <string name="sent_to_watch">تم إرسال «%1$s» إلى الساعة</string>
     <string name="settings_speed">السرعة</string>
     <string name="settings_conversion">التحويل</string>
     <string name="default_speed">السرعة الافتراضية</string>

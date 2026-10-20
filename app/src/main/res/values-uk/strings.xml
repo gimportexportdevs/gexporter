@@ -41,6 +41,8 @@
     <string name="empty_hint">Поділіться з цим застосунком файлом GPX чи FIT або місцем із Google Карт чи Organic Maps. Або виберіть папку.</string>
     <string name="choose_folder">Вибрати папку</string>
     <string name="removed_one">«%1$s» вилучено</string>
+    <string name="on_watch">на годиннику</string>
+    <string name="sent_to_watch">«%1$s» надіслано на годинник</string>
     <string name="settings_speed">Швидкість</string>
     <string name="settings_conversion">Перетворення</string>
     <string name="default_speed">Типова швидкість</string>

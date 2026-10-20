@@ -103,7 +103,7 @@ public class ManageWatchActivity extends AppCompatActivity implements WatchLink.
         new ItemTouchHelper(new SwipeToDelete()).attachToRecyclerView(mList);
         mRetry.setOnClickListener(v -> requestList());
 
-        WatchLink.setListener(this);
+        WatchLink.addListener(this);
         requestList();
     }
 
@@ -116,7 +116,7 @@ public class ManageWatchActivity extends AppCompatActivity implements WatchLink.
 
     @Override
     protected void onDestroy() {
-        WatchLink.setListener(null);
+        WatchLink.removeListener(this);
         mHandler.removeCallbacks(mTimeout);
         super.onDestroy();
     }

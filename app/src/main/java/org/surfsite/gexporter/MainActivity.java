@@ -57,18 +57,21 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements WatchLink.Listener {
     private static final Logger Log = LoggerFactory.getLogger(MainActivity.class);
     private static final int GEXPORTER_OPEN_DIR = 1;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 300;
@@ -151,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         initializeUIComponents();
+        WatchLink.addListener(this);
         initConnectIQ();
         Log.debug("onCreate completed");
     }
@@ -202,6 +206,7 @@ public class MainActivity extends AppCompatActivity {
                             mConnectedApp = app;
                             WatchLink.addApp(connectIQ, device, app, false);
                             setWatchState(WatchState.CONNECTED, device);
+                            requestWatchContent();
 
                             // Register the GET_PORT listener as soon as we know the
                             // app is installed - independent of whether the user
@@ -251,6 +256,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.info("Garmin widget {} on device {}", widget.getApplicationId(), device.getDeviceIdentifier());
                     WatchLink.addApp(connectIQ, device, widget, true);
                     registerMessageListener(connectIQ, device, widget);
+                    requestWatchContent();
                     if (!appInstalled) {
                         mConnectedDevice = device;
                         mConnectedApp = widget;
@@ -271,6 +277,50 @@ public class MainActivity extends AppCompatActivity {
         } catch (InvalidStateException | ServiceUnavailableException e) {
             Log.error("Error checking widget", e);
         }
+    }
+
+    /**
+     * Ask the watch, without the "open gimporter?" prompt, what is on it, to
+     * mark those entries. Only a running gimporter answers; a queued request
+     * is answered when it starts.
+     */
+    private void requestWatchContent() {
+        if (WatchLink.isConnected()) {
+            WatchLink.sendToAll(WatchContent.listRequest());
+        }
+    }
+
+    @Override
+    @SuppressLint("NotifyDataSetChanged")  // the marks of any entry may change
+    public void onWatchContent(String owner, List<WatchContent.Item> items) {
+        mServedAdapter.notifyDataSetChanged();
+    }
+
+    /** Tapping an entry: gimporter downloads the track, or navigates to the location, right away. */
+    private void sendToWatch(ServedFiles.Entry entry) {
+        Map<String, Object> message;
+        if (entry.location) {
+            message = new SharedLocation(entry.name, entry.lat, entry.lon).toWatchMessage(System.currentTimeMillis());
+        } else if (server != null) {
+            String url;
+            try {
+                url = URLEncoder.encode(entry.file.getName(), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                return;  // UTF-8 always exists
+            }
+            message = WatchContent.trackRequest(url, entry.file.getName(), server.getListeningPort(),
+                    entry.fingerprint, System.currentTimeMillis());
+        } else {
+            message = null;
+        }
+        if (message == null || !WatchLink.sendToPreferred(message)) {
+            Snackbar.make(findViewById(R.id.main_root), R.string.watch_not_connected, Snackbar.LENGTH_LONG)
+                    .setAnchorView(R.id.choose_folder).show();
+            return;
+        }
+        WatchLink.openApp();
+        Snackbar.make(findViewById(R.id.main_root), getString(R.string.sent_to_watch, entry.name), Snackbar.LENGTH_LONG)
+                .setAnchorView(R.id.choose_folder).show();
     }
 
     private enum WatchState { CONNECTING, NO_DEVICE, INIT_FAILED, NOT_INSTALLED, WIDGET_ONLY, CONNECTED }
@@ -480,6 +530,7 @@ public class MainActivity extends AppCompatActivity {
         if (server == null || mPendingShare) {
             checkPermissionsAndServe();
         }
+        requestWatchContent();
     }
 
     @Override
@@ -654,6 +705,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         mRegisteredApps.clear();
+        WatchLink.removeListener(this);
         WatchLink.clear();
         mScanner.shutdownNow();
         super.onDestroy();
@@ -1024,6 +1076,12 @@ public class MainActivity extends AppCompatActivity {
                 icon = v.findViewById(R.id.item_icon);
                 name = v.findViewById(R.id.item_name);
                 detail = v.findViewById(R.id.item_kind);
+                v.setOnClickListener(x -> {
+                    int pos = getBindingAdapterPosition();
+                    if (pos != RecyclerView.NO_POSITION) {
+                        sendToWatch(mServed.get(pos));
+                    }
+                });
             }
         }
 
@@ -1039,13 +1097,18 @@ public class MainActivity extends AppCompatActivity {
             ServedFiles.Entry entry = mServed.get(position);
             h.icon.setImageResource(entry.location ? R.drawable.ic_location : R.drawable.ic_track);
             h.name.setText(entry.name);
+            String detail;
             if (entry.location) {
-                h.detail.setText(R.string.kind_location);
+                detail = getString(R.string.kind_location);
             } else if (entry.length != ServedFiles.NO_LENGTH) {
-                h.detail.setText(String.format(Locale.getDefault(), "%.1f km", entry.length / 1000.0));
+                detail = String.format(Locale.getDefault(), "%.1f km", entry.length / 1000.0);
             } else {
-                h.detail.setText(entry.file.getName().toLowerCase(Locale.ROOT).endsWith(".fit") ? "FIT" : "GPX");
+                detail = entry.file.getName().toLowerCase(Locale.ROOT).endsWith(".fit") ? "FIT" : "GPX";
             }
+            if (WatchContent.isOnWatch(entry.fingerprint, WatchLink.latestContent())) {
+                detail += " · " + getString(R.string.on_watch);
+            }
+            h.detail.setText(detail);
         }
 
         @Override

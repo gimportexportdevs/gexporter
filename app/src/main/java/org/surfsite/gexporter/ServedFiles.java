@@ -25,12 +25,24 @@ final class ServedFiles {
         final boolean location;
         /** meters, or {@link #NO_LENGTH} */
         final double length;
+        /** coordinates of a location; NaN for tracks */
+        final double lat;
+        final double lon;
+        /** identifies the content on the watch, see WatchContent.fingerprint() */
+        final String fingerprint;
 
         Entry(File file, String name, boolean location, double length) {
+            this(file, name, location, length, Double.NaN, Double.NaN);
+        }
+
+        Entry(File file, String name, boolean location, double length, double lat, double lon) {
             this.file = file;
             this.name = name;
             this.location = location;
             this.length = length;
+            this.lat = lat;
+            this.lon = lon;
+            this.fingerprint = location ? WatchContent.fingerprint(name, lat, lon) : WatchContent.fingerprint(file);
         }
     }
 
@@ -62,7 +74,7 @@ final class ServedFiles {
                     String wptName = wpt.getName();
                     entries.add(new Entry(file,
                             wptName == null || wptName.trim().isEmpty() ? title : wptName.trim(),
-                            true, NO_LENGTH));
+                            true, NO_LENGTH, wpt.getLat(), wpt.getLon()));
                 }
                 continue;
             }

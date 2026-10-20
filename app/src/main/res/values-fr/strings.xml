@@ -41,6 +41,8 @@
     <string name="empty_hint">Partagez avec cette app un fichier GPX ou FIT, ou un lieu de Google Maps ou Organic Maps. Ou choisissez un dossier.</string>
     <string name="choose_folder">Choisir un dossier</string>
     <string name="removed_one">« %1$s » retiré</string>
+    <string name="on_watch">sur la montre</string>
+    <string name="sent_to_watch">« %1$s » envoyé à la montre</string>
     <string name="settings_speed">Vitesse</string>
     <string name="settings_conversion">Conversion</string>
     <string name="default_speed">Vitesse par défaut</string>

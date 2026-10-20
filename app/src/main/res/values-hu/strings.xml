@@ -41,6 +41,8 @@
     <string name="empty_hint">Ossz meg ezzel az alkalmazással egy GPX- vagy FIT-fájlt, vagy egy helyet a Google Mapsből vagy az Organic Mapsből. Vagy válassz mappát.</string>
     <string name="choose_folder">Mappa kiválasztása</string>
     <string name="removed_one">„%1$s” eltávolítva</string>
+    <string name="on_watch">az órán</string>
+    <string name="sent_to_watch">„%1$s” elküldve az órára</string>
     <string name="settings_speed">Sebesség</string>
     <string name="settings_conversion">Átalakítás</string>
     <string name="default_speed">Alapértelmezett sebesség</string>

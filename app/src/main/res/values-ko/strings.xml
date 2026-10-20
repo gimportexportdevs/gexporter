@@ -41,6 +41,8 @@
     <string name="empty_hint">GPX 또는 FIT 파일이나 Google 지도 또는 Organic Maps의 장소를 이 앱으로 공유하세요. 또는 폴더를 선택하세요.</string>
     <string name="choose_folder">폴더 선택</string>
     <string name="removed_one">‘%1$s’ 제거됨</string>
+    <string name="on_watch">시계에 있음</string>
+    <string name="sent_to_watch">‘%1$s’을(를) 시계로 보냈습니다</string>
     <string name="settings_speed">속도</string>
     <string name="settings_conversion">변환</string>
     <string name="default_speed">기본 속도</string>

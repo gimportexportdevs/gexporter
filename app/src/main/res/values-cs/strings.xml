@@ -41,6 +41,8 @@
     <string name="empty_hint">Sdílejte s touto aplikací soubor GPX nebo FIT nebo místo z Google Maps či Organic Maps. Nebo vyberte složku.</string>
     <string name="choose_folder">Vybrat složku</string>
     <string name="removed_one">„%1$s“ odebráno</string>
+    <string name="on_watch">v hodinkách</string>
+    <string name="sent_to_watch">„%1$s“ odesláno do hodinek</string>
     <string name="settings_speed">Rychlost</string>
     <string name="settings_conversion">Převod</string>
     <string name="default_speed">Výchozí rychlost</string>

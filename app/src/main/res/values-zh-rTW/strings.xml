@@ -41,6 +41,8 @@
     <string name="empty_hint">將 GPX 或 FIT 檔案，或 Google 地圖、Organic Maps 中的地點分享到此應用程式。也可以選擇資料夾。</string>
     <string name="choose_folder">選擇資料夾</string>
     <string name="removed_one">已移除「%1$s」</string>
+    <string name="on_watch">已在手錶上</string>
+    <string name="sent_to_watch">已將「%1$s」傳送到手錶</string>
     <string name="settings_speed">速度</string>
     <string name="settings_conversion">轉換</string>
     <string name="default_speed">預設速度</string>

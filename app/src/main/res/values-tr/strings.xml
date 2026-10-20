@@ -41,6 +41,8 @@
     <string name="empty_hint">Bu uygulamayla bir GPX veya FIT dosyası ya da Google Haritalar veya Organic Maps\'ten bir yer paylaşın. Ya da bir klasör seçin.</string>
     <string name="choose_folder">Klasör seç</string>
     <string name="removed_one">“%1$s” kaldırıldı</string>
+    <string name="on_watch">saatte</string>
+    <string name="sent_to_watch">“%1$s” saate gönderildi</string>
     <string name="settings_speed">Hız</string>
     <string name="settings_conversion">Dönüştürme</string>
     <string name="default_speed">Varsayılan hız</string>
