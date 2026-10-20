@@ -10,7 +10,6 @@ import org.junit.Test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
@@ -152,20 +151,10 @@ public class TestSharedLocation {
 
     private static class FakeFetcher implements SharedLocation.Fetcher {
         final Map<String, String> redirects = new HashMap<>();
-        final Map<String, String> bodies = new HashMap<>();
 
         @Override
         public String redirectTarget(String url) {
             return redirects.get(url);
-        }
-
-        @Override
-        public String body(String url) throws IOException {
-            String body = bodies.get(url);
-            if (body == null) {
-                throw new IOException("404 " + url);
-            }
-            return body;
         }
     }
 
@@ -188,13 +177,24 @@ public class TestSharedLocation {
     }
 
     @Test
-    public void fallsBackToPageContent() {
+    public void placeLinkWithoutCoordinatesFails() {
+        // Shape of a real Google Maps share (2026): the short link resolves to
+        // a place URL with only name, address and feature id. The page has no
+        // usable position (only the map view around the requester's IP), so
+        // this must fail rather than return a wrong place.
         FakeFetcher f = new FakeFetcher();
-        String target = "https://maps.google.com/maps?q=Stephansdom&ftid=0x476d079e5136ca9f:0xfdc2e58a51a25b46";
-        f.redirects.put("https://maps.app.goo.gl/abc123", target);
-        f.bodies.put(target, "<meta content=\"https://maps.google.com/maps/api/staticmap?center=48.2084%2C16.3731&zoom=17\" property=\"og:image\">");
-        assertLoc(SharedLocation.resolve("Stephansdom\nhttps://maps.app.goo.gl/abc123", f),
-                "Stephansdom", 48.2084, 16.3731);
+        f.redirects.put("https://maps.app.goo.gl/snWQZ4aAnVYPzJ148",
+                "https://www.google.com/maps/place/FRISTO+Getr%C3%A4nkemarkt,"
+                        + "+Johann-Sebastian-Bach-Stra%C3%9Fe+5,+85591+Vaterstetten/data=!4m2!3m1"
+                        + "!1s0x479de27452cc669b:0xa06148bcc99c5f4f!18m1!1e1?entry=gps");
+        assertNull(SharedLocation.resolve("https://maps.app.goo.gl/snWQZ4aAnVYPzJ148", f));
+    }
+
+    @Test
+    public void placeNameStopsAtAddress() {
+        assertLoc(SharedLocation.parse("https://www.google.com/maps/place/FRISTO+Getr%C3%A4nkemarkt,"
+                        + "+Johann-Sebastian-Bach-Stra%C3%9Fe+5,+85591+Vaterstetten/@48.111,11.7789,17z"),
+                "FRISTO Getränkemarkt", 48.111, 11.7789);
     }
 
     @Test

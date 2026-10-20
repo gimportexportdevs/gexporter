@@ -3,14 +3,11 @@ package org.surfsite.gexporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -41,8 +38,9 @@ public class SharedLocation {
     private static final Pattern GOOGLE_VIEWPORT = Pattern.compile("@" + NUM + "," + NUM);
     private static final Pattern GOOGLE_PLACE_NAME = Pattern.compile("/maps/place/([^/@?]+)");
     private static final Pattern QUERY_COORDS = Pattern.compile("[?&](?:q|ll|query|destination|daddr|center|sll)=" + NUM + "(?:,|%2C)\\+?" + NUM, Pattern.CASE_INSENSITIVE);
-    // Last resort for Google pages: the static map preview is centered on the place.
-    private static final Pattern GOOGLE_HTML_CENTER = Pattern.compile("center=" + NUM + "(?:%2C|,)" + NUM);
+    // In the EU, Google redirects every request without this cookie to the
+    // consent dialog, so following a place URL would loop through it.
+    static final String GOOGLE_CONSENT_COOKIE = "SOCS=CAESEwgDEgk0ODE3Nzk3MjQaAmVuIAEaBgiA_LyaBg";
     // Organic Maps links, see organicmaps libs/ge0/parser.cpp: either a ge0
     // code (1 zoom char + 9 lat/lon chars) or clear "<lat>,<lon>", then an
     // optional "/<name>" with '_' and ' ' swapped.
@@ -80,8 +78,6 @@ public class SharedLocation {
     public interface Fetcher {
         /** @return the redirect target, or null if the response was not a redirect */
         String redirectTarget(String url) throws IOException;
-
-        String body(String url) throws IOException;
     }
 
     /**
@@ -144,13 +140,14 @@ public class SharedLocation {
     }
 
     private static SharedLocation followRedirects(String url, String name, Fetcher fetcher) throws IOException {
+        String start = url;
         for (int hops = 0; hops < 10; hops++) {
             String next = fetcher.redirectTarget(url);
             if (next == null) {
                 break;
             }
             url = new URL(new URL(url), next).toString();
-            Log.debug("Redirected to {}", url);
+            Log.info("Redirected to {}", url);
             // EU consent interstitial wraps the real target in ?continue=
             String cont = queryParam(url, "continue");
             if (cont != null) {
@@ -162,16 +159,11 @@ public class SharedLocation {
             }
         }
 
-        if (!isGoogle(url)) {
-            return null;
-        }
-        // Some Google share links resolve to a ?q=<name>&ftid=... URL with
-        // no coordinates; the page itself still embeds the position.
-        Matcher h = GOOGLE_HTML_CENTER.matcher(fetcher.body(url));
-        if (h.find()) {
-            String placeName = googlePlaceName(url);
-            return fromStrings(placeName != null ? placeName : name, h.group(1), h.group(2));
-        }
+        // Google place links often resolve to /maps/place/<name>/data=...
+        // with only a feature id. The page does not help: the only position
+        // in it is the map view around the requester's IP location, not the
+        // place (the place data is loaded by script later).
+        Log.warn("No coordinates in {} (resolved to {})", start, url);
         return null;
     }
 
@@ -322,6 +314,12 @@ public class SharedLocation {
         if (placeName.isEmpty() || PLAIN_COORDS.matcher(placeName).find() || placeName.contains("°")) {
             return null;
         }
+        // "FRISTO Getränkemarkt, Johann-Sebastian-Bach-Straße 5, 85591 ...":
+        // the watch shows short names, so keep the part before the address.
+        int comma = placeName.indexOf(',');
+        if (comma > 0) {
+            placeName = placeName.substring(0, comma).trim();
+        }
         return placeName;
     }
 
@@ -417,7 +415,6 @@ public class SharedLocation {
     /** Real network access via HttpURLConnection. */
     public static class HttpFetcher implements Fetcher {
         private static final int TIMEOUT_MS = 10000;
-        private static final int MAX_BODY = 2 * 1024 * 1024;
 
         private HttpURLConnection open(String url) throws IOException {
             HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
@@ -426,6 +423,9 @@ public class SharedLocation {
             c.setReadTimeout(TIMEOUT_MS);
             c.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android) gexporter");
             c.setRequestProperty("Accept-Language", "en");
+            if (isGoogle(url)) {
+                c.setRequestProperty("Cookie", GOOGLE_CONSENT_COOKIE);
+            }
             return c;
         }
 
@@ -438,22 +438,6 @@ public class SharedLocation {
                     return c.getHeaderField("Location");
                 }
                 return null;
-            } finally {
-                c.disconnect();
-            }
-        }
-
-        @Override
-        public String body(String url) throws IOException {
-            HttpURLConnection c = open(url);
-            try (InputStream in = c.getInputStream()) {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                byte[] buf = new byte[8192];
-                int len;
-                while ((len = in.read(buf)) > 0 && out.size() < MAX_BODY) {
-                    out.write(buf, 0, len);
-                }
-                return out.toString(StandardCharsets.UTF_8.name());
             } finally {
                 c.disconnect();
             }
