@@ -1,13 +1,21 @@
 package org.surfsite.gexporter;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -74,10 +82,13 @@ public class SharedLocation {
         return lon;
     }
 
-    /** Fetches a URL without following redirects; injectable for tests. */
+    /** Network access, injectable for tests. */
     public interface Fetcher {
         /** @return the redirect target, or null if the response was not a redirect */
         String redirectTarget(String url) throws IOException;
+
+        /** @return the body of a successful GET */
+        String body(String url) throws IOException;
     }
 
     /**
@@ -159,11 +170,51 @@ public class SharedLocation {
             }
         }
 
-        // Google place links often resolve to /maps/place/<name>/data=...
-        // with only a feature id. The page does not help: the only position
-        // in it is the map view around the requester's IP location, not the
-        // place (the place data is loaded by script later).
+        // Google place links often resolve to /maps/place/<name, address>/
+        // data=... with only a feature id. The page does not help: the only
+        // position in it is the map view around the requester's IP location,
+        // not the place. The name and address in the URL can be geocoded.
+        String placeText = isGoogle(url) ? googlePlaceText(url) : null;
+        if (placeText != null) {
+            SharedLocation loc = geocode(placeText, fetcher);
+            if (loc != null) {
+                String placeName = googlePlaceName(url);
+                return new SharedLocation(placeName != null ? placeName : name, loc.lat, loc.lon);
+            }
+        }
         Log.warn("No coordinates in {} (resolved to {})", start, url);
+        return null;
+    }
+
+    static final String NOMINATIM = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=";
+
+    /**
+     * Look up "<name>, <street>, <zip city>" with OpenStreetMap Nominatim.
+     * Business names are often unknown to OSM, so leading parts are dropped
+     * until something matches; at least two parts are kept, as a city alone
+     * is too coarse to navigate to.
+     */
+    static SharedLocation geocode(String placeText, Fetcher fetcher) {
+        String[] parts = placeText.split("\\s*,\\s*");
+        for (int first = 0; first == 0 || parts.length - first >= 2; first++) {
+            String query = String.join(", ", Arrays.copyOfRange(parts, first, parts.length));
+            try {
+                JsonArray hits = JsonParser.parseString(
+                        fetcher.body(NOMINATIM + URLEncoder.encode(query, "UTF-8"))).getAsJsonArray();
+                if (hits.size() > 0) {
+                    JsonObject hit = hits.get(0).getAsJsonObject();
+                    SharedLocation loc = fromStrings(null, hit.get("lat").getAsString(), hit.get("lon").getAsString());
+                    if (loc != null) {
+                        Log.info("Geocoded '{}' to {}, {}", query, loc.lat, loc.lon);
+                        return loc;
+                    }
+                }
+            } catch (IOException | RuntimeException e) {
+                // RuntimeException: malformed JSON from the service
+                Log.warn("Geocoding '{}' failed: {}", query, e.toString());
+                return null;
+            }
+        }
         return null;
     }
 
@@ -304,14 +355,24 @@ public class SharedLocation {
                 || host.matches("(?:.+\\.)?google\\.[a-z.]+");
     }
 
-    private static String googlePlaceName(String url) {
+    /** "<name>, <address>" from /maps/place/<text> or ?q=<text>, or null. */
+    private static String googlePlaceText(String url) {
         Matcher m = GOOGLE_PLACE_NAME.matcher(url);
-        if (!m.find()) {
+        String text = m.find() ? urlDecode(m.group(1)) : queryParam(url, "q");
+        if (text == null) {
             return null;
         }
-        String placeName = urlDecode(m.group(1)).trim();
+        text = text.trim();
         // A dropped pin is "named" by its own coordinates; that is no name.
-        if (placeName.isEmpty() || PLAIN_COORDS.matcher(placeName).find() || placeName.contains("°")) {
+        if (text.isEmpty() || PLAIN_COORDS.matcher(text).find() || text.contains("°")) {
+            return null;
+        }
+        return text;
+    }
+
+    private static String googlePlaceName(String url) {
+        String placeName = googlePlaceText(url);
+        if (placeName == null) {
             return null;
         }
         // "FRISTO Getränkemarkt, Johann-Sebastian-Bach-Straße 5, 85591 ...":
@@ -415,13 +476,35 @@ public class SharedLocation {
     /** Real network access via HttpURLConnection. */
     public static class HttpFetcher implements Fetcher {
         private static final int TIMEOUT_MS = 10000;
+        private static final int MAX_BODY = 1024 * 1024;
+        // Nominatim usage policy: at most one request per second and a
+        // User-Agent that identifies the application.
+        private static final long NOMINATIM_INTERVAL_MS = 1100;
+        private static final String APP_USER_AGENT = "gexporter (+https://github.com/gimportexportdevs/gexporter)";
+        private static long sLastNominatimRequest = 0;
+
+        private static synchronized void throttleNominatim() {
+            long wait = sLastNominatimRequest + NOMINATIM_INTERVAL_MS - System.currentTimeMillis();
+            if (wait > 0) {
+                try {
+                    Thread.sleep(wait);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+            sLastNominatimRequest = System.currentTimeMillis();
+        }
 
         private HttpURLConnection open(String url) throws IOException {
+            boolean nominatim = url.startsWith(NOMINATIM);
+            if (nominatim) {
+                throttleNominatim();
+            }
             HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
             c.setInstanceFollowRedirects(false);
             c.setConnectTimeout(TIMEOUT_MS);
             c.setReadTimeout(TIMEOUT_MS);
-            c.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android) gexporter");
+            c.setRequestProperty("User-Agent", nominatim ? APP_USER_AGENT : "Mozilla/5.0 (Linux; Android) gexporter");
             c.setRequestProperty("Accept-Language", "en");
             if (isGoogle(url)) {
                 c.setRequestProperty("Cookie", GOOGLE_CONSENT_COOKIE);
@@ -438,6 +521,27 @@ public class SharedLocation {
                     return c.getHeaderField("Location");
                 }
                 return null;
+            } finally {
+                c.disconnect();
+            }
+        }
+
+        @Override
+        public String body(String url) throws IOException {
+            HttpURLConnection c = open(url);
+            try {
+                if (c.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                    throw new IOException("HTTP " + c.getResponseCode() + " for " + url);
+                }
+                try (InputStream in = c.getInputStream()) {
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    byte[] buf = new byte[8192];
+                    int len;
+                    while ((len = in.read(buf)) > 0 && out.size() < MAX_BODY) {
+                        out.write(buf, 0, len);
+                    }
+                    return out.toString("UTF-8");
+                }
             } finally {
                 c.disconnect();
             }

@@ -10,7 +10,10 @@ import org.junit.Test;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -151,12 +154,35 @@ public class TestSharedLocation {
 
     private static class FakeFetcher implements SharedLocation.Fetcher {
         final Map<String, String> redirects = new HashMap<>();
+        final Map<String, String> bodies = new HashMap<>();
+        final List<String> fetched = new ArrayList<>();
 
         @Override
         public String redirectTarget(String url) {
             return redirects.get(url);
         }
+
+        @Override
+        public String body(String url) throws IOException {
+            fetched.add(url);
+            String body = bodies.get(url);
+            if (body == null) {
+                throw new IOException("404 " + url);
+            }
+            return body;
+        }
     }
+
+    private static String nominatim(String query) throws Exception {
+        return SharedLocation.NOMINATIM + URLEncoder.encode(query, "UTF-8");
+    }
+
+    private static final String FRISTO_SHORT = "https://maps.app.goo.gl/snWQZ4aAnVYPzJ148";
+    // Shape of a real Google Maps share (2026): a place URL with only name,
+    // address and feature id, no coordinates.
+    private static final String FRISTO_PLACE = "https://www.google.com/maps/place/FRISTO+Getr%C3%A4nkemarkt,"
+            + "+Johann-Sebastian-Bach-Stra%C3%9Fe+5,+85591+Vaterstetten/data=!4m2!3m1"
+            + "!1s0x479de27452cc669b:0xa06148bcc99c5f4f!18m1!1e1?entry=gps";
 
     @Test
     public void resolvesShortLinkRedirect() {
@@ -177,17 +203,51 @@ public class TestSharedLocation {
     }
 
     @Test
-    public void placeLinkWithoutCoordinatesFails() {
-        // Shape of a real Google Maps share (2026): the short link resolves to
-        // a place URL with only name, address and feature id. The page has no
-        // usable position (only the map view around the requester's IP), so
-        // this must fail rather than return a wrong place.
+    public void placeLinkIsGeocoded() throws Exception {
         FakeFetcher f = new FakeFetcher();
-        f.redirects.put("https://maps.app.goo.gl/snWQZ4aAnVYPzJ148",
-                "https://www.google.com/maps/place/FRISTO+Getr%C3%A4nkemarkt,"
-                        + "+Johann-Sebastian-Bach-Stra%C3%9Fe+5,+85591+Vaterstetten/data=!4m2!3m1"
-                        + "!1s0x479de27452cc669b:0xa06148bcc99c5f4f!18m1!1e1?entry=gps");
-        assertNull(SharedLocation.resolve("https://maps.app.goo.gl/snWQZ4aAnVYPzJ148", f));
+        f.redirects.put(FRISTO_SHORT, FRISTO_PLACE);
+        // OSM does not know the shop name, only the address
+        f.bodies.put(nominatim("FRISTO Getränkemarkt, Johann-Sebastian-Bach-Straße 5, 85591 Vaterstetten"), "[]");
+        f.bodies.put(nominatim("Johann-Sebastian-Bach-Straße 5, 85591 Vaterstetten"),
+                "[{\"lat\":\"48.1111247\",\"lon\":\"11.7789765\",\"display_name\":\"5, Johann-Sebastian-Bach-Straße\"}]");
+        assertLoc(SharedLocation.resolve(FRISTO_SHORT, f), "FRISTO Getränkemarkt", 48.1111247, 11.7789765);
+    }
+
+    @Test
+    public void geocodingStopsBeforeCityOnly() throws Exception {
+        FakeFetcher f = new FakeFetcher();
+        f.redirects.put(FRISTO_SHORT, FRISTO_PLACE);
+        f.bodies.put(nominatim("FRISTO Getränkemarkt, Johann-Sebastian-Bach-Straße 5, 85591 Vaterstetten"), "[]");
+        f.bodies.put(nominatim("Johann-Sebastian-Bach-Straße 5, 85591 Vaterstetten"), "[]");
+        f.bodies.put(nominatim("85591 Vaterstetten"), "[{\"lat\":\"48.1\",\"lon\":\"11.7\"}]");
+        assertNull(SharedLocation.resolve(FRISTO_SHORT, f));
+        assertEquals(2, f.fetched.size());
+    }
+
+    @Test
+    public void geocodingFailureGivesNull() {
+        FakeFetcher f = new FakeFetcher();
+        f.redirects.put(FRISTO_SHORT, FRISTO_PLACE);
+        // no bodies: every request fails like a network error
+        assertNull(SharedLocation.resolve(FRISTO_SHORT, f));
+        assertEquals(1, f.fetched.size());
+    }
+
+    @Test
+    public void malformedGeocoderReplyGivesNull() throws Exception {
+        FakeFetcher f = new FakeFetcher();
+        f.redirects.put(FRISTO_SHORT, FRISTO_PLACE);
+        f.bodies.put(nominatim("FRISTO Getränkemarkt, Johann-Sebastian-Bach-Straße 5, 85591 Vaterstetten"),
+                "<html>rate limited</html>");
+        assertNull(SharedLocation.resolve(FRISTO_SHORT, f));
+    }
+
+    @Test
+    public void coordinatesInLinkNeedNoGeocoding() {
+        FakeFetcher f = new FakeFetcher();
+        f.redirects.put(FRISTO_SHORT, "https://www.google.com/maps/place/FRISTO/@48.111,11.7789,17z");
+        assertLoc(SharedLocation.resolve(FRISTO_SHORT, f), "FRISTO", 48.111, 11.7789);
+        assertTrue(f.fetched.isEmpty());
     }
 
     @Test
