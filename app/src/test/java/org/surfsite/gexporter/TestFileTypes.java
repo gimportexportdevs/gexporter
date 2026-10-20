@@ -31,7 +31,7 @@ public class TestFileTypes {
     @Test
     public void sniffsGpx() {
         assertEquals(".gpx", sniff(head("<?xml version=\"1.0\"?><gpx>")));
-        assertEquals(".gpx", sniff(head("﻿<?xml version=\"1.0\"?>")));
+        assertEquals(".gpx", sniff(head("\uFEFF<?xml version=\"1.0\"?>")));
         assertEquals(".gpx", sniff(head("\n  <gpx version=\"1.1\">")));
     }
 

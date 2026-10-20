@@ -27,7 +27,7 @@ final class FileTypes {
             return ".fit";
         }
         String text = new String(head, 0, Math.max(len, 0), StandardCharsets.UTF_8);
-        if (text.startsWith("﻿")) {
+        if (text.startsWith("\uFEFF")) {
             text = text.substring(1);
         }
         text = text.trim();
