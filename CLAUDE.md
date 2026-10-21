@@ -80,10 +80,23 @@ Communicates with Garmin devices via ConnectIQ SDK:
 - App ID: `9B0A09CF-C89E-4F7C-A5E4-AB21400EE424`
 - Widget ID: `B5FD4C5F-E0F8-48E8-8A03-E37E86971CEB`
 - Responds to `GET_PORT` messages to tell the device which port to connect to
+- With several connected Garmin devices, the watch card shows the best result of all of them (`showDeviceState`), so a watch without gimporter does not hide the Edge that has it
+
+### Talking to the watch (WatchLink.java, WatchContent.java, SharedLocation.java)
+
+- `WatchLink` sends messages to gimporter (app and widget, per device): push a tapped track or a shared place, ask for and delete gimporter's content on the watch. It remembers which gimporter answered; while gimporter reports that it is busy, a new push is held (up to 60 s) and sent once it is ready.
+- gimporter reports its state ("importing", "imported", "started", "ready"); `MainActivity` shows it in the status line.
+- `SharedLocation` turns shared text into a place: `geo:` URIs, Google Maps links (short links are resolved; place links without coordinates are geocoded via Nominatim, never guessed from the page), Organic Maps links (ge0) and plain coordinates.
+
+### Compatibility with gimporter
+
+All combinations of old and new versions must work. An old gimporter does not answer the new messages: gexporter then tells the user to pick the track from gimporter's list, and lists places only to a gimporter that asks for them (`locations=1`). A new gimporter with an old gexporter uses the track list as before.
 
 ## Testing
 
 - **TestPlay.java**: GPX parsing and FIT conversion tests using sample files in `src/test/resources/`
+- **TestCourseFit.java**: Decodes the written FIT to check what devices rely on (course point distances, timestamps not before the FIT epoch)
+- **TestConversionGuards.java**, **TestSharedLocation.java**, **TestWatchContent.java**, **TestServedFiles.java**, **TestDirListing.java**, **TestFileTypes.java**: time parsing and input checks, place parsing, watch messages, served files
 - **TestRunServer.java**: Standalone development server (not a test, despite the name)
 
 ## Key Dependencies
@@ -103,3 +116,20 @@ Communicates with Garmin devices via ConnectIQ SDK:
   Android SDK, so it is slow; subsequent runs are cached. Gradle itself needs
   network access on the first build to fetch the Android Gradle plugin
   (offline mode fails until the plugin is cached).
+
+## Releasing
+
+1. release-please opens a "chore(master): release x.y.z" PR from the conventional commits; merging it tags the release, creates the GitHub release and bumps the version (`versionCode` = MAJOR*10000 + MINOR*100 + PATCH).
+2. The maintainer builds the signed App Bundle in Android Studio (Build > Generate Signed App Bundle, keystore `~/android-release.jks`); it lands in `app/release/app-release.aab`.
+3. Play Console > Production > Create new release: upload the bundle, release notes as `<en-US>…</en-US><de-DE>…</de-DE>`, then Next > Save > Publishing overview > Send for review. The missing-deobfuscation-file warning is expected.
+4. Release notes: only what users of the last published Play version notice, in user language, not the commit list.
+5. The store listing (short and full description in 29 languages, screenshots, feature graphic) is maintained in the Play Console, not in this repo.
+
+A debug build cannot be installed over the Play version (different signature); installing it means uninstalling the Play version first, which resets the chosen folder and settings.
+
+## Where users report problems
+
+Look there now and then and before a release; answer in the reporter's language, and show the text to the maintainer before posting (it is public):
+- GitHub issues: https://github.com/gimportexportdevs/gexporter/issues (and https://github.com/gimportexportdevs/gimporter/issues)
+- Garmin forum support thread: https://forums.garmin.com/developer/connect-iq/f/showcase/5150/gimporter-gexporter---import-fit-gpx-courses-from-your-android-phone
+- Google Play reviews: Play Console > Ratings and reviews > Reviews
