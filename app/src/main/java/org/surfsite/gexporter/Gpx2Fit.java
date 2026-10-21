@@ -698,12 +698,17 @@ public class Gpx2Fit {
             pt_min_dist = mGpx2FitOptions.getMinRoutePointDistance();
 
 
+        // Course points are written between the records, each right after
+        // the record at its distance along the course (as Garmin's
+        // EncodeCourse example does).
+        List<CoursePointMesg> cps = new ArrayList<>();
+
         if (!skipExtraCP && !wayPoints.isEmpty()) {
-            writeWayPoints(encode, wayPoints, duration);
+            writeWayPoints(cps, wayPoints, duration);
         }
 
         if (!skipExtraCP && !rtePoints.isEmpty()) {
-            writeWayPoints(encode, rtePoints, duration);
+            writeWayPoints(cps, rtePoints, duration);
         }
 
         {
@@ -747,18 +752,23 @@ public class Gpx2Fit {
 
                     cp.setDistance((float) dist);
                     cp.setTimestamp(timestamp);
-                    encode.write(cp);
+                    cps.add(cp);
                     written = true;
                 }
 
                 if (wpt.equals(lastWayPoint)) {
+                    if (written) {
+                        // a one-point track: "Start" is already in cps
+                        cp = new CoursePointMesg();
+                        cp.setLocalNum(0);
+                    }
                     cp.setPositionLat(wpt.getLatSemi());
                     cp.setPositionLong(wpt.getLonSemi());
                     cp.setName("End");
                     cp.setType(CoursePoint.GENERIC);
                     cp.setDistance((float) dist);
                     cp.setTimestamp(timestamp);
-                    encode.write(cp);
+                    cps.add(cp);
                     written = true;
                 } else if ((dist - lcdist) > cp_min_dist) {
                     cp.setName("");
@@ -767,7 +777,7 @@ public class Gpx2Fit {
                     cp.setPositionLong(wpt.getLonSemi());
                     cp.setDistance((float) dist);
                     cp.setTimestamp(timestamp);
-                    encode.write(cp);
+                    cps.add(cp);
                     lcdist = dist;
                     written = true;
                 }
@@ -785,6 +795,13 @@ public class Gpx2Fit {
             last = null;
 
         }
+
+        // in course order; the sort is stable, so ties keep their order
+        Collections.sort(cps, (a, b) -> {
+            int c = Float.compare(a.getDistance(), b.getDistance());
+            return c != 0 ? c : Long.compare(a.getTimestamp().getTimestamp(), b.getTimestamp().getTimestamp());
+        });
+        int nextCp = 0;
 
         for (WayPoint wpt : trkPoints) {
             boolean written = false;
@@ -821,6 +838,12 @@ public class Gpx2Fit {
                     r.setSpeed((float) 0.0);
                 }
 
+                // The course points before this record follow the last one
+                // written. Both distances went through the same rounding.
+                while (nextCp < cps.size() && cps.get(nextCp).getDistance() < r.getDistance()) {
+                    encode.write(cps.get(nextCp++));
+                }
+
                 encode.write(r);
                 ldist = dist;
                 ltimestamp = l;
@@ -834,6 +857,10 @@ public class Gpx2Fit {
                             wpt.getLat(), wpt.getLon(), wpt.getEle(), dist, gspeed);
                 }
             }
+        }
+
+        while (nextCp < cps.size()) {
+            encode.write(cps.get(nextCp++));
         }
 
         {
@@ -859,10 +886,9 @@ public class Gpx2Fit {
      * Write GPX waypoints as course points. A course point needs the distance
      * along the course (and the matching timestamp), or devices show all of
      * them at the end of the course in "Up Ahead". Each waypoint takes them
-     * from the nearest track point; the points are written in course order.
+     * from the nearest track point; the points are added to cps.
      */
-    private void writeWayPoints(FileEncoder encode, List<WayPoint> points, long duration) {
-        List<CoursePointMesg> cps = new ArrayList<>();
+    private void writeWayPoints(List<CoursePointMesg> cps, List<WayPoint> points, long duration) {
         for (WayPoint wpt : points) {
             int nearest = nearestTrackPoint(wpt);
             WayPoint trk = trkPoints.get(nearest);
@@ -881,10 +907,6 @@ public class Gpx2Fit {
             else
                 cp.setTimestamp(new DateTime(new Date(WayPoint.RefMilliSec + (nearest + 1) * 1000L)));
             cps.add(cp);
-        }
-        Collections.sort(cps, (a, b) -> Float.compare(a.getDistance(), b.getDistance()));
-        for (CoursePointMesg cp : cps) {
-            encode.write(cp);
         }
     }
 

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.garmin.fit.CoursePointMesg;
 import com.garmin.fit.Decode;
+import com.garmin.fit.Mesg;
 import com.garmin.fit.MesgBroadcaster;
 import com.garmin.fit.RecordMesg;
 
@@ -32,6 +33,8 @@ public class TestCourseFit {
 
     private final List<RecordMesg> records = new ArrayList<>();
     private final List<CoursePointMesg> coursePoints = new ArrayList<>();
+    /** Records and course points in file order. */
+    private final List<Mesg> trail = new ArrayList<>();
 
     /** A straight track north, 0.01° (about 1.1 km) per point. */
     private File gpx(String wpts, String timeFormat) throws Exception {
@@ -56,14 +59,24 @@ public class TestCourseFit {
     }
 
     private void convertAndDecode(File gpx) throws Exception {
+        convertAndDecode(gpx, new Gpx2FitOptions());
+    }
+
+    private void convertAndDecode(File gpx, Gpx2FitOptions options) throws Exception {
         File fit = tmp.newFile("out.fit");
         try (FileInputStream in = new FileInputStream(gpx)) {
-            new Gpx2Fit("t", in, new Gpx2FitOptions()).writeFit(fit);
+            new Gpx2Fit("t", in, options).writeFit(fit);
         }
         Decode decode = new Decode();
         MesgBroadcaster broadcaster = new MesgBroadcaster(decode);
-        broadcaster.addListener((com.garmin.fit.RecordMesgListener) records::add);
-        broadcaster.addListener((com.garmin.fit.CoursePointMesgListener) coursePoints::add);
+        broadcaster.addListener((com.garmin.fit.RecordMesgListener) m -> {
+            records.add(m);
+            trail.add(m);
+        });
+        broadcaster.addListener((com.garmin.fit.CoursePointMesgListener) m -> {
+            coursePoints.add(m);
+            trail.add(m);
+        });
         try (InputStream in = new FileInputStream(fit)) {
             assertTrue("FIT integrity", decode.checkFileIntegrity(in));
         }
@@ -91,6 +104,33 @@ public class TestCourseFit {
         assertEquals(records.get(8).getDistance(), late.getDistance(), 0.5f);
         assertEquals(records.get(2).getTimestamp().getTimestamp(), early.getTimestamp().getTimestamp());
         assertEquals(records.get(8).getTimestamp().getTimestamp(), late.getTimestamp().getTimestamp());
+    }
+
+    @Test
+    public void coursePointsFollowTheirRecord() throws Exception {
+        Gpx2FitOptions options = new Gpx2FitOptions();
+        options.setInjectCoursePoints(true);
+        convertAndDecode(gpx(
+                "<wpt lat=\"48.0801\" lon=\"9.0001\"><name>late</name></wpt>\n"
+                        + "<wpt lat=\"48.0199\" lon=\"8.9999\"><name>early</name></wpt>\n",
+                "2026-09-05T10:%02d:00Z"), options);
+
+        // Start, End, the injected ones and both waypoints
+        assertTrue(coursePoints.size() > 4);
+        assertEquals("Start", coursePoints.get(0).getName());
+        assertEquals("End", coursePoints.get(coursePoints.size() - 1).getName());
+        assertTrue("starts with a record", trail.get(0) instanceof RecordMesg);
+        RecordMesg lastRecord = null;
+        for (Mesg m : trail) {
+            if (m instanceof RecordMesg) {
+                lastRecord = (RecordMesg) m;
+                continue;
+            }
+            CoursePointMesg cp = (CoursePointMesg) m;
+            // right after the record it belongs to: same distance and time
+            assertEquals(cp.getName(), lastRecord.getDistance(), cp.getDistance(), 0.5f);
+            assertEquals(cp.getName(), lastRecord.getTimestamp().getTimestamp(), cp.getTimestamp().getTimestamp());
+        }
     }
 
     @Test
