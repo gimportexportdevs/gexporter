@@ -148,6 +148,10 @@ public class WayPoint {
     }
 
     private CoursePoint parseStringToCoursePoint(String s) {
+        if (s == null) {
+            // most waypoints have no <type> or <sym>; valueOf(null) throws
+            return null;
+        }
         if (isNumeric(s)) {
             return CoursePoint.getByValue(toShort(s));
         } else {

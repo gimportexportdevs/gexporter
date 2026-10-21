@@ -36,6 +36,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -101,6 +103,7 @@ public class Gpx2Fit {
                 parser.setInput(inputStream, null);
                 parser.nextTag();
                 readGPX(parser);
+                shiftTimesBeforeFitEpoch();
                 return;
             } catch (Exception e) {
                 last = e;
@@ -381,6 +384,32 @@ public class Gpx2Fit {
      * Parse a required lat/lon attribute, rejecting null, non-numeric,
      * non-finite, or out-of-range values.
      */
+    /**
+     * FIT timestamps count from the FIT epoch (1989-12-31) and cannot go
+     * below it. Some apps, like Locus Map, write route times relative to
+     * 1970-01-01; written as they are, they wrap around, and devices reject
+     * the course once it is saved ("invalid course"). Such times are moved so
+     * the earliest one is the FIT epoch: durations, and thereby speeds, stay.
+     */
+    private void shiftTimesBeforeFitEpoch() {
+        long first = Long.MAX_VALUE;
+        for (List<WayPoint> points : Arrays.asList(trkPoints, rtePoints, wayPoints)) {
+            for (WayPoint wpt : points) {
+                first = Math.min(first, wpt.getTime().getTime());
+            }
+        }
+        if (first >= WayPoint.RefMilliSec) {
+            return;
+        }
+        long shift = WayPoint.RefMilliSec - first;
+        Log.info("Times before the FIT epoch, shifting them by {} ms", shift);
+        for (List<WayPoint> points : Arrays.asList(trkPoints, rtePoints, wayPoints)) {
+            for (WayPoint wpt : points) {
+                wpt.setTime(new Date(wpt.getTime().getTime() + shift));
+            }
+        }
+    }
+
     private static double parseCoordinate(String value, double min, double max, String what) {
         if (value == null)
             throw new IllegalArgumentException("Missing " + what);
@@ -670,11 +699,11 @@ public class Gpx2Fit {
 
 
         if (!skipExtraCP && !wayPoints.isEmpty()) {
-            writeWayPoints(encode, wayPoints);
+            writeWayPoints(encode, wayPoints, duration);
         }
 
         if (!skipExtraCP && !rtePoints.isEmpty()) {
-            writeWayPoints(encode, rtePoints);
+            writeWayPoints(encode, rtePoints, duration);
         }
 
         {
@@ -826,8 +855,18 @@ public class Gpx2Fit {
         }
     }
 
-    private void writeWayPoints(FileEncoder encode, List<WayPoint> points) {
+    /**
+     * Write GPX waypoints as course points. A course point needs the distance
+     * along the course (and the matching timestamp), or devices show all of
+     * them at the end of the course in "Up Ahead". Each waypoint takes them
+     * from the nearest track point; the points are written in course order.
+     */
+    private void writeWayPoints(FileEncoder encode, List<WayPoint> points, long duration) {
+        List<CoursePointMesg> cps = new ArrayList<>();
         for (WayPoint wpt : points) {
+            int nearest = nearestTrackPoint(wpt);
+            WayPoint trk = trkPoints.get(nearest);
+
             CoursePointMesg cp = new CoursePointMesg();
             cp.setLocalNum(0);
 
@@ -835,7 +874,31 @@ public class Gpx2Fit {
             cp.setPositionLong(wpt.getLonSemi());
             cp.setName(defaultString(wpt.getName()));
             cp.setType(wpt.getPointType());
+            cp.setDistance((float) trk.getTotaldist());
+            // the same timestamp the record of that track point gets
+            if (duration != 0)
+                cp.setTimestamp(new DateTime(trk.getTime()));
+            else
+                cp.setTimestamp(new DateTime(new Date(WayPoint.RefMilliSec + (nearest + 1) * 1000L)));
+            cps.add(cp);
+        }
+        Collections.sort(cps, (a, b) -> Float.compare(a.getDistance(), b.getDistance()));
+        for (CoursePointMesg cp : cps) {
             encode.write(cp);
         }
+    }
+
+    /** Index of the track point closest to wpt. */
+    private int nearestTrackPoint(WayPoint wpt) {
+        int nearest = 0;
+        double best = Double.MAX_VALUE;
+        for (int i = 0; i < trkPoints.size(); i++) {
+            double d = wpt.distance(trkPoints.get(i));
+            if (d < best) {
+                best = d;
+                nearest = i;
+            }
+        }
+        return nearest;
     }
 }
