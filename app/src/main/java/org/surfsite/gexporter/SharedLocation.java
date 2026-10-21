@@ -48,8 +48,9 @@ public class SharedLocation {
     private static final Pattern GOOGLE_VIEWPORT = Pattern.compile("@" + NUM + "," + NUM);
     private static final Pattern GOOGLE_PLACE_NAME = Pattern.compile("/maps/place/([^/@?]+)");
     // Directions (/maps/dir/<start>/<stops>/<destination>/@viewport/data=...):
-    // the data part lists the position of each named stop as !1d<lon>!2d<lat>.
-    private static final Pattern GOOGLE_DIR_STOP = Pattern.compile("!1d" + NUM + "!2d" + NUM);
+    // the data part lists the position of each named stop, as !1d<lon>!2d<lat>
+    // or (Google Maps app, 2026) as !3d<lat>!4d<lon>.
+    private static final Pattern GOOGLE_DIR_STOP = Pattern.compile("!1d" + NUM + "!2d" + NUM + "|!3d" + NUM + "!4d" + NUM);
     private static final Pattern GOOGLE_DIR_QUERY = Pattern.compile("[?&](?:destination|daddr)=" + NUM + "(?:,|%2C)\\+?" + NUM, Pattern.CASE_INSENSITIVE);
     private static final Pattern QUERY_COORDS = Pattern.compile("[?&](?:q|ll|query|destination|daddr|center|sll)=" + NUM + "(?:,|%2C)\\+?" + NUM, Pattern.CASE_INSENSITIVE);
     // In the EU, Google redirects every request without this cookie to the
@@ -381,8 +382,13 @@ public class SharedLocation {
         String lat = null;
         String lon = null;
         while (m.find()) {
-            lon = m.group(1);
-            lat = m.group(2);
+            if (m.group(1) != null) {
+                lon = m.group(1);
+                lat = m.group(2);
+            } else {
+                lat = m.group(3);
+                lon = m.group(4);
+            }
         }
         return lat != null ? fromStrings(name, lat, lon) : null;
     }
