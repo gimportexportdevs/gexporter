@@ -1,5 +1,13 @@
 # Changelog
 
+## [20.3.2](https://github.com/gimportexportdevs/gexporter/compare/v20.3.1...v20.3.2) (2026-10-21)
+
+
+### Bug Fixes
+
+* a shared Google Maps route navigates to its destination ([a6f990e](https://github.com/gimportexportdevs/gexporter/commit/a6f990e954be7beeadb663bd65d9f5984f4fc9e5)), closes [#12](https://github.com/gimportexportdevs/gexporter/issues/12)
+* read the destination of routes shared from the Google Maps app ([8d45bbb](https://github.com/gimportexportdevs/gexporter/commit/8d45bbbbd5c964d2c6810d635cc74e3281d0acd4))
+
 ## [20.3.1](https://github.com/gimportexportdevs/gexporter/compare/v20.3.0...v20.3.1) (2026-10-21)
 
 
