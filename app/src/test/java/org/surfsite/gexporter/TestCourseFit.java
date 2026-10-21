@@ -6,6 +6,9 @@ import static org.junit.Assert.assertTrue;
 
 import com.garmin.fit.CoursePointMesg;
 import com.garmin.fit.Decode;
+import com.garmin.fit.Event;
+import com.garmin.fit.EventMesg;
+import com.garmin.fit.EventType;
 import com.garmin.fit.MesgBroadcaster;
 import com.garmin.fit.RecordMesg;
 
@@ -32,6 +35,7 @@ public class TestCourseFit {
 
     private final List<RecordMesg> records = new ArrayList<>();
     private final List<CoursePointMesg> coursePoints = new ArrayList<>();
+    private final List<EventMesg> events = new ArrayList<>();
 
     /** A straight track north, 0.01° (about 1.1 km) per point. */
     private File gpx(String wpts, String timeFormat) throws Exception {
@@ -64,6 +68,7 @@ public class TestCourseFit {
         MesgBroadcaster broadcaster = new MesgBroadcaster(decode);
         broadcaster.addListener((com.garmin.fit.RecordMesgListener) records::add);
         broadcaster.addListener((com.garmin.fit.CoursePointMesgListener) coursePoints::add);
+        broadcaster.addListener((com.garmin.fit.EventMesgListener) events::add);
         try (InputStream in = new FileInputStream(fit)) {
             assertTrue("FIT integrity", decode.checkFileIntegrity(in));
         }
@@ -114,5 +119,17 @@ public class TestCourseFit {
         // 2026-09-05T10:00:00Z in FIT seconds (since 1989-12-31T00:00:00Z)
         long expected = (1788602400000L - 631065600000L) / 1000L;
         assertEquals(expected, (long) records.get(0).getTimestamp().getTimestamp());
+    }
+
+    @Test
+    public void courseEndsWithTimerStopAllAtTheLastRecord() throws Exception {
+        // as Garmin's EncodeCourse example
+        convertAndDecode(gpx("", "2026-09-05T10:%02d:00Z"));
+
+        EventMesg stop = events.get(events.size() - 1);
+        assertEquals(Event.TIMER, stop.getEvent());
+        assertEquals(EventType.STOP_ALL, stop.getEventType());
+        assertEquals(records.get(records.size() - 1).getTimestamp().getTimestamp(),
+                stop.getTimestamp().getTimestamp());
     }
 }

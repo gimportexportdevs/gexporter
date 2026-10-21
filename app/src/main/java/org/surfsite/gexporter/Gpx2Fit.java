@@ -786,6 +786,7 @@ public class Gpx2Fit {
 
         }
 
+        DateTime lastRecordTime = timestamp;
         for (WayPoint wpt : trkPoints) {
             boolean written = false;
             i += 1;
@@ -822,6 +823,7 @@ public class Gpx2Fit {
                 }
 
                 encode.write(r);
+                lastRecordTime = timestamp;
                 ldist = dist;
                 ltimestamp = l;
                 written = true;
@@ -841,10 +843,9 @@ public class Gpx2Fit {
             eventMesg.setLocalNum(0);
 
             eventMesg.setEvent(Event.TIMER);
-            eventMesg.setEventType(EventType.STOP_DISABLE_ALL);
+            eventMesg.setEventType(EventType.STOP_ALL);
             eventMesg.setEventGroup((short) 0);
-            //timestamp.add(2);
-            eventMesg.setTimestamp(timestamp);
+            eventMesg.setTimestamp(lastRecordTime);
 
             encode.write(eventMesg);
         }
