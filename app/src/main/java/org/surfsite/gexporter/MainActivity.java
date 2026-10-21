@@ -119,6 +119,8 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
     private ConnectIQ mConnectIQ = null;
     private IQDevice mConnectedDevice = null;
     private IQApp mConnectedApp = null;
+    // Best result of the devices checked since the last scan, see showDeviceState
+    private WatchState mDeviceState = null;
     // "device:app" pairs with a message listener; app and widget each need one
     private final Set<String> mRegisteredApps = new HashSet<>();
     
@@ -227,6 +229,7 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
     private void launchIQApp(ConnectIQ connectIQ) {
         try {
             List<IQDevice> devices = connectIQ.getConnectedDevices();
+            mDeviceState = null;
             if (devices != null && !devices.isEmpty()) {
                 for (IQDevice device : devices) {
                     connectIQ.getApplicationInfo(CONNECT_IQ_GIMPORTER_APP, device, new ConnectIQ.IQApplicationInfoListener() {
@@ -235,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
                             mConnectedDevice = device;
                             mConnectedApp = app;
                             WatchLink.addApp(connectIQ, device, app, false);
-                            setWatchState(WatchState.CONNECTED, device);
+                            showDeviceState(WatchState.CONNECTED, device);
                             requestWatchContent();
 
                             // Register the GET_PORT listener as soon as we know the
@@ -287,10 +290,9 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
                     WatchLink.addApp(connectIQ, device, widget, true);
                     registerMessageListener(connectIQ, device, widget);
                     requestWatchContent();
-                    if (!appInstalled) {
+                    if (!appInstalled && showDeviceState(WatchState.WIDGET_ONLY, device)) {
                         mConnectedDevice = device;
                         mConnectedApp = widget;
-                        setWatchState(WatchState.WIDGET_ONLY, device);
                         // A widget cannot be opened from the phone; the location
                         // waits until the user opens it.
                         sendPendingLocation();
@@ -300,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
                 @Override
                 public void onApplicationNotInstalled(String applicationId) {
                     if (!appInstalled) {
-                        setWatchState(WatchState.NOT_INSTALLED, device);
+                        showDeviceState(WatchState.NOT_INSTALLED, device);
                     }
                 }
             });
@@ -399,7 +401,23 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
         held.show();
     }
 
+    // The per-device results are ordered from worst to best (showDeviceState).
     private enum WatchState { CONNECTING, NO_DEVICE, INIT_FAILED, NOT_INSTALLED, WIDGET_ONLY, CONNECTED }
+
+    /**
+     * Show the result of one connected device unless another device already
+     * did better: a second watch without gimporter must not hide the Edge
+     * that has it. Returns whether the result is shown.
+     */
+    private boolean showDeviceState(WatchState state, IQDevice device) {
+        if (mDeviceState != null && mDeviceState.compareTo(state) > 0) {
+            Log.info("Ignoring {} for {}, another device is {}", state, device.getFriendlyName(), mDeviceState);
+            return false;
+        }
+        mDeviceState = state;
+        setWatchState(state, device);
+        return true;
+    }
 
     /** Show the watch, its connection state and the action that fits it. */
     private void setWatchState(WatchState state, @Nullable IQDevice device) {
