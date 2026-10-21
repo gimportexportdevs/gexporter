@@ -53,6 +53,7 @@ import com.garmin.android.connectiq.exception.ServiceUnavailableException;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.color.MaterialColors;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
@@ -351,9 +352,12 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
     private void sendToWatch(ServedFiles.Entry entry) {
         String busy = WatchLink.busyWith(System.currentTimeMillis());
         if (busy != null) {
-            Snackbar.make(findViewById(R.id.main_root),
-                            getString(R.string.watch_busy, ServedFiles.withoutExtension(busy)), Snackbar.LENGTH_LONG)
-                    .setAnchorView(R.id.choose_folder).show();
+            // a dialog, not a snackbar: the track was not sent, which must
+            // not be mistaken for a passing status
+            new MaterialAlertDialogBuilder(this)
+                    .setMessage(getString(R.string.watch_busy, ServedFiles.withoutExtension(busy)))
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
             return;
         }
         Map<String, Object> message;
@@ -1083,12 +1087,8 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
     }
 
     private void setStatusText(@Nullable CharSequence text) {
-        if (text == null) {
-            mStatusText.setVisibility(View.GONE);
-        } else {
-            mStatusText.setText(text);
-            mStatusText.setVisibility(View.VISIBLE);
-        }
+        // keeps its two lines when empty, see activity_main.xml
+        mStatusText.setText(text == null ? "" : text);
     }
 
     /**

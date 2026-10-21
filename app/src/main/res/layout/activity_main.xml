@@ -82,7 +82,9 @@
             android:maxLines="1"
             android:textColor="?android:attr/textColorSecondary" />
 
-        <!-- Progress and problems: resolving a shared location, server errors -->
+        <!-- Progress and problems: resolving a shared location, server
+             errors, what gimporter does. Always two lines high, so the list
+             below does not move under the finger when a status appears. -->
         <TextView
             android:id="@+id/status_text"
             style="@style/TextAppearance.Material3.BodyMedium"
@@ -90,7 +92,9 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="8dp"
-            android:visibility="gone" />
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:minLines="2" />
 
         <FrameLayout
             android:layout_width="match_parent"
