@@ -3,14 +3,9 @@
 ## [20.3.0](https://github.com/gimportexportdevs/gexporter/compare/v20.2.0...v20.3.0) (2026-10-21)
 
 
-### Features
-
-* let a debug build talk to the ConnectIQ simulator over adb ([52760b3](https://github.com/gimportexportdevs/gexporter/commit/52760b3e0d721762b621bd1e0f788c6de8a477dd))
-
-
 ### Bug Fixes
 
-* keep the list still under the finger and make "busy" impossible to miss ([d5ae713](https://github.com/gimportexportdevs/gexporter/commit/d5ae71378404669123e2efbb2d54223c6aa1fa1d))
+* Refinements to sending tracks to the watch (see 20.2.0 for the new features)
 
 ## [20.2.0](https://github.com/gimportexportdevs/gexporter/compare/v20.1.0...v20.2.0) (2026-10-20)
 
