@@ -15,8 +15,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -45,6 +47,10 @@ public class SharedLocation {
     private static final Pattern GOOGLE_PLACE = Pattern.compile("!3d" + NUM + "!4d" + NUM);
     private static final Pattern GOOGLE_VIEWPORT = Pattern.compile("@" + NUM + "," + NUM);
     private static final Pattern GOOGLE_PLACE_NAME = Pattern.compile("/maps/place/([^/@?]+)");
+    // Directions (/maps/dir/<start>/<stops>/<destination>/@viewport/data=...):
+    // the data part lists the position of each named stop as !1d<lon>!2d<lat>.
+    private static final Pattern GOOGLE_DIR_STOP = Pattern.compile("!1d" + NUM + "!2d" + NUM);
+    private static final Pattern GOOGLE_DIR_QUERY = Pattern.compile("[?&](?:destination|daddr)=" + NUM + "(?:,|%2C)\\+?" + NUM, Pattern.CASE_INSENSITIVE);
     private static final Pattern QUERY_COORDS = Pattern.compile("[?&](?:q|ll|query|destination|daddr|center|sll)=" + NUM + "(?:,|%2C)\\+?" + NUM, Pattern.CASE_INSENSITIVE);
     // In the EU, Google redirects every request without this cookie to the
     // consent dialog, so following a place URL would loop through it.
@@ -110,7 +116,9 @@ public class SharedLocation {
             }
         }
 
-        Matcher c = PLAIN_COORDS.matcher(text);
+        // Coordinates inside a link are for the link parsers above: a
+        // directions link's viewport is not a place.
+        Matcher c = PLAIN_COORDS.matcher(URL_PATTERN.matcher(text).replaceAll(" "));
         while (c.find()) {
             SharedLocation loc = fromStrings(name, c.group(1), c.group(2));
             if (loc != null) {
@@ -329,6 +337,9 @@ public class SharedLocation {
     }
 
     private static SharedLocation parseGoogleUrl(String url, String fallbackName) {
+        if (googleDirStops(url) != null) {
+            return parseGoogleDirections(url, fallbackName);
+        }
         String placeName = googlePlaceName(url);
         String name = placeName != null ? placeName : fallbackName;
 
@@ -344,6 +355,58 @@ public class SharedLocation {
         return null;
     }
 
+    /**
+     * The destination of a directions link, which is its last stop. The
+     * viewport (@lat,lon) is never used: it shows the whole route, and its
+     * center is somewhere between start and destination.
+     */
+    private static SharedLocation parseGoogleDirections(String url, String fallbackName) {
+        String placeName = googlePlaceName(url);
+        String name = placeName != null ? placeName : fallbackName;
+
+        Matcher m = GOOGLE_DIR_QUERY.matcher(url);
+        if (m.find()) {
+            return fromStrings(name, m.group(1), m.group(2));
+        }
+        List<String> stops = googleDirStops(url);
+        if (stops.isEmpty()) {
+            return null;
+        }
+        // a destination given as coordinates has no entry in the data part
+        m = PLAIN_COORDS.matcher(stops.get(stops.size() - 1));
+        if (m.matches()) {
+            return fromStrings(fallbackName, m.group(1), m.group(2));
+        }
+        m = GOOGLE_DIR_STOP.matcher(url);
+        String lat = null;
+        String lon = null;
+        while (m.find()) {
+            lon = m.group(1);
+            lat = m.group(2);
+        }
+        return lat != null ? fromStrings(name, lat, lon) : null;
+    }
+
+    /** The stops of a /maps/dir/ link (start first, destination last), or null. */
+    private static List<String> googleDirStops(String url) {
+        int i = url.indexOf("/maps/dir/");
+        if (i < 0) {
+            return null;
+        }
+        String rest = url.substring(i + "/maps/dir/".length()).split("[?#]", 2)[0];
+        List<String> stops = new ArrayList<>();
+        for (String segment : rest.split("/")) {
+            if (segment.startsWith("@") || segment.startsWith("data=")) {
+                break;
+            }
+            String stop = urlDecode(segment).trim();
+            if (!stop.isEmpty()) {
+                stops.add(stop);
+            }
+        }
+        return stops;
+    }
+
     private static boolean isGoogle(String url) {
         String host;
         try {
@@ -355,10 +418,22 @@ public class SharedLocation {
                 || host.matches("(?:.+\\.)?google\\.[a-z.]+");
     }
 
-    /** "<name>, <address>" from /maps/place/<text> or ?q=<text>, or null. */
+    /**
+     * "<name>, <address>" from /maps/place/<text>, ?q=<text> or the
+     * destination of a directions link, or null.
+     */
     private static String googlePlaceText(String url) {
-        Matcher m = GOOGLE_PLACE_NAME.matcher(url);
-        String text = m.find() ? urlDecode(m.group(1)) : queryParam(url, "q");
+        String text;
+        List<String> stops = googleDirStops(url);
+        if (stops != null) {
+            text = queryParam(url, "destination");
+            if (text == null) {
+                text = stops.isEmpty() ? null : stops.get(stops.size() - 1);
+            }
+        } else {
+            Matcher m = GOOGLE_PLACE_NAME.matcher(url);
+            text = m.find() ? urlDecode(m.group(1)) : queryParam(url, "q");
+        }
         if (text == null) {
             return null;
         }
