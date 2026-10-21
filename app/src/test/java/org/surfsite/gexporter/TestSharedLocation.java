@@ -147,6 +147,41 @@ public class TestSharedLocation {
         assertNull(SharedLocation.parse("https://omaps.app/get"));
     }
 
+    // Shape of a Google Maps "Share directions" link once its short link is
+    // resolved: start, destination, the route's viewport, and in data= the
+    // position of each named stop as !1d<lon>!2d<lat>.
+    private static final String DIRECTIONS = "https://www.google.com/maps/dir/M%C3%BCnchen/Zugspitze/"
+            + "@47.7869,11.0712,9z/data=!3m1!4b1!4m13!4m12"
+            + "!1m5!1m1!1s0x479e75f9a38c5fd9:0x10cb84a7db1987d!2m2!1d11.5819806!2d48.1351253"
+            + "!1m5!1m1!1s0x479d0b6a6d6e2a0b:0x2e8d7b9f2a3c!2m2!1d10.9863!2d47.4211";
+
+    @Test
+    public void directionsGoToTheDestinationNotTheViewport() {
+        assertLoc(SharedLocation.parse(DIRECTIONS), "Zugspitze", 47.4211, 10.9863);
+    }
+
+    @Test
+    public void directionsWithCoordinateStops() {
+        assertLoc(SharedLocation.parse("https://www.google.com/maps/dir/48.1351253,11.5819806/47.4211,10.9863/@47.8,11.2,9z"),
+                SharedLocation.DEFAULT_NAME, 47.4211, 10.9863);
+    }
+
+    @Test
+    public void directionsApiLink() {
+        assertLoc(SharedLocation.parse("https://www.google.com/maps/dir/?api=1&destination=47.4211,10.9863"),
+                SharedLocation.DEFAULT_NAME, 47.4211, 10.9863);
+    }
+
+    @Test
+    public void directionsWithoutPositionsAreGeocoded() throws Exception {
+        String url = "https://www.google.com/maps/dir/M%C3%BCnchen/Zugspitze/@47.7869,11.0712,9z";
+        assertNull(SharedLocation.parse(url));
+        FakeFetcher f = new FakeFetcher();
+        f.redirects.put("https://maps.app.goo.gl/dir123", url);
+        f.bodies.put(nominatim("Zugspitze"), "[{\"lat\":\"47.4211\",\"lon\":\"10.9863\"}]");
+        assertLoc(SharedLocation.resolve("https://maps.app.goo.gl/dir123", f), "Zugspitze", 47.4211, 10.9863);
+    }
+
     @Test
     public void unknownLinkNeedsResolving() {
         assertNull(SharedLocation.parse("Stephansdom\nhttps://maps.app.goo.gl/abc123"));
