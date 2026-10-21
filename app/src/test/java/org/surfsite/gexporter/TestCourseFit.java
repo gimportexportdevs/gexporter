@@ -6,6 +6,8 @@ import static org.junit.Assert.assertTrue;
 
 import com.garmin.fit.CoursePointMesg;
 import com.garmin.fit.Decode;
+import com.garmin.fit.FileIdMesg;
+import com.garmin.fit.Manufacturer;
 import com.garmin.fit.MesgBroadcaster;
 import com.garmin.fit.RecordMesg;
 
@@ -32,6 +34,7 @@ public class TestCourseFit {
 
     private final List<RecordMesg> records = new ArrayList<>();
     private final List<CoursePointMesg> coursePoints = new ArrayList<>();
+    private final List<FileIdMesg> fileIds = new ArrayList<>();
 
     /** A straight track north, 0.01° (about 1.1 km) per point. */
     private File gpx(String wpts, String timeFormat) throws Exception {
@@ -64,6 +67,7 @@ public class TestCourseFit {
         MesgBroadcaster broadcaster = new MesgBroadcaster(decode);
         broadcaster.addListener((com.garmin.fit.RecordMesgListener) records::add);
         broadcaster.addListener((com.garmin.fit.CoursePointMesgListener) coursePoints::add);
+        broadcaster.addListener((com.garmin.fit.FileIdMesgListener) fileIds::add);
         try (InputStream in = new FileInputStream(fit)) {
             assertTrue("FIT integrity", decode.checkFileIntegrity(in));
         }
@@ -114,5 +118,19 @@ public class TestCourseFit {
         // 2026-09-05T10:00:00Z in FIT seconds (since 1989-12-31T00:00:00Z)
         long expected = (1788602400000L - 631065600000L) / 1000L;
         assertEquals(expected, (long) records.get(0).getTimestamp().getTimestamp());
+    }
+
+    @Test
+    public void fileIdNamesADevelopmentManufacturer() throws Exception {
+        convertAndDecode(gpx("", null));
+
+        // gexporter is not a Garmin product, so it does not claim to be one
+        // (as in the FIT SDK's EncodeCourse example)
+        assertEquals(1, fileIds.size());
+        FileIdMesg fileId = fileIds.get(0);
+        assertEquals(com.garmin.fit.File.COURSE, fileId.getType());
+        assertEquals(Manufacturer.DEVELOPMENT, (int) fileId.getManufacturer());
+        assertEquals(0, (int) fileId.getProduct());
+        assertEquals(12345L, (long) fileId.getSerialNumber());
     }
 }
