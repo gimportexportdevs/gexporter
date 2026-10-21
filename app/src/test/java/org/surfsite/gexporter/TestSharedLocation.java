@@ -161,6 +161,16 @@ public class TestSharedLocation {
     }
 
     @Test
+    public void directionsFromTheGoogleMapsApp() {
+        // Shape of a 2026 "Share directions" from the Google Maps app, once
+        // resolved: the start is the current position, the destination is
+        // named and its position is in data= as !3d<lat>!4d<lon>.
+        String url = "https://www.google.com/maps/dir/48.1,11.5/Some+Shop+GmbH/data=!4m12!4m11!1m1!4e1"
+                + "!1m5!1m4!1s0x0:0x0!8m2!3d47.4211!4d10.9863!2m1!11b1!3e2?utm_source=mstt_0";
+        assertLoc(SharedLocation.parse(url), "Some Shop GmbH", 47.4211, 10.9863);
+    }
+
+    @Test
     public void directionsWithCoordinateStops() {
         assertLoc(SharedLocation.parse("https://www.google.com/maps/dir/48.1351253,11.5819806/47.4211,10.9863/@47.8,11.2,9z"),
                 SharedLocation.DEFAULT_NAME, 47.4211, 10.9863);
