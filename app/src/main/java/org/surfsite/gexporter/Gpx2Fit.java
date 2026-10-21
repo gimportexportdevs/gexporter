@@ -507,9 +507,9 @@ public class Gpx2Fit {
         {
             //Generate FileIdMessage
             FileIdMesg fileIdMesg = new FileIdMesg(); // Every FIT file MUST contain a 'File ID' message as the first message
-            fileIdMesg.setManufacturer(Manufacturer.GARMIN);
+            fileIdMesg.setManufacturer(Manufacturer.DEVELOPMENT); // not a Garmin product, as in the FIT SDK's EncodeCourse example
             fileIdMesg.setType(com.garmin.fit.File.COURSE);
-            fileIdMesg.setProduct(12345);
+            fileIdMesg.setProduct(0);
             fileIdMesg.setSerialNumber(12345L);
             fileIdMesg.setNumber(trkPoints.hashCode());
             fileIdMesg.setTimeCreated(new DateTime(new Date()));
