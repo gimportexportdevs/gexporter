@@ -1,5 +1,13 @@
 # Changelog
 
+## [20.3.1](https://github.com/gimportexportdevs/gexporter/compare/v20.3.0...v20.3.1) (2026-10-21)
+
+
+### Bug Fixes
+
+* a second Garmin device without gimporter no longer hides the one that has it ([60a83e0](https://github.com/gimportexportdevs/gexporter/commit/60a83e0f86b421e7793a0d9285fbec1135651059))
+* **convert:** valid timestamps for Locus routes, distances for waypoints ([8fb4c83](https://github.com/gimportexportdevs/gexporter/commit/8fb4c83de4c7c5a3dacee5a16758b1c680b94c85)), closes [#36](https://github.com/gimportexportdevs/gexporter/issues/36) [#14](https://github.com/gimportexportdevs/gexporter/issues/14)
+
 ## [20.3.0](https://github.com/gimportexportdevs/gexporter/compare/v20.2.0...v20.3.0) (2026-10-21)
 
 
