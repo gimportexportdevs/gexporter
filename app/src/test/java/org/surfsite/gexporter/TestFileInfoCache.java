@@ -1,6 +1,8 @@
 package org.surfsite.gexporter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -61,5 +63,24 @@ public class TestFileInfoCache {
         FileInfoCache.Info after = FileInfoCache.get(file);
         assertNull(after.locations);
         assertNotEquals(before.fingerprint, after.fingerprint);
+    }
+
+    @Test
+    public void warmFillsTheCacheAndForgetsRemovedFiles() throws Exception {
+        File kept = new File(dir, "kept.gpx");
+        File removed = new File(dir, "removed.gpx");
+        for (File f : new File[]{kept, removed}) {
+            try (InputStream in = getClass().getClassLoader().getResourceAsStream("sample11.gpx")) {
+                Files.copy(in, f.toPath());
+            }
+        }
+        FileInfoCache.warm(dir);
+        assertTrue(FileInfoCache.contains(kept));
+        assertTrue(FileInfoCache.contains(removed));
+
+        assertTrue(removed.delete());
+        FileInfoCache.warm(dir);
+        assertTrue(FileInfoCache.contains(kept));
+        assertFalse(FileInfoCache.contains(removed));
     }
 }

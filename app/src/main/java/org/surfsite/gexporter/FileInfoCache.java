@@ -36,6 +36,11 @@ final class FileInfoCache {
     private FileInfoCache() {
     }
 
+    /** For tests: whether the cache holds an entry for this file. */
+    static boolean contains(File file) {
+        return sInfo.containsKey(file.getAbsolutePath());
+    }
+
     /** The info of a file, read again only when the file has changed. */
     static Info get(File file) {
         String key = file.getAbsolutePath();
@@ -47,8 +52,12 @@ final class FileInfoCache {
         return info;
     }
 
-    /** Read the track files of a directory ahead of the first list request. */
+    /**
+     * Read the track files of a directory ahead of the first list request,
+     * and forget files that are gone (a new share empties the served folder).
+     */
     static void warm(File dir) {
+        sInfo.keySet().removeIf(path -> !new File(path).isFile());
         File[] files = dir.listFiles();
         if (files == null) {
             return;
