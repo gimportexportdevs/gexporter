@@ -1048,6 +1048,8 @@ public class MainActivity extends AppCompatActivity implements WatchLink.Listene
 
     private void startWebServer(File directory) {
         Log.debug("Starting web server for directory: {}", directory.getAbsolutePath());
+        // before the list for the screen: the watch may ask any moment
+        mScanner.execute(() -> FileInfoCache.warm(directory));
         try {
             server = new WebServer(directory, getCacheDir(), 22222, mGpx2FitOptions);
             server.start();

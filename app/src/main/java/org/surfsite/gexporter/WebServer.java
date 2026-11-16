@@ -208,7 +208,8 @@ public class WebServer extends NanoHTTPD {
                 }
                 String courseName = (doLongname ? aFilelist : getCourseName(aFilelist));
 
-                List<WayPoint> locations = ServedFiles.locationsIn(new File(mRootDir, aFilelist));
+                FileInfoCache.Info info = FileInfoCache.get(new File(mRootDir, aFilelist));
+                List<WayPoint> locations = info.locations;
                 if (locations != null && !doLocations) {
                     // An older gimporter cannot use a location and would
                     // fail to convert it to a course; do not offer it.
@@ -236,7 +237,7 @@ public class WebServer extends NanoHTTPD {
                 Map<String, String> track = new LinkedHashMap<>();
                 track.put("title", courseName);
                 track.put("url", url);
-                track.put("hash", WatchContent.fingerprint(new File(mRootDir, aFilelist)));
+                track.put("hash", info.fingerprint);
                 tracks.add(track);
             }
         }
